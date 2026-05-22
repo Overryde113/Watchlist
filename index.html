@@ -655,17 +655,31 @@ async function pushToSimkl() {
   for (const e of entries) {
     try {
       const mediaType = e.type==='🎥' ? 'movie' : (e.type==='🎌' ? 'anime' : 'tv');
-      const res = await fetch(`https://api.simkl.com/search/${mediaType}?q=${encodeURIComponent(e.title)}&client_id=${CLIENT_ID}&limit=1`);
-      const results = await res.json();
-      if (results && results.length) {
-        const item = results[0];
-        e.simklId = item.ids?.simkl || item.simkl_id;
-        if (e.type==='🎥') movies.push({ids:{simkl:e.simklId},title:e.title});
-        else if (e.type==='🎌') anime.push({ids:{simkl:e.simklId},title:e.title});
-        else shows.push({ids:{simkl:e.simklId},title:e.title});
-        found++;
-      } else {
+      // Clean title - strip emoji artifacts and extra whitespace
+      const cleanTitle = e.title.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u200d\ufe0f\u20e3]/gu,'').trim();
+      const searchUrl = `https://api.simkl.com/search/${mediaType}?q=${encodeURIComponent(cleanTitle)}&client_id=${CLIENT_ID}&limit=1`;
+      const res = await fetch(searchUrl, {
+        headers: {
+          'Content-Type': 'application/json',
+          'simkl-api-key': CLIENT_ID
+        }
+      });
+      if (!res.ok) {
+        if (res.status === 429) { await delay(3000); } // back off on rate limit
         notFound.push(e.title);
+      } else {
+        const results = await res.json();
+        if (results && Array.isArray(results) && results.length) {
+          const item = results[0];
+          e.simklId = item.ids?.simkl || item.ids?.simkl_id || item.simkl_id;
+          const simklItem = {ids:{simkl:e.simklId}, title:cleanTitle};
+          if (e.type==='🎥') movies.push(simklItem);
+          else if (e.type==='🎌') anime.push(simklItem);
+          else shows.push(simklItem);
+          found++;
+        } else {
+          notFound.push(e.title);
+        }
       }
     } catch(err) {}
     done++;
@@ -682,10 +696,10 @@ async function pushToSimkl() {
     if (shows.length) body.shows=shows;
     if (anime.length) body.anime=anime;
     if (Object.keys(body).length) {
-      const res = await fetch('https://api.simkl.com/sync/add-to-list', {
+      const res = await fetch('https://api.simkl.com/sync/watchlist', {
         method: 'POST',
         headers: {'Authorization':`Bearer ${simklToken}`,'simkl-api-key':CLIENT_ID,'Content-Type':'application/json'},
-        body: JSON.stringify({ list: 'plantowatch', ...body })
+        body: JSON.stringify(body)
       });
     }
   } catch(err) {}
