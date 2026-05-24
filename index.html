@@ -641,7 +641,7 @@ async function pushToSimkl() {
   if (!simklToken) { showToast('Connect Simkl first','err'); return; }
   if (!DATA || DATA.length === 0) { setSyncStatus('No entries found — try refreshing','err'); return; }
 
-  const TMDB_KEY = '4a39dbbf9c8c26bb8a1deea3c3f50012'; // public read-only TMDB API key
+  const TMDB_KEY = '014a12827b82585392041c087cee3ffa';
   const entries = DATA.filter(e => !e.find);
   const total = entries.length;
   let done = 0, found = 0;
