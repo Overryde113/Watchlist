@@ -359,6 +359,17 @@ tr:hover .action-cell{opacity:1}
     </div>
   </div>
 
+  <div id="backfillProgress" style="display:none;background:var(--surface);border:1px solid color-mix(in srgb,var(--accent2) 30%,transparent);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+      <span style="font-size:.82rem;font-weight:500;color:var(--accent2)">🔄 Fetching metadata from TMDB...</span>
+      <span id="backfillCounter" style="font-size:.78rem;color:var(--muted)">0 / 0</span>
+    </div>
+    <div style="height:4px;background:var(--surface3);border-radius:2px;overflow:hidden">
+      <div id="backfillBar" style="height:100%;background:var(--accent2);border-radius:2px;width:0%;transition:width .3s"></div>
+    </div>
+    <div id="backfillSub" style="font-size:.72rem;color:var(--muted);margin-top:.4rem">Starting...</div>
+  </div>
+
   <div class="results-info"><span id="resultsInfo"></span><span id="pageInfo"></span></div>
 
   <div class="table-wrap">
@@ -1335,11 +1346,19 @@ async function backfillMetadata() {
 
   const btn = document.getElementById('backfillBtn');
   btn.disabled = true;
-  btn.textContent = '🔄 Backfilling...';
+  btn.textContent = '🔄 Running...';
+
+  const progressWrap = document.getElementById('backfillProgress');
+  const progressBar  = document.getElementById('backfillBar');
+  const progressCtr  = document.getElementById('backfillCounter');
+  const progressSub  = document.getElementById('backfillSub');
+  progressWrap.style.display = 'block';
+  progressBar.style.width = '0%';
 
   let done = 0, filled = 0;
   const total = missing.length;
-  showToast(`Fetching metadata for ${total} entries...`, 'info');
+  progressCtr.textContent = `0 / ${total}`;
+  progressSub.textContent = 'Starting...';
 
   for (const e of missing) {
     try {
@@ -1378,18 +1397,27 @@ async function backfillMetadata() {
     } catch(err) {}
 
     done++;
-    if (done % 50 === 0) {
-      saveLocal();
-      btn.textContent = `🔄 ${done}/${total}...`;
-    }
-    await delay(50); // TMDB allows ~40 req/10s, 50ms per entry (2 req) keeps us safe
+    const pct = Math.round((done / total) * 100);
+    progressBar.style.width = pct + '%';
+    progressCtr.textContent = `${done} / ${total}`;
+    progressSub.textContent = `${filled} matched · ${done - filled} not found · ${total - done} remaining`;
+    if (done % 50 === 0) saveLocal();
+    await delay(50);
   }
 
   saveLocal();
   render();
   btn.disabled = false;
   btn.textContent = '🔄 Backfill Metadata';
-  showToast(`Done! Filled metadata for ${filled}/${total} entries`, 'ok');
+  progressBar.style.width = '100%';
+  progressBar.style.background = 'var(--watching)';
+  progressCtr.textContent = `${total} / ${total}`;
+  progressSub.textContent = `✅ Done! ${filled} entries updated with metadata.`;
+  setTimeout(() => {
+    progressWrap.style.display = 'none';
+    progressBar.style.background = 'var(--accent2)';
+  }, 5000);
+  showToast(`Done! Metadata fetched for ${filled} entries`, 'ok');
 }
 
 // ── EXPORT .TXT ───────────────────────────────────────────────────────────────
