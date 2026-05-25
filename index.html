@@ -1378,11 +1378,11 @@ async function backfillMetadata() {
     } catch(err) {}
 
     done++;
-    if (done % 20 === 0) {
+    if (done % 50 === 0) {
       saveLocal();
       btn.textContent = `🔄 ${done}/${total}...`;
     }
-    await delay(150); // 2 requests per entry, stay under TMDB rate limit
+    await delay(50); // TMDB allows ~40 req/10s, 50ms per entry (2 req) keeps us safe
   }
 
   saveLocal();
