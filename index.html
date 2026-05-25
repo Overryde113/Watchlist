@@ -11,8 +11,10 @@
   --border:#2a2a3a; --accent:#c8a96e; --accent2:#7c6ef5; --accent3:#e05c7a;
   --text:#e8e6f0; --muted:#6b6880;
   --movie:#c8a96e; --show:#7c6ef5; --anime:#e05c7a;
-  --watching:#4ade80; --rewatching:#60a5fa; --find:#f97316; --unreleased:#a78bfa;
+  --watching:#facc15; --rewatching:#4ade80; --find:#f97316; --unreleased:#a78bfa;
   --simkl:#16b5b5;
+  --watched:#a78bfa;
+  --franchise:#f472b6;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
@@ -80,20 +82,65 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.94);backdrop
 .chip.active{border-color:currentColor;background:color-mix(in srgb,currentColor 14%,transparent)}
 .chip.movie{color:var(--movie)}.chip.show{color:var(--show)}.chip.anime{color:var(--anime)}
 .chip.watching{color:var(--watching)}.chip.rewatching{color:var(--rewatching)}
-.chip.find{color:var(--find)}.chip.unreleased{color:var(--unreleased)}.chip.all{color:var(--accent)}
+.chip.find{color:var(--find)}.chip.unreleased{color:var(--unreleased)}.chip.watched{color:var(--watched)}.chip.franchise{color:var(--franchise)}.chip.all{color:var(--accent)}
 .filter-sep{width:1px;height:20px;background:var(--border);margin:0 .15rem}
 .sort-select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.74rem;padding:.26rem .52rem;outline:none;cursor:pointer;margin-left:auto}
 
 /* ── ADD BAR ── */
-.add-bar{display:flex;gap:.4rem;margin-bottom:1.1rem;flex-wrap:wrap}
+.add-bar{display:flex;gap:.4rem;margin-bottom:0;flex-wrap:wrap}
 .add-bar input,.add-bar select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;padding:.43rem .68rem;outline:none;transition:border-color .2s}
 .add-bar input:focus,.add-bar select:focus{border-color:var(--accent)}
 .add-bar input{flex:1;min-width:160px}.add-bar input::placeholder{color:var(--muted)}
+
+/* ── SEARCH DROPDOWN ── */
+.search-dropdown{position:relative;flex:1;min-width:200px}
+.search-results{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;z-index:50;max-height:380px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none}
+.search-results.open{display:block}
+.search-result-item{display:flex;gap:.75rem;padding:.65rem .9rem;cursor:pointer;transition:background .1s;align-items:center;border-bottom:1px solid var(--border)}
+.search-result-item:last-child{border-bottom:none}
+.search-result-item:hover{background:var(--surface2)}
+.result-poster{width:36px;height:54px;object-fit:cover;border-radius:4px;background:var(--surface3);flex-shrink:0}
+.result-poster-placeholder{width:36px;height:54px;border-radius:4px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.result-info{flex:1;min-width:0}
+.result-title{font-size:.85rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.result-meta{font-size:.72rem;color:var(--muted);margin-top:.15rem}
+.result-type{font-size:.68rem;padding:.1rem .35rem;border-radius:3px;background:var(--surface3);color:var(--muted);margin-left:.35rem}
+.search-loading{padding:.75rem 1rem;font-size:.8rem;color:var(--muted);text-align:center}
+.add-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.9rem 1rem;margin-bottom:1.1rem}
+.add-section-title{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.65rem}
+
+/* ── POSTER IN TABLE ── */
+.poster-cell{width:32px;padding-right:0}
+.row-poster{width:28px;height:42px;object-fit:cover;border-radius:3px;background:var(--surface3);display:block}
+.row-poster-placeholder{width:28px;height:42px;border-radius:3px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:.8rem}
+
+/* ── RATING ── */
+.rating-stars{display:flex;gap:1px;align-items:center}
+.star{font-size:.8rem;cursor:pointer;color:var(--muted);transition:color .1s;line-height:1}
+.star.filled{color:var(--accent)}
+.star:hover,.star:hover~.star{color:var(--accent)}
+.rating-display{font-size:.75rem;color:var(--accent);font-weight:500}
+
+/* ── STATUS BADGE ── */
+.status-badge{display:inline-flex;align-items:center;gap:.2rem;padding:.1rem .4rem;border-radius:4px;font-size:.68rem;font-weight:500}
+.badge-completed{background:rgba(74,222,128,.12);color:var(--watching)}
+.badge-watching{background:rgba(96,165,250,.12);color:var(--rewatching)}
+.badge-plan{background:var(--surface3);color:var(--muted)}
 .btn{padding:.43rem .95rem;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;transition:all .15s}
 .btn-primary{background:var(--accent);color:#0a0a0f}.btn-primary:hover{filter:brightness(1.1)}
 .btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--accent)}
 .btn-simkl{background:color-mix(in srgb,var(--simkl) 12%,var(--surface2));color:var(--simkl);border:1px solid color-mix(in srgb,var(--simkl) 28%,transparent)}.btn-simkl:hover{background:color-mix(in srgb,var(--simkl) 22%,var(--surface2))}
 .btn-sm{padding:.26rem .58rem;font-size:.74rem}
+
+/* ── FRANCHISE FILTER ── */
+.franchise-filter-wrap{position:relative;display:inline-block}
+.franchise-dropdown{position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;z-index:50;min-width:220px;max-height:320px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;padding:.35rem}
+.franchise-dropdown.open{display:block}
+.franchise-option{display:flex;align-items:center;gap:.5rem;padding:.35rem .6rem;border-radius:6px;cursor:pointer;font-size:.78rem;color:var(--muted);transition:all .12s;white-space:nowrap}
+.franchise-option:hover{background:var(--surface2);color:var(--text)}
+.franchise-option.active{background:color-mix(in srgb,var(--franchise) 12%,transparent);color:var(--franchise)}
+.franchise-option .f-emoji{font-size:.9rem;width:20px;text-align:center}
+.franchise-chip{color:var(--franchise);border-color:color-mix(in srgb,var(--franchise) 40%,transparent);background:color-mix(in srgb,var(--franchise) 12%,transparent)}
 
 /* ── RESULTS ── */
 .results-info{font-size:.73rem;color:var(--muted);margin-bottom:.6rem;display:flex;align-items:center;justify-content:space-between}
@@ -104,6 +151,8 @@ table{width:100%;border-collapse:collapse;font-size:.84rem}
 thead tr{background:var(--surface2);border-bottom:1px solid var(--border)}
 thead th{padding:.62rem .88rem;text-align:left;font-size:.67rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;white-space:nowrap;cursor:pointer;user-select:none}
 thead th:hover{color:var(--text)}
+thead th.sort-asc::after{content:" ↑";color:var(--accent)}
+thead th.sort-desc::after{content:" ↓";color:var(--accent)}
 tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:var(--surface2)}
@@ -130,6 +179,8 @@ td{padding:.52rem .88rem;vertical-align:middle}
 .dot{width:6px;height:6px;border-radius:50%}
 .dot-watch{background:var(--watching)}.dot-rewatch{background:var(--rewatching)}
 .dot-find{background:var(--find)}.dot-unreleased{background:var(--unreleased)}
+.dot-watched{background:var(--watched)}
+.dot-franchise{background:var(--franchise)}
 .people-cell{display:flex;flex-wrap:wrap;gap:.13rem}
 .person-tag{font-size:.65rem;padding:.07rem .28rem;border-radius:3px;background:var(--surface3);color:var(--muted);border:1px solid var(--border)}
 .action-cell{display:flex;gap:.22rem;opacity:0;transition:opacity .15s}
@@ -251,28 +302,61 @@ tr:hover .action-cell{opacity:1}
     <span class="filter-label">Status</span>
     <button class="chip watching" id="chip-watching" onclick="toggleStatusFilter('watching',this)">⭐ Watching</button>
     <button class="chip rewatching" id="chip-rewatching" onclick="toggleStatusFilter('rewatching',this)">🟩 Rewatching</button>
+    <button class="chip watched" id="chip-watched" onclick="toggleStatusFilter('watched',this)">✅ Watched</button>
     <button class="chip find" id="chip-find" onclick="toggleStatusFilter('find',this)">🔍 No Platform</button>
     <button class="chip unreleased" id="chip-unreleased" onclick="toggleStatusFilter('unreleased',this)">🔜 Upcoming</button>
+    <div class="filter-sep"></div>
+    <span class="filter-label">Franchise</span>
+    <div class="franchise-filter-wrap">
+      <button class="chip franchise" id="chip-franchise" onclick="toggleFranchiseDropdown()">🎬 Select Franchise <span id="franchiseChipLabel"></span></button>
+      <div class="franchise-dropdown" id="franchiseDropdown">
+        <div class="franchise-option" onclick="setFranchiseFilter(null)"><span class="f-emoji">✕</span> All Franchises</div>
+      </div>
+    </div>
     <select class="sort-select" id="sortSelect" onchange="render()">
-      <option value="default">Order: Default</option>
-      <option value="az">A → Z</option>
-      <option value="za">Z → A</option>
-      <option value="type">By Type</option>
-      <option value="platform">By Platform</option>
+      <optgroup label="General">
+        <option value="default">Default</option>
+        <option value="az">Title A → Z</option>
+        <option value="za">Title Z → A</option>
+        <option value="type">Type</option>
+        <option value="platform">Platform</option>
+        <option value="status">Status</option>
+        <option value="people">Watch With</option>
+      </optgroup>
+      <optgroup label="Release">
+        <option value="year-asc">Release Date ↑</option>
+        <option value="year-desc">Release Date ↓</option>
+        <option value="runtime">Runtime</option>
+      </optgroup>
+      <optgroup label="Shows &amp; Anime">
+        <option value="episodes">Episode Count</option>
+        <option value="seasons">Season Count</option>
+      </optgroup>
+      <optgroup label="Franchise">
+        <option value="franchise">Franchise A → Z</option>
+      </optgroup>
     </select>
   </div>
 
-  <!-- ADD BAR -->
-  <div class="add-bar">
-    <input type="text" id="newTitle" placeholder="Add title to watchlist..." onkeydown="if(event.key==='Enter')addEntry()">
-    <select id="newType">
-      <option value="🎥">🎥 Movie</option>
-      <option value="📺">📺 Show</option>
-      <option value="🎌">🎌 Anime</option>
-    </select>
-    <input type="text" id="newPlatform" placeholder="Platform (optional)">
-    <button class="btn btn-primary" onclick="addEntry()">+ Add</button>
-    <button class="btn btn-ghost" onclick="exportTxt()">⬇ Export .txt</button>
+  <!-- ADD SECTION -->
+  <div class="add-section">
+    <div class="add-section-title">Add to Watchlist</div>
+    <div class="add-bar" style="margin-bottom:.5rem">
+      <div class="search-dropdown" id="tmdbSearchWrap">
+        <input type="text" id="tmdbSearchInput" placeholder="Search movies, shows, anime..." autocomplete="off"
+          oninput="onTmdbSearch()" onkeydown="if(event.key==='Escape')closeSearchResults()">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+      <select id="newType">
+        <option value="all">All Types</option>
+        <option value="🎥">🎥 Movie</option>
+        <option value="📺">📺 Show</option>
+        <option value="🎌">🎌 Anime</option>
+      </select>
+      <button class="btn btn-ghost" onclick="addManually()">+ Manual</button>
+      <button class="btn btn-ghost" onclick="exportTxt()">⬇ Export</button>
+      <button class="btn btn-ghost" id="backfillBtn" onclick="backfillMetadata()" title="Fetch missing release dates, runtimes, seasons & episodes for all entries">🔄 Backfill Metadata</button>
+    </div>
   </div>
 
   <div class="results-info"><span id="resultsInfo"></span><span id="pageInfo"></span></div>
@@ -281,12 +365,14 @@ tr:hover .action-cell{opacity:1}
     <table>
       <thead>
         <tr>
-          <th class="td-num">#</th>
-          <th>Type</th>
-          <th onclick="document.getElementById('sortSelect').value='az';render()">Title ↕</th>
-          <th>Platform</th>
-          <th>Status</th>
-          <th>With</th>
+          <th class="td-num" onclick="thSort('default')" id="th-num">#</th>
+          <th class="poster-cell"></th>
+          <th onclick="thSort('type')" id="th-type">Type</th>
+          <th onclick="thSort('az')" id="th-title">Title</th>
+          <th>Rating</th>
+          <th onclick="thSort('platform')" id="th-platform">Platform</th>
+          <th onclick="thSort('status')" id="th-status">Status</th>
+          <th onclick="thSort('people')" id="th-people">With</th>
           <th></th>
         </tr>
       </thead>
@@ -317,10 +403,19 @@ tr:hover .action-cell{opacity:1}
     </div>
     <div class="form-group"><label>Platform</label><input type="text" id="editPlatform"></div>
     <div class="form-group">
+      <label>Franchise / Universe</label>
+      <input type="text" id="editFranchise" placeholder="Auto-detected or enter manually">
+    </div>
+    <div class="form-group">
+      <label>Rating</label>
+      <div id="editRatingStars" style="display:flex;gap:2px;align-items:center;flex-wrap:wrap"></div>
+    </div>
+    <div class="form-group">
       <label>Status</label>
       <div class="checkbox-group">
         <div class="checkbox-item" id="ckWatching">⭐ Watching</div>
         <div class="checkbox-item" id="ckRewatching">🟩 Rewatching</div>
+        <div class="checkbox-item" id="ckWatched">✅ Watched</div>
         <div class="checkbox-item" id="ckFind">🔍 Need Platform</div>
         <div class="checkbox-item" id="ckUnreleased">🔜 Upcoming</div>
       </div>
@@ -343,13 +438,93 @@ tr:hover .action-cell{opacity:1}
 const CLIENT_ID = '321cbe35fa57c89c8706f6940c839dc11fd2b585acce5288b2058e809f8f85db';
 const CLIENT_SECRET = '4e9d52f8ca1b5a57e7c0e25e7f67724da03c3d25897c3a27500722ef16554f2b';
 // Auth URL built dynamically in startPinFlow()
+const FRANCHISE_MAP = {
+  'MCU':                  { emoji: '🟥', keywords: ['iron man','the incredible hulk','thor','captain america','the avengers','iron man 3','thor: the dark world','captain america: the winter soldier','guardians of the galaxy','avengers: age of ultron','ant-man','captain america: civil war','doctor strange','guardians of the galaxy vol','spider-man: homecoming','thor: ragnarok','black panther','avengers: infinity war','ant-man and the wasp','captain marvel','avengers: endgame','spider-man: far from home','black widow','shang-chi','eternals','spider-man: no way home','doctor strange in the multiverse of madness','thor: love and thunder','black panther: wakanda forever','ant-man and the wasp: quantumania','guardians of the galaxy vol. 3','the marvels','deadpool','deadpool & wolverine','captain america: brave new world','thunderbolts','the fantastic four','avengers: doomsday'] },
+  'DCU':                  { emoji: '🔵', keywords: ['superman','creature commandos','waller','lanterns','the authority','paradise lost','the brave and the bold','supergirl','booster gold','swamp thing'] },
+  'DC':                   { emoji: '🦇', keywords: ['batman','wonder woman','aquaman','shazam','birds of prey','the suicide squad','black adam','the flash','blue beetle','joker','the batman','man of steel','batman v superman','suicide squad','justice league'] },
+  'Star Wars':            { emoji: '⚔️', keywords: ['star wars','rogue one','the mandalorian','andor','obi-wan','the book of boba fett','ahsoka','revenge of the sith','a new hope','the empire strikes back','return of the jedi','the phantom menace','attack of the clones'] },
+  'Harry Potter':         { emoji: '⚡', keywords: ['harry potter','fantastic beasts'] },
+  'Spider-Man':           { emoji: '🕷️', keywords: ['spider-man','into the spider-verse','across the spider-verse','beyond the spider-verse'] },
+  'Indiana Jones':        { emoji: '🪨', keywords: ['raiders of the lost ark','indiana jones and the temple of doom','indiana jones and the last crusade','indiana jones and the kingdom of the crystal skull','indiana jones and the dial of destiny'] },
+  'Pirates of the Caribbean': { emoji: '☠️', keywords: ['pirates of the caribbean'] },
+  'James Bond':           { emoji: '🔫', keywords: ['casino royale','quantum of solace','skyfall','spectre','no time to die','goldfinger','thunderball','the spy who loved me','goldeneye'] },
+  'Jason Bourne':         { emoji: '🏃‍♂️', keywords: ['bourne identity','bourne supremacy','bourne ultimatum','bourne legacy','jason bourne'] },
+  'John Wick':            { emoji: '🐶', keywords: ['john wick','the continental'] },
+  'Scream':               { emoji: '👻', keywords: ['scream'] },
+  'Friday the 13th':      { emoji: '🏕️', keywords: ['friday the 13th','friday the thirteenth'] },
+  'Texas Chainsaw':       { emoji: '🔗', keywords: ['texas chain saw','texas chainsaw'] },
+  'Halloween':            { emoji: '🎃', keywords: ['halloween'] },
+  'Nightmare on Elm Street': { emoji: '✂️', keywords: ['nightmare on elm street','freddy vs'] },
+  'Final Destination':    { emoji: '💀', keywords: ['final destination'] },
+  'Back to the Future':   { emoji: '⏰', keywords: ['back to the future'] },
+  'Ace Ventura':          { emoji: '🕵️', keywords: ['ace ventura'] },
+  'Beverly Hills Cop':    { emoji: '👮', keywords: ['beverly hills cop'] },
+  'Beyblade':             { emoji: '🌀', keywords: ['beyblade'] },
+  'Pokemon':              { emoji: '🏐', keywords: ['pokemon','pokémon'] },
+  'Sonic':                { emoji: '🦔', keywords: ['sonic the hedgehog','sonic prime','sonic boom','sonic x','adventures of sonic'] },
+  'Power Rangers':        { emoji: '🦖', keywords: ['power rangers'] },
+  'Saw':                  { emoji: '🪚', keywords: ['saw','jigsaw'] },
+  'Black Phone':          { emoji: '📱', keywords: ['black phone'] },
+  'FNAF':                 { emoji: '🐻', keywords: ['five nights at freddy'] },
+  "Child's Play":         { emoji: '👶', keywords: ["child's play",'chucky','bride of chucky','seed of chucky','curse of chucky','cult of chucky'] },
+  'Purge':                { emoji: '⚠️', keywords: ['the purge','anarchy','election year','the first purge','the forever purge'] },
+  'Hunger Games':         { emoji: '🏹', keywords: ['hunger games','songbirds'] },
+  'Transformers':         { emoji: '🏳️‍⚧️', keywords: ['transformers','bumblebee','rise of the beasts'] },
+  'Fast & Furious':       { emoji: '🚗', keywords: ['fast & furious','fast and furious','the fast and the furious','furious 7','fate of the furious','fast x'] },
+  'Mission Impossible':   { emoji: '🪢', keywords: ['mission: impossible','mission impossible'] },
+  'Naruto':               { emoji: '🥷', keywords: ['naruto','boruto'] },
+  'Dragon Ball':          { emoji: '🐲', keywords: ['dragon ball'] },
+  'One Piece':            { emoji: '👒', keywords: ['one piece'] },
+  'GI Joe':               { emoji: '🪖', keywords: ['g.i. joe','gi joe','snake eyes'] },
+  'Chronicles of Narnia': { emoji: '🦁', keywords: ['chronicles of narnia'] },
+  'Creed / Rocky':        { emoji: '🥊', keywords: ['rocky','creed'] },
+  'Top Gun':              { emoji: '✈️', keywords: ['top gun'] },
+  'Matrix':               { emoji: '💊', keywords: ['the matrix','matrix resurrections'] },
+  'Kingsman':             { emoji: '👑', keywords: ['kingsman'] },
+  'Jurassic Park':        { emoji: '🦕', keywords: ['jurassic park','jurassic world','lost world'] },
+  'Die Hard':             { emoji: '🏢', keywords: ['die hard'] },
+  'Home Alone':           { emoji: '🏠', keywords: ['home alone'] },
+  'Toy Story / Pixar':    { emoji: '🧸', keywords: ['toy story'] },
+  'Kung Fu Panda':        { emoji: '🐼', keywords: ['kung fu panda'] },
+  'Dune':                 { emoji: '🏜️', keywords: ['dune'] },
+  'Jujutsu Kaisen':       { emoji: '👁️', keywords: ['jujutsu kaisen'] },
+  'Attack on Titan':      { emoji: '⚙️', keywords: ['attack on titan','shingeki no kyojin'] },
+  'Demon Slayer':         { emoji: '🗡️', keywords: ['demon slayer','kimetsu no yaiba'] },
+  'Bleach':               { emoji: '☠', keywords: ['bleach'] },
+  'Doctor Who':           { emoji: '🚪', keywords: ['doctor who','torchwood'] },
+  'Breaking Bad':         { emoji: '🧪', keywords: ['breaking bad','better call saul'] },
+  'Daredevil':            { emoji: '🔴', keywords: ['daredevil','the punisher'] },
+  'Taken':                { emoji: '📱', keywords: ['taken'] },
+  'G.I. Joe':             { emoji: '🪖', keywords: ['g.i. joe','snake eyes: g.i. joe'] },
+  'Puss in Boots':        { emoji: '🐱', keywords: ['puss in boots'] },
+  'Despicable Me':        { emoji: '💛', keywords: ['despicable me','minions'] },
+  'National Treasure':    { emoji: '🗺️', keywords: ['national treasure'] },
+  'Shrek':                { emoji: '🧅', keywords: ['shrek','puss in boots'] },
+};
+
+function getFranchise(title) {
+  if (!title) return null;
+  const t = title.toLowerCase();
+  for (const [franchise, data] of Object.entries(FRANCHISE_MAP)) {
+    if (data.keywords.some(k => t.includes(k))) return franchise;
+  }
+  return null;
+}
+
+function getFranchiseEmoji(title, manualFranchise) {
+  const name = manualFranchise || getFranchise(title);
+  if (!name) return null;
+  return FRANCHISE_MAP[name]?.emoji || '🎬';
+}
+
+
 const PEOPLE = ['Josh','Ari','Mama','Brent','Brooklin','Briley','Noah','Linkin','T','Anton'];
 const PLAT_CLASS = {'Netflix':'p-netflix','Disney+':'p-disney','Prime Video':'p-prime','Hulu':'p-hulu','HBO Max':'p-hbo','HBO MAX':'p-hbo','Max':'p-hbo','Apple TV':'p-apple','Apple TV+':'p-apple','Peacock':'p-peacock','Paramount+':'p-paramount','YouTube TV':'p-youtube','Tubi':'p-tubi'};
 const PAGE_SIZE = 75;
 
 // ── STATE ────────────────────────────────────────────────────────────────────
 let DATA = [];
-let filters = { type: 'all', status: null };
+let filters = { type: 'all', status: null, franchise: null };
 let currentPage = 1;
 let simklToken = null;
 let simklUser = null;
@@ -386,6 +561,9 @@ function getFiltered() {
     if (filters.status === 'rewatching' && !e.rewatching) return false;
     if (filters.status === 'find' && !e.find) return false;
     if (filters.status === 'unreleased' && !e.unreleased) return false;
+    if (filters.status === 'watched' && !e.watched) return false;
+    if (filters.status === 'franchise' && !getFranchise(e.title)) return false;
+    if (filters.franchise && getFranchise(e.title) !== filters.franchise && e.franchise !== filters.franchise) return false;
     if (q) { const hay = (e.title+' '+e.platform+' '+e.people.join(' ')).toLowerCase(); if (!hay.includes(q)) return false; }
     return true;
   });
@@ -393,7 +571,25 @@ function getFiltered() {
   if (sort === 'az') arr.sort((a,b) => a.title.localeCompare(b.title));
   else if (sort === 'za') arr.sort((a,b) => b.title.localeCompare(a.title));
   else if (sort === 'type') arr.sort((a,b) => a.type.localeCompare(b.type));
+  else if (sort === 'type-desc') arr.sort((a,b) => b.type.localeCompare(a.type));
   else if (sort === 'platform') arr.sort((a,b) => (a.platform||'zzz').localeCompare(b.platform||'zzz'));
+  else if (sort === 'platform-desc') arr.sort((a,b) => (b.platform||'zzz').localeCompare(a.platform||'zzz'));
+  else if (sort === 'year-asc') arr.sort((a,b) => (a.year||'9999').localeCompare(b.year||'9999'));
+  else if (sort === 'year-desc') arr.sort((a,b) => (b.year||'0000').localeCompare(a.year||'0000'));
+  else if (sort === 'episodes') arr.sort((a,b) => (b.episodes||0)-(a.episodes||0));
+  else if (sort === 'seasons') arr.sort((a,b) => (b.seasons||0)-(a.seasons||0));
+  else if (sort === 'runtime') arr.sort((a,b) => (b.runtime||0)-(a.runtime||0));
+  else if (sort === 'status') arr.sort((a,b) => {
+    const score = e => (e.watching?8:0)+(e.rewatching?4:0)+(e.watched?2:0)+(e.find?1:0);
+    return score(b)-score(a);
+  });
+  else if (sort === 'status-desc') arr.sort((a,b) => {
+    const score = e => (e.watching?8:0)+(e.rewatching?4:0)+(e.watched?2:0)+(e.find?1:0);
+    return score(a)-score(b);
+  });
+  else if (sort === 'people') arr.sort((a,b) => (a.people||[]).join().localeCompare((b.people||[]).join()));
+  else if (sort === 'people-desc') arr.sort((a,b) => (b.people||[]).join().localeCompare((a.people||[]).join()));
+  else if (sort === 'franchise') arr.sort((a,b) => (getFranchise(a.title)||'zzz').localeCompare(getFranchise(b.title)||'zzz'));
   return arr;
 }
 
@@ -417,20 +613,36 @@ function render() {
       const gi = DATA.indexOf(e), rn = start+i+1;
       const tc = e.find?'find':e.unreleased?'unreleased':'';
       const pfx = e.find?'🔍 ':e.unreleased?'🔜 ':'';
+      const metaParts = [];
+      if (e.year) metaParts.push(e.year);
+      if (e.runtime) metaParts.push(fmtRuntime(e.runtime));
+      if (e.seasons) metaParts.push(`${e.seasons}S · ${e.episodes}eps`);
+      const metaStr = metaParts.length ? `<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">${metaParts.join(' · ')}</div>` : '';
+      const franchise = getFranchise(e.title);
       const dots = [
         e.watching?`<span class="dot dot-watch" title="Watching"></span>`:'',
         e.rewatching?`<span class="dot dot-rewatch" title="Rewatching"></span>`:'',
+        e.watched?`<span class="dot dot-watched" title="Watched"></span>`:'',
         e.find?`<span class="dot dot-find" title="No Platform"></span>`:'',
-        e.unreleased?`<span class="dot dot-unreleased" title="Upcoming"></span>`:''
+        e.unreleased?`<span class="dot dot-unreleased" title="Upcoming"></span>`:'',
+        franchise?`<span title="${franchise} · ${getFranchiseEmoji(e.title,e.franchise)}" style="font-size:.8rem;line-height:1">${getFranchiseEmoji(e.title,e.franchise)}</span>`:''  
       ].join('');
       const plats = e.platform ? e.platform.split(',').map(p=>p.trim()).filter(Boolean)
         .map(p=>`<span class="platform-badge ${getPlatClass(p)}">${p}</span>`).join(' ') : '';
       const people = e.people.length ? e.people.map(p=>`<span class="person-tag">${p}</span>`).join('') : '';
       const syncIcon = e.simklId ? `<span class="icon-btn synced" title="Synced to Simkl">⚡</span>` : '';
+      const posterEl = e.poster
+        ? `<img class="row-poster" src="https://image.tmdb.org/t/p/w92${e.poster}" loading="lazy" alt="">`
+        : `<div class="row-poster-placeholder" style="color:var(--muted)">▪</div>`;
+      const ratingEl = e.rating
+        ? `<span class="rating-display">★ ${e.rating}</span>`
+        : `<span class="rating-display" style="color:var(--border)">—</span>`;
       return `<tr data-idx="${gi}">
         <td class="td-num">${rn}</td>
+        <td class="poster-cell">${posterEl}</td>
         <td class="type-badge">${e.type}</td>
-        <td class="title-cell ${tc}">${pfx}${escHtml(e.title)}</td>
+        <td class="title-cell ${tc}">${pfx}${escHtml(e.title)}${metaStr}</td>
+        <td>${ratingEl}</td>
         <td><div class="plat-wrap">${plats}</div></td>
         <td><div class="status-dots">${dots}</div></td>
         <td><div class="people-cell">${people}</div></td>
@@ -477,14 +689,273 @@ function updateStats() {
 }
 
 // ── ADD / DELETE ─────────────────────────────────────────────────────────────
-function addEntry() {
-  const title = document.getElementById('newTitle').value.trim();
-  if (!title) { showToast('Enter a title first','err'); return; }
-  DATA.push({ type:document.getElementById('newType').value, title, platform:document.getElementById('newPlatform').value.trim(), watching:false, rewatching:false, people:[], find:false, unreleased:false });
-  document.getElementById('newTitle').value='';
-  document.getElementById('newPlatform').value='';
-  saveLocal(); render(); showToast(`"${title}" added!`,'ok');
+
+// ── COLUMN HEADER SORT ────────────────────────────────────────────────────
+const TH_CYCLES = {
+  'default': ['default'],
+  'type':    ['type','type-desc'],
+  'az':      ['az','za'],
+  'platform':['platform','platform-desc'],
+  'status':  ['status','status-desc'],
+  'people':  ['people','people-desc'],
+};
+let _currentSort = 'default';
+
+function thSort(key) {
+  const cycle = TH_CYCLES[key] || [key];
+  const cur = _currentSort;
+  const idx = cycle.indexOf(cur);
+  const next = cycle[(idx+1) % cycle.length];
+  _currentSort = next;
+  document.getElementById('sortSelect').value = next;
+  // Update header classes
+  document.querySelectorAll('thead th').forEach(th => { th.classList.remove('sort-asc','sort-desc'); });
+  const thMap = {'az':'th-title','za':'th-title','type':'th-type','type-desc':'th-type','platform':'th-platform','platform-desc':'th-platform','status':'th-status','status-desc':'th-status','people':'th-people','people-desc':'th-people','default':'th-num'};
+  const thEl = document.getElementById(thMap[next]);
+  if (thEl) thEl.classList.add(next.endsWith('-desc')?'sort-desc':'sort-asc');
+  currentPage=1; render();
 }
+
+// ── FRANCHISE FILTER ─────────────────────────────────────────────────────
+function buildFranchiseDropdown() {
+  const dropdown = document.getElementById('franchiseDropdown');
+  // Get all franchises present in DATA
+  const present = new Set();
+  DATA.forEach(e => {
+    const f = e.franchise || getFranchise(e.title);
+    if (f) present.add(f);
+  });
+  // Build sorted list
+  const sorted = Array.from(present).sort();
+  const clearOption = '<div class="franchise-option" onclick="setFranchiseFilter(null)"><span class="f-emoji">✕</span> All Franchises</div>';
+  dropdown.innerHTML = clearOption + sorted.map(f => {
+    const emoji = FRANCHISE_MAP[f]?.emoji || '🎬';
+    const active = filters.franchise === f ? ' active' : '';
+    return `<div class="franchise-option${active}" onclick="setFranchiseFilter('${f.replace(/'/g,"\'")}')">
+      <span class="f-emoji">${emoji}</span> ${f}
+    </div>`;
+  }).join('');
+}
+
+function toggleFranchiseDropdown() {
+  const dd = document.getElementById('franchiseDropdown');
+  if (!dd.classList.contains('open')) buildFranchiseDropdown();
+  dd.classList.toggle('open');
+}
+
+function setFranchiseFilter(name) {
+  filters.franchise = name;
+  const chip = document.getElementById('chip-franchise');
+  const label = document.getElementById('franchiseChipLabel');
+  if (name) {
+    const emoji = FRANCHISE_MAP[name]?.emoji || '🎬';
+    label.textContent = '· ' + emoji + ' ' + name;
+    chip.classList.add('active');
+  } else {
+    label.textContent = '';
+    chip.classList.remove('active');
+  }
+  document.getElementById('franchiseDropdown').classList.remove('open');
+  currentPage = 1;
+  render();
+}
+
+// Close franchise dropdown when clicking outside
+document.addEventListener('click', e => {
+  const wrap = document.querySelector('.franchise-filter-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('franchiseDropdown').classList.remove('open');
+  }
+});
+
+// ── TMDB SEARCH TO ADD ───────────────────────────────────────────────────
+let _searchTimer = null;
+let _lastSearchQuery = '';
+
+function onTmdbSearch() {
+  const q = document.getElementById('tmdbSearchInput').value.trim();
+  if (q.length < 2) { closeSearchResults(); return; }
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(() => runTmdbSearch(q), 350);
+}
+
+async function runTmdbSearch(q) {
+  if (q === _lastSearchQuery) return;
+  _lastSearchQuery = q;
+  const el = document.getElementById('searchResults');
+  el.innerHTML = '<div class="search-loading">Searching...</div>';
+  el.classList.add('open');
+
+  const typeFilter = document.getElementById('newType').value;
+  const results = [];
+
+  try {
+    // Search all relevant types
+    const types = typeFilter === 'all'
+      ? ['movie','tv']
+      : typeFilter === '🎥' ? ['movie'] : ['tv'];
+
+    for (const t of types) {
+      const res = await fetch(
+        `https://api.themoviedb.org/3/search/${t}?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&page=1`,
+        {headers:{'Content-Type':'application/json'}}
+      );
+      const data = await res.json();
+      // Fetch details for top 3 results to get runtime/seasons
+      const topItems = (data.results||[]).slice(0,4);
+      for (const item of topItems) {
+        let runtime = null, seasons = null, episodes = null;
+        try {
+          const detailRes = await fetch(
+            `https://api.themoviedb.org/3/${t}/${item.id}?api_key=${TMDB_KEY}`,
+            {headers:{'Content-Type':'application/json'}}
+          );
+          const detail = await detailRes.json();
+          if (t === 'movie') {
+            runtime = detail.runtime; // minutes
+          } else {
+            seasons = detail.number_of_seasons;
+            episodes = detail.number_of_episodes;
+          }
+        } catch(e) {}
+        results.push({
+          tmdbId: item.id,
+          title: item.title || item.name,
+          year: (item.release_date||item.first_air_date||'').substring(0,4),
+          poster: item.poster_path,
+          mediaType: t,
+          overview: item.overview,
+          runtime,
+          seasons,
+          episodes
+        });
+      }
+    }
+
+    // Sort by popularity (already sorted by TMDB)
+    if (!results.length) {
+      el.innerHTML = '<div class="search-loading">No results found</div>';
+      return;
+    }
+
+    el.innerHTML = results.slice(0,8).map(r => {
+      const posterSrc = r.poster
+        ? `https://image.tmdb.org/t/p/w92${r.poster}`
+        : null;
+      const typeIcon = r.mediaType === 'movie' ? '🎥' : '📺';
+      return `<div class="search-result-item" onclick="selectSearchResult(${JSON.stringify(r).replace(/"/g,'&quot;')})">
+        ${posterSrc
+          ? `<img class="result-poster" src="${posterSrc}" loading="lazy" alt="">`
+          : `<div class="result-poster-placeholder">${typeIcon}</div>`}
+        <div class="result-info">
+          <div class="result-title">${escHtml(r.title)}</div>
+          <div class="result-meta">
+            ${r.year||'?'}
+            ${r.runtime ? `· ${fmtRuntime(r.runtime)}` : ''}
+            ${r.seasons ? `· ${r.seasons} season${r.seasons!==1?'s':''}, ${r.episodes} eps` : ''}
+            <span class="result-type">${typeIcon} ${r.mediaType==='movie'?'Movie':'Show'}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    el.innerHTML = '<div class="search-loading">Search failed</div>';
+  }
+}
+
+function selectSearchResult(r) {
+  // Determine type
+  let type = '🎥';
+  if (r.mediaType === 'tv') {
+    // Check if it's likely anime - rough heuristic
+    type = '📺';
+  }
+  // Override with manual type if set
+  const typeFilter = document.getElementById('newType').value;
+  if (typeFilter !== 'all') type = typeFilter;
+
+  // Check if already in list
+  const exists = DATA.find(e => e.tmdbId === r.tmdbId);
+  if (exists) {
+    showToast(`"${r.title}" is already in your list`,'');
+    closeSearchResults();
+    document.getElementById('tmdbSearchInput').value = '';
+    return;
+  }
+
+  DATA.push({
+    type,
+    title: r.title,
+    platform: '',
+    watching: false,
+    rewatching: false,
+    completed: false,
+    people: [],
+    find: false,
+    unreleased: false,
+    rating: 0,
+    poster: r.poster || '',
+    tmdbId: r.tmdbId,
+    year: r.year,
+    runtime: r.runtime || null,
+    seasons: r.seasons || null,
+    episodes: r.episodes || null,
+    overview: r.overview || ''
+  });
+
+  saveLocal(); render();
+  showToast(`"${r.title}" added!`, 'ok');
+  closeSearchResults();
+  document.getElementById('tmdbSearchInput').value = '';
+  _lastSearchQuery = '';
+}
+
+function closeSearchResults() {
+  document.getElementById('searchResults').classList.remove('open');
+}
+
+function addManually() {
+  const title = prompt('Enter title:');
+  if (!title || !title.trim()) return;
+  const typeFilter = document.getElementById('newType').value;
+  DATA.push({
+    type: typeFilter === 'all' ? '🎥' : typeFilter,
+    title: title.trim(), platform:'', watching:false, rewatching:false,
+    completed:false, people:[], find:false, unreleased:false, rating:0, poster:'', tmdbId:null
+  });
+  saveLocal(); render(); showToast(`"${title.trim()}" added!`,'ok');
+}
+
+// Close search results when clicking outside
+document.addEventListener('click', e => {
+  if (!document.getElementById('tmdbSearchWrap').contains(e.target)) closeSearchResults();
+});
+// ── RATING ───────────────────────────────────────────────────────────────
+let _editRating = 0;
+
+function setRating(val) {
+  _editRating = val;
+  updateRatingStars(val);
+}
+
+function updateRatingStars(val) {
+  const stars = document.querySelectorAll('#editRatingStars .star');
+  const label = document.getElementById('editRatingLabel');
+  stars.forEach((s,i) => s.classList.toggle('filled', i < val));
+  if (label) label.textContent = val ? `${val}/10` : 'Not rated';
+}
+
+function buildRatingStars() {
+  const wrap = document.getElementById('editRatingStars');
+  if (!wrap) return;
+  wrap.innerHTML = Array.from({length:10},(_,i)=>
+    `<span class="star${_editRating>i?' filled':''}" onclick="setRating(${i+1})">★</span>`
+  ).join('') +
+  `<span id="editRatingLabel" style="margin-left:.5rem;font-size:.8rem;color:var(--muted)">${_editRating?_editRating+'/10':'Not rated'}</span>` +
+  `<button onclick="setRating(0)" style="margin-left:.4rem;font-size:.7rem;background:none;border:none;color:var(--muted);cursor:pointer;padding:0">✕ Clear</button>`;
+}
+
 function deleteEntry(idx) {
   const title=DATA[idx].title; DATA.splice(idx,1); saveLocal(); render(); showToast(`"${title}" removed`,'');
 }
@@ -497,10 +968,14 @@ function openEdit(idx) {
   document.getElementById('editType').value=e.type;
   document.getElementById('editPlatform').value=e.platform;
   setCheck('ckWatching',e.watching); setCheck('ckRewatching',e.rewatching);
-  setCheck('ckFind',e.find); setCheck('ckUnreleased',e.unreleased);
+  setCheck('ckWatched',e.watched); setCheck('ckFind',e.find); setCheck('ckUnreleased',e.unreleased);
+  const autoFranchise = getFranchise(e.title);
+  document.getElementById('editFranchise').value = e.franchise || autoFranchise || '';
   const pg=document.getElementById('peopleCheckboxes');
   pg.innerHTML=PEOPLE.map(p=>`<div class="checkbox-item ${e.people.includes(p)?'checked':''}" data-person="${p}">${p}</div>`).join('');
   pg.querySelectorAll('.checkbox-item').forEach(el=>el.addEventListener('click',()=>el.classList.toggle('checked')));
+  _editRating = e.rating || 0;
+  buildRatingStars();
   document.getElementById('editModal').classList.add('open');
 }
 function closeModal() { document.getElementById('editModal').classList.remove('open'); }
@@ -510,8 +985,10 @@ function saveEdit() {
   DATA[idx].type=document.getElementById('editType').value;
   DATA[idx].platform=document.getElementById('editPlatform').value.trim();
   DATA[idx].watching=isChecked('ckWatching'); DATA[idx].rewatching=isChecked('ckRewatching');
-  DATA[idx].find=isChecked('ckFind'); DATA[idx].unreleased=isChecked('ckUnreleased');
+  DATA[idx].watched=isChecked('ckWatched'); DATA[idx].find=isChecked('ckFind'); DATA[idx].unreleased=isChecked('ckUnreleased');
+  DATA[idx].franchise=document.getElementById('editFranchise').value.trim();
   DATA[idx].people=Array.from(document.querySelectorAll('#peopleCheckboxes .checkbox-item.checked')).map(el=>el.dataset.person);
+  DATA[idx].rating = _editRating;
   saveLocal(); closeModal(); render(); showToast('Saved!','ok');
 }
 function toggleCheck(id) { const el=document.getElementById(id); if(el) el.classList.toggle('checked'); }
@@ -813,8 +1290,8 @@ async function pullFromSimkl() {
     let updated=0;
     for (const e of DATA) {
       if (!e.simklId) continue;
-      if (watchedIds.has(e.simklId) && !e.rewatching) {
-        e.rewatching=true; updated++;
+      if (watchedIds.has(e.simklId) && !e.watched) {
+        e.watched=true; updated++;
       }
       if (watchingIds.has(e.simklId) && !e.watching) {
         e.watching=true; updated++;
@@ -850,6 +1327,70 @@ function setSyncStatus(msg,type) {
 }
 function setSyncInfo(msg) { document.getElementById('syncInfo').textContent=msg; }
 const delay = ms => new Promise(r=>setTimeout(r,ms));
+
+// ── BACKFILL METADATA ────────────────────────────────────────────────────
+async function backfillMetadata() {
+  const missing = DATA.filter(e => !e.year && !e.find);
+  if (!missing.length) { showToast('All entries already have metadata!', 'ok'); return; }
+
+  const btn = document.getElementById('backfillBtn');
+  btn.disabled = true;
+  btn.textContent = '🔄 Backfilling...';
+
+  let done = 0, filled = 0;
+  const total = missing.length;
+  showToast(`Fetching metadata for ${total} entries...`, 'info');
+
+  for (const e of missing) {
+    try {
+      const cleanTitle = e.title
+        .replace(/[\u{1F000}-\u{1FFFF}\u{2000}-\u{27BF}\u200d\ufe0f\u20e3]/gu, '')
+        .replace(/[^\x00-\x7F\u00C0-\u024F]/g, '').trim()
+        .replace(/\b(One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)\s*\((\d+)\)/gi, '$2');
+      if (!cleanTitle) { done++; continue; }
+
+      const tmdbType = e.type === '🎥' ? 'movie' : 'tv';
+      // Search
+      const searchRes = await fetch(
+        `https://api.themoviedb.org/3/search/${tmdbType}?api_key=${TMDB_KEY}&query=${encodeURIComponent(cleanTitle)}&page=1`
+      );
+      const searchData = await searchRes.json();
+      const results = searchData.results || [];
+      if (!results.length) { done++; await delay(75); continue; }
+
+      const item = results[0];
+      e.tmdbId = item.id;
+      e.year = (item.release_date || item.first_air_date || '').substring(0, 4);
+      e.poster = e.poster || item.poster_path || '';
+
+      // Fetch details for runtime/seasons
+      const detailRes = await fetch(
+        `https://api.themoviedb.org/3/${tmdbType}/${item.id}?api_key=${TMDB_KEY}`
+      );
+      const detail = await detailRes.json();
+      if (tmdbType === 'movie') {
+        e.runtime = detail.runtime || null;
+      } else {
+        e.seasons = detail.number_of_seasons || null;
+        e.episodes = detail.number_of_episodes || null;
+      }
+      filled++;
+    } catch(err) {}
+
+    done++;
+    if (done % 20 === 0) {
+      saveLocal();
+      btn.textContent = `🔄 ${done}/${total}...`;
+    }
+    await delay(150); // 2 requests per entry, stay under TMDB rate limit
+  }
+
+  saveLocal();
+  render();
+  btn.disabled = false;
+  btn.textContent = '🔄 Backfill Metadata';
+  showToast(`Done! Filled metadata for ${filled}/${total} entries`, 'ok');
+}
 
 // ── EXPORT .TXT ───────────────────────────────────────────────────────────────
 function exportTxt() {
@@ -888,6 +1429,11 @@ function loadSimklAuth() {
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
+function fmtRuntime(mins) {
+  if (!mins) return null;
+  const h = Math.floor(mins/60), m = mins%60;
+  return h ? `${h}h ${m}m` : `${m}m`;
+}
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function showToast(msg,type) {
   const t=document.getElementById('toast');
@@ -901,7 +1447,7 @@ function showToast(msg,type) {
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('searchInput').addEventListener('input',()=>{currentPage=1;render();});
   document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-  ['ckWatching','ckRewatching','ckFind','ckUnreleased'].forEach(id=>{
+  ['ckWatching','ckRewatching','ckWatched','ckFind','ckUnreleased'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.addEventListener('click',()=>el.classList.toggle('checked'));
   });
 
