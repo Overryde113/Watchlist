@@ -301,7 +301,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v2.3</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v2.4</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -497,7 +497,8 @@ tr:hover .action-cell{opacity:1}
       <button class="btn btn-ghost" onclick="addManually()">+ Manual</button>
       <button class="btn btn-ghost" onclick="exportTxt()">⬇ Export</button>
       <button class="btn btn-ghost" onclick="exportToFile()" title="Bake current data into the HTML file for GitHub">💾 Save to File</button>
-      <button class="btn btn-ghost" id="backfillBtn" onclick="backfillMetadata()" title="Fetch missing release dates, runtimes, seasons &amp; episodes for all entries">🔄 Backfill Metadata</button>
+      <button class="btn btn-ghost" id="backfillBtn" onclick="backfillMetadata(false)" title="Fetch missing metadata for entries that need it">🔄 Backfill Metadata</button>
+      <button class="btn btn-ghost" id="backfillForceBtn" onclick="backfillMetadata(true)" title="Re-fetch ALL metadata from scratch (ignores existing data)">🔄 Force Refetch All</button>
     </div>
   </div>
 
@@ -2662,14 +2663,20 @@ function setSyncInfo(msg) { document.getElementById('syncInfo').textContent=msg;
 const delay = ms => new Promise(r=>setTimeout(r,ms));
 
 // ── BACKFILL METADATA ────────────────────────────────────────────────────
-async function backfillMetadata() {
-  // Target entries missing tmdbId OR missing a poster
-  const missing = DATA.filter(e => !e.tmdbId || !e.poster);
-  if (!missing.length) { showToast('All entries already have metadata & posters!', 'ok'); return; }
+async function backfillMetadata(force = false) {
+  const missing = force
+    ? DATA.filter(e => !e.find)
+    : DATA.filter(e => !e.tmdbId || !e.poster || !e.genres?.length || !e.year);
+  if (!missing.length) {
+    showToast('All entries already have metadata! Use Force Refetch to re-fetch everything.', 'ok');
+    return;
+  }
 
   const btn = document.getElementById('backfillBtn');
   btn.disabled = true;
   btn.textContent = '🔄 Running...';
+  const forceBtnEl = document.getElementById('backfillForceBtn');
+  if (forceBtnEl) { forceBtnEl.disabled = true; }
 
   const progressWrap = document.getElementById('backfillProgress');
   const progressBar  = document.getElementById('backfillBar');
@@ -2689,7 +2696,7 @@ async function backfillMetadata() {
       const tmdbType = e.type === '🎥' ? 'movie' : 'tv';
 
       // If we already have a tmdbId but just need a poster, fetch it directly
-      if (e.tmdbId && !e.poster) {
+      if (e.tmdbId && !e.poster && !force) {
         const detailRes = await fetch(
           `https://api.themoviedb.org/3/${tmdbType}/${e.tmdbId}?api_key=${TMDB_KEY}&append_to_response=release_dates,content_ratings`
         );
@@ -2760,6 +2767,8 @@ async function backfillMetadata() {
   render();
   btn.disabled = false;
   btn.textContent = '🔄 Backfill Metadata';
+  const forceBtn = document.getElementById('backfillForceBtn');
+  if (forceBtn) { forceBtn.disabled = false; forceBtn.textContent = '🔄 Force Refetch All'; }
   progressBar.style.width = '100%';
   progressBar.style.background = 'var(--watching)';
   progressCtr.textContent = `${total} / ${total}`;
