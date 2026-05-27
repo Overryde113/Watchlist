@@ -633,6 +633,7 @@ tr:hover .action-cell{opacity:1}
 <div class="toast" id="toast"></div>
 
 <script>
+const TMDB_KEY = '014a12827b82585392041c087cee3ffa';
 // ── CONSTANTS ────────────────────────────────────────────────────────────────
 const CLIENT_ID = '321cbe35fa57c89c8706f6940c839dc11fd2b585acce5288b2058e809f8f85db';
 const CLIENT_SECRET = '4e9d52f8ca1b5a57e7c0e25e7f67724da03c3d25897c3a27500722ef16554f2b';
@@ -1402,7 +1403,6 @@ async function pushToSimkl() {
   if (!simklToken) { showToast('Connect Simkl first','err'); return; }
   if (!DATA || DATA.length === 0) { setSyncStatus('No entries found — try refreshing','err'); return; }
 
-  const TMDB_KEY = '014a12827b82585392041c087cee3ffa';
   const entries = DATA.filter(e => !e.find);
   const total = entries.length;
   let done = 0, found = 0;
