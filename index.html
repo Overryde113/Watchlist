@@ -178,8 +178,8 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.94);backdrop
 
 /* ── RATING ── */
 .rating-stars{display:flex;gap:0;align-items:center}
-.star-wrap{position:relative;width:16px;height:20px;cursor:pointer;flex-shrink:0}
-.star-wrap .s-empty,.star-wrap .s-half,.star-wrap .s-full{position:absolute;left:0;top:50%;transform:translateY(-50%);font-size:.85rem;transition:color .1s;pointer-events:none;line-height:1}
+.star-wrap{position:relative;width:26px;height:32px;cursor:pointer;flex-shrink:0}
+.star-wrap .s-empty,.star-wrap .s-half,.star-wrap .s-full{position:absolute;left:0;top:50%;transform:translateY(-50%);font-size:1.4rem;transition:color .1s;pointer-events:none;line-height:1}
 .star-wrap .s-empty{color:var(--border)}
 .star-wrap .s-half{color:var(--accent);clip-path:inset(0 50% 0 0);display:none}
 .star-wrap .s-full{color:var(--accent);display:none}
@@ -1181,7 +1181,7 @@ function buildRatingStars() {
   for (let i = 1; i <= 10; i++) {
     const full = _editRating >= i;
     const half = !full && _editRating >= i - 0.5 && _editRating < i;
-    html += `<div class="star-wrap${full?' full':half?' half':''}" data-star="${i}" onmousemove="hoverStar(event,${i})" onmouseleave="resetStarHover()" onclick="clickStar(event,${i})">
+    html += `<div class="star-wrap${full?' full':half?' half':''}" data-star="${i}" onmousemove="hoverStar(event,${i})" onmouseleave="resetStarHover()" onclick="clickStar(event,${i})" style="margin-right:2px">
       <span class="s-empty">★</span>
       <span class="s-half">★</span>
       <span class="s-full">★</span>
@@ -1614,7 +1614,7 @@ const delay = ms => new Promise(r=>setTimeout(r,ms));
 
 // ── BACKFILL METADATA ────────────────────────────────────────────────────
 async function backfillMetadata() {
-  const missing = DATA.filter(e => !e.year && !e.find);
+  const missing = DATA.filter(e => !e.find);
   if (!missing.length) { showToast('All entries already have metadata!', 'ok'); return; }
 
   const btn = document.getElementById('backfillBtn');
