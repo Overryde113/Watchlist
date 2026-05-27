@@ -1670,7 +1670,7 @@ async function backfillMetadata() {
       }
       e.genres = (detail.genres||[]).map(g=>g.name);
       filled++;
-    } catch(err) {}
+    } catch(err) { console.error(err); }
 
     done++;
     const pct = Math.round((done / total) * 100);
