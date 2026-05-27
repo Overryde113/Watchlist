@@ -1614,7 +1614,7 @@ const delay = ms => new Promise(r=>setTimeout(r,ms));
 
 // ── BACKFILL METADATA ────────────────────────────────────────────────────
 async function backfillMetadata() {
-  const missing = DATA.filter(e => !e.find);
+  const missing = DATA.filter(e => !e.tmdbId);
   if (!missing.length) { showToast('All entries already have metadata!', 'ok'); return; }
 
   const btn = document.getElementById('backfillBtn');
