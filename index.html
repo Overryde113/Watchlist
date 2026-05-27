@@ -498,6 +498,7 @@ tr:hover .action-cell{opacity:1}
       </select>
       <button class="btn btn-ghost" onclick="addManually()">+ Manual</button>
       <button class="btn btn-ghost" onclick="exportTxt()">⬇ Export</button>
+      <button class="btn btn-ghost" onclick="exportToFile()" title="Bake current data into the HTML file for GitHub">💾 Save to File</button>
       <button class="btn btn-ghost" id="backfillBtn" onclick="backfillMetadata()" title="Fetch missing release dates, runtimes, seasons & episodes for all entries">🔄 Backfill Metadata</button>
     </div>
   </div>
@@ -1710,6 +1711,19 @@ function exportTxt() {
   const blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Things_I_Want_to_Watch.txt'; a.click();
   showToast('Exported!','ok');
+}
+
+// ── EXPORT TO FILE ────────────────────────────────────────────────────────────
+function exportToFile() {
+  const dataJson = JSON.stringify(DATA);
+  const html = document.documentElement.outerHTML;
+  const updated = html.replace(/const EMBEDDED = \[[\s\S]*?\];(\s*\n\s*if \(!loadLocal\(\))/, `const EMBEDDED = ${dataJson};\n$1`);
+  const blob = new Blob([updated], {type: 'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'index.html';
+  a.click();
+  showToast('Exported! Push the downloaded file to GitHub.', 'ok');
 }
 
 // ── LOCAL STORAGE ─────────────────────────────────────────────────────────────
