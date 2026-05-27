@@ -301,7 +301,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v2.2</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v2.3</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -2691,8 +2691,9 @@ async function backfillMetadata() {
       // If we already have a tmdbId but just need a poster, fetch it directly
       if (e.tmdbId && !e.poster) {
         const detailRes = await fetch(
-          `https://api.themoviedb.org/3/${tmdbType}/${e.tmdbId}?api_key=${TMDB_KEY}`
+          `https://api.themoviedb.org/3/${tmdbType}/${e.tmdbId}?api_key=${TMDB_KEY}&append_to_response=release_dates,content_ratings`
         );
+        if (!detailRes.ok) { console.error('Detail fetch failed:', detailRes.status, e.title); done++; await delay(100); continue; }
         const detail = await detailRes.json();
         if (detail.poster_path) {
           e.poster = detail.poster_path;
@@ -2730,7 +2731,7 @@ async function backfillMetadata() {
 
       // Fetch full details for runtime/seasons/genres/mpaa
       const detailRes = await fetch(
-        `https://api.themoviedb.org/3/${tmdbType}/${item.id}?api_key=${TMDB_KEY}`
+        `https://api.themoviedb.org/3/${tmdbType}/${item.id}?api_key=${TMDB_KEY}&append_to_response=release_dates,content_ratings`
       );
       const detail = await detailRes.json();
       if (!e.poster && detail.poster_path) { e.poster = detail.poster_path; postersFilled++; }
@@ -2744,7 +2745,7 @@ async function backfillMetadata() {
       }
       if (!e.genres?.length) e.genres = (detail.genres||[]).map(g=>g.name);
       filled++;
-    } catch(err) { console.error(err); }
+    } catch(err) { console.error('Backfill error for', e.title, ':', err); }
 
     done++;
     const pct = Math.round((done / total) * 100);
@@ -2752,7 +2753,7 @@ async function backfillMetadata() {
     progressCtr.textContent = `${done} / ${total}`;
     progressSub.textContent = `${filled} updated (${postersFilled} posters) · ${done - filled} not found · ${total - done} remaining`;
     if (done % 50 === 0) saveLocal();
-    await delay(50);
+    await delay(100); // increased to 100ms to avoid rate limits
   }
 
   saveLocal();
