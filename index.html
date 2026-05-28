@@ -301,7 +301,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v2.5</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v2.6</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -2734,7 +2734,7 @@ async function backfillMetadata(force = false) {
       const item = results[0];
       e.tmdbId = item.id;
       e.year = (force || !e.year) ? (item.release_date || item.first_air_date || '').substring(0, 4) : e.year;
-      if ((!e.poster || force) && item.poster_path) { e.poster = item.poster_path; postersFilled++; }
+      if ((!e.poster || force) && item.poster_path) { e.poster = item.poster_path; postersFilled++; filled++; }
 
       // Fetch full details for runtime/seasons/genres/mpaa
       const detailRes = await fetch(
@@ -2758,7 +2758,7 @@ async function backfillMetadata(force = false) {
     const pct = Math.round((done / total) * 100);
     progressBar.style.width = pct + '%';
     progressCtr.textContent = `${done} / ${total}`;
-    progressSub.textContent = `${filled} updated (${postersFilled} posters) · ${done - filled} not found · ${total - done} remaining`;
+    progressSub.textContent = `${filled} metadata · ${postersFilled} posters · ${done - filled} not found · ${total - done} remaining`;
     if (done % 50 === 0) saveLocal();
     await delay(100); // increased to 100ms to avoid rate limits
   }
@@ -2772,7 +2772,7 @@ async function backfillMetadata(force = false) {
   progressBar.style.width = '100%';
   progressBar.style.background = 'var(--watching)';
   progressCtr.textContent = `${total} / ${total}`;
-  progressSub.textContent = `✅ Done! ${filled} entries updated, ${postersFilled} posters filled.`;
+  progressSub.textContent = `✅ Done! ${filled} metadata updated · ${postersFilled} posters saved`;
   setTimeout(() => {
     progressWrap.style.display = 'none';
     progressBar.style.background = 'var(--accent2)';
