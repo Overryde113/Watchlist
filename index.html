@@ -301,7 +301,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v2.6</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v2.8</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -2686,81 +2686,67 @@ async function backfillMetadata(force = false) {
   progressBar.style.width = '0%';
   progressBar.style.background = 'var(--accent2)';
 
-  let done = 0, filled = 0, postersFilled = 0;
+  let done = 0, updated = 0, noMatch = 0;
   const total = missing.length;
   progressCtr.textContent = `0 / ${total}`;
   progressSub.textContent = 'Starting...';
 
   for (const e of missing) {
+    let gotData = false;
     try {
       const tmdbType = e.type === '🎥' ? 'movie' : 'tv';
+      let tmdbId = e.tmdbId;
 
-      // If we already have a tmdbId but just need a poster, fetch it directly
-      if (e.tmdbId && !e.poster && !force) {
-        const detailRes = await fetch(
-          `https://api.themoviedb.org/3/${tmdbType}/${e.tmdbId}?api_key=${TMDB_KEY}&append_to_response=release_dates,content_ratings`
+      // Step 1: Search if we don't have a tmdbId yet, or force mode
+      if (!tmdbId || force) {
+        const cleanTitle = e.title
+          .replace(/[\u{1F000}-\u{1FFFF}\u{2000}-\u{27BF}\u200d\ufe0f\u20e3]/gu, '')
+          .replace(/[^\x00-\x7F\u00C0-\u024F]/g, '').trim()
+          .replace(/\b(One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)\s*\((\d+)\)/gi, '$2');
+        if (!cleanTitle) { done++; noMatch++; await delay(100); continue; }
+        const searchRes = await fetch(
+          `https://api.themoviedb.org/3/search/${tmdbType}?api_key=${TMDB_KEY}&query=${encodeURIComponent(cleanTitle)}&page=1`
         );
-        if (!detailRes.ok) { console.error('Detail fetch failed:', detailRes.status, e.title); done++; await delay(100); continue; }
-        const detail = await detailRes.json();
-        if (detail.poster_path) {
-          e.poster = detail.poster_path;
-          postersFilled++;
-          filled++;
-        }
-        done++;
-        const pct = Math.round((done / total) * 100);
-        progressBar.style.width = pct + '%';
-        progressCtr.textContent = `${done} / ${total}`;
-        progressSub.textContent = `${filled} updated (${postersFilled} posters) · ${total - done} remaining`;
-        if (done % 50 === 0) saveLocal();
-        await delay(50);
-        continue;
+        const searchData = await searchRes.json();
+        const results = searchData.results || [];
+        if (!results.length) { done++; noMatch++; await delay(100); continue; }
+        tmdbId = results[0].id;
+        e.tmdbId = tmdbId;
+        e.year = (results[0].release_date || results[0].first_air_date || '').substring(0, 4);
+        if (results[0].poster_path) e.poster = results[0].poster_path;
+        gotData = true;
+        await delay(75);
       }
 
-      // Need to search for tmdbId (and poster will come along with it)
-      const cleanTitle = e.title
-        .replace(/[\u{1F000}-\u{1FFFF}\u{2000}-\u{27BF}\u200d\ufe0f\u20e3]/gu, '')
-        .replace(/[^\x00-\x7F\u00C0-\u024F]/g, '').trim()
-        .replace(/\b(One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)\s*\((\d+)\)/gi, '$2');
-      if (!cleanTitle) { done++; continue; }
-
-      const searchRes = await fetch(
-        `https://api.themoviedb.org/3/search/${tmdbType}?api_key=${TMDB_KEY}&query=${encodeURIComponent(cleanTitle)}&page=1`
-      );
-      const searchData = await searchRes.json();
-      const results = searchData.results || [];
-      if (!results.length) { done++; await delay(75); continue; }
-
-      const item = results[0];
-      e.tmdbId = item.id;
-      e.year = (force || !e.year) ? (item.release_date || item.first_air_date || '').substring(0, 4) : e.year;
-      if ((!e.poster || force) && item.poster_path) { e.poster = item.poster_path; postersFilled++; filled++; }
-
-      // Fetch full details for runtime/seasons/genres/mpaa
+      // Step 2: Fetch full details
       const detailRes = await fetch(
-        `https://api.themoviedb.org/3/${tmdbType}/${item.id}?api_key=${TMDB_KEY}&append_to_response=release_dates,content_ratings`
+        `https://api.themoviedb.org/3/${tmdbType}/${tmdbId}?api_key=${TMDB_KEY}&append_to_response=release_dates,content_ratings`
       );
-      const detail = await detailRes.json();
-      if ((!e.poster || force) && detail.poster_path) { e.poster = detail.poster_path; postersFilled++; }
-      if (tmdbType === 'movie') {
-        e.runtime = (force || !e.runtime) ? (detail.runtime || null) : e.runtime;
-        e.mpaa = e.mpaa || detail.release_dates?.results?.find(r=>r.iso_3166_1==='US')?.release_dates?.find(r=>r.certification)?.certification || null;
-      } else {
-        e.seasons = (force || !e.seasons) ? (detail.number_of_seasons || null) : e.seasons;
-        e.episodes = (force || !e.episodes) ? (detail.number_of_episodes || null) : e.episodes;
-        e.mpaa = e.mpaa || detail.content_ratings?.results?.find(r=>r.iso_3166_1==='US')?.rating || null;
+      if (detailRes.ok) {
+        const detail = await detailRes.json();
+        if (detail.poster_path) e.poster = detail.poster_path;
+        if (!e.year) e.year = (detail.release_date || detail.first_air_date || '').substring(0, 4);
+        e.genres = (detail.genres||[]).map(g=>g.name);
+        if (tmdbType === 'movie') {
+          e.runtime = detail.runtime || null;
+          e.mpaa = detail.release_dates?.results?.find(r=>r.iso_3166_1==='US')?.release_dates?.find(r=>r.certification)?.certification || null;
+        } else {
+          e.seasons = detail.number_of_seasons || null;
+          e.episodes = detail.number_of_episodes || null;
+          e.mpaa = detail.content_ratings?.results?.find(r=>r.iso_3166_1==='US')?.rating || null;
+        }
+        gotData = true;
       }
-      if (!e.genres?.length || force) e.genres = (detail.genres||[]).map(g=>g.name);
-      filled++;
     } catch(err) { console.error('Backfill error for', e.title, ':', err); }
 
     done++;
+    if (gotData) updated++;
     const pct = Math.round((done / total) * 100);
     progressBar.style.width = pct + '%';
     progressCtr.textContent = `${done} / ${total}`;
-    progressSub.textContent = `${filled} metadata · ${postersFilled} posters · ${done - filled} not found · ${total - done} remaining`;
+    progressSub.textContent = `${updated} updated · ${noMatch} not found on TMDB · ${total - done} remaining`;
     if (done % 50 === 0) saveLocal();
-    await delay(100); // increased to 100ms to avoid rate limits
+    await delay(100);
   }
 
   saveLocal();
@@ -2772,7 +2758,7 @@ async function backfillMetadata(force = false) {
   progressBar.style.width = '100%';
   progressBar.style.background = 'var(--watching)';
   progressCtr.textContent = `${total} / ${total}`;
-  progressSub.textContent = `✅ Done! ${filled} metadata updated · ${postersFilled} posters saved`;
+  progressSub.textContent = `✅ Done! ${updated} entries updated · ${noMatch} not found on TMDB`;
   setTimeout(() => {
     progressWrap.style.display = 'none';
     progressBar.style.background = 'var(--accent2)';
