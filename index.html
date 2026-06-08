@@ -301,7 +301,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v3.0</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v3.3</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -502,7 +502,7 @@ tr:hover .action-cell{opacity:1}
     </div>
   </div>
 
-  <div id="backfillProgress" style="display: block; background: var(--surface); border: 1px solid color-mix(in srgb,var(--accent2) 30%,transparent); border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 1rem;">
+  <div id="backfillProgress" style="display: none; background: var(--surface); border: 1px solid color-mix(in srgb,var(--accent2) 30%,transparent); border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 1rem;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
       <span style="font-size:.82rem;font-weight:500;color:var(--accent2)">🔄 Fetching metadata from TMDB...</span>
       <span id="backfillCounter" style="font-size:.78rem;color:var(--muted)">222 / 222</span>
@@ -1651,6 +1651,7 @@ tr:hover .action-cell{opacity:1}
       </select>
     </div>
     <div class="form-group"><label>Platform</label><input type="text" id="editPlatform"></div>
+    <div class="form-group"><label>TMDB ID <span style="font-size:.68rem;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(override for Force Refetch)</span></label><input type="number" id="editTmdbId" placeholder="e.g. 61889 — leave blank to auto-search"></div>
     <div class="form-group">
       <label>Franchise / Universe</label>
       <input type="text" id="editFranchise" placeholder="Auto-detected or enter manually">
@@ -1680,7 +1681,7 @@ tr:hover .action-cell{opacity:1}
   </div>
 </div>
 
-<div class="toast ok" id="toast">Done! Metadata fetched for 160 entries</div>
+<div class="toast ok" id="toast"></div>
 
 <script>
 const TMDB_KEY = '014a12827b82585392041c087cee3ffa';
@@ -2302,6 +2303,7 @@ function openEdit(idx) {
   document.getElementById('editTitle').value=e.title;
   document.getElementById('editType').value=e.type;
   document.getElementById('editPlatform').value=e.platform;
+  document.getElementById('editTmdbId').value=e.tmdbId||'';
   setCheck('ckWatching',e.watching); setCheck('ckRewatching',e.rewatching);
   setCheck('ckWatched',e.watched); setCheck('ckFind',e.find); setCheck('ckUnreleased',e.unreleased);
   const autoFranchise = getFranchise(e.title);
@@ -2319,6 +2321,8 @@ function saveEdit() {
   DATA[idx].title=document.getElementById('editTitle').value.trim();
   DATA[idx].type=document.getElementById('editType').value;
   DATA[idx].platform=document.getElementById('editPlatform').value.trim();
+  const rawTmdb = document.getElementById('editTmdbId').value.trim();
+  if (rawTmdb) DATA[idx].tmdbId = parseInt(rawTmdb, 10);
   DATA[idx].watching=isChecked('ckWatching'); DATA[idx].rewatching=isChecked('ckRewatching');
   DATA[idx].watched=isChecked('ckWatched'); DATA[idx].find=isChecked('ckFind'); DATA[idx].unreleased=isChecked('ckUnreleased');
   DATA[idx].franchise=document.getElementById('editFranchise').value.trim();
@@ -2697,8 +2701,8 @@ async function backfillMetadata(force = false) {
       const tmdbType = e.type === '🎥' ? 'movie' : 'tv';
       let tmdbId = e.tmdbId;
 
-      // Step 1: Search if we don't have a tmdbId yet, or force mode
-      if (!tmdbId || force) {
+      // Step 1: Search only if we don't have a tmdbId (force mode reuses stored ID if present)
+      if (!tmdbId) {
         const cleanTitle = e.title
           .replace(/[\u{1F000}-\u{1FFFF}\u{2000}-\u{27BF}\u200d\ufe0f\u20e3]/gu, '')
           .replace(/[^\x00-\x7F\u00C0-\u024F]/g, '').trim()
@@ -2710,10 +2714,27 @@ async function backfillMetadata(force = false) {
         const searchData = await searchRes.json();
         const results = searchData.results || [];
         if (!results.length) { done++; noMatch++; await delay(100); continue; }
-        tmdbId = results[0].id;
+
+        // Find best match: prefer title+year match, fall back to closest title match
+        const entryYear = (e.year || '').toString().substring(0, 4);
+        const normalize = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const normTitle = normalize(cleanTitle);
+
+        let best = null;
+        for (const r of results) {
+          const rTitle = normalize(r.title || r.name || '');
+          const rYear = (r.release_date || r.first_air_date || '').substring(0, 4);
+          const titleMatch = rTitle === normTitle;
+          const yearMatch = entryYear && rYear === entryYear;
+          if (titleMatch && yearMatch) { best = r; break; }
+          if (titleMatch && !best) best = r;
+        }
+        if (!best) best = results[0];
+
+        tmdbId = best.id;
         e.tmdbId = tmdbId;
-        e.year = (results[0].release_date || results[0].first_air_date || '').substring(0, 4);
-        if (results[0].poster_path) e.poster = results[0].poster_path;
+        e.year = (best.release_date || best.first_air_date || '').substring(0, 4);
+        if (best.poster_path) e.poster = best.poster_path;
         gotData = true;
         await delay(75);
       }
