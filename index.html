@@ -301,7 +301,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v3.4</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v3.8</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -1674,6 +1674,78 @@ tr:hover .action-cell{opacity:1}
       <label>Watch With</label>
       <div class="checkbox-group" id="peopleCheckboxes"></div>
     </div>
+
+    <!-- Metadata section -->
+    <div style="border-top:1px solid var(--border);margin:.9rem 0 .75rem"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;cursor:pointer;user-select:none" onclick="toggleMetaSection()">
+      <span style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)">Metadata</span>
+      <span id="metaToggleArrow" style="font-size:.7rem;color:var(--muted);transition:transform .2s">▼</span>
+    </div>
+    <div id="metaSection" style="display:none">
+      <!-- TMDB search to rewrite metadata -->
+      <div class="form-group" style="margin-bottom:.75rem;position:relative">
+        <label>Search TMDB to rewrite metadata</label>
+        <div style="display:flex;gap:.4rem">
+          <input type="text" id="metaTmdbSearch" placeholder="Search title..." autocomplete="off" oninput="onMetaTmdbSearch()" onkeydown="if(event.key==='Escape')closeMetaSearch()" style="flex:1">
+          <select id="metaTmdbType" style="width:110px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.55rem .75rem;outline:none">
+            <option value="multi">Any</option>
+            <option value="movie">🎥 Movie</option>
+            <option value="tv">📺 Show</option>
+          </select>
+        </div>
+        <div id="metaSearchResults" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;z-index:300;max-height:280px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.6)"></div>
+      </div>
+      <div style="display:flex;gap:.75rem;margin-bottom:.75rem">
+        <div style="flex-shrink:0">
+          <img id="editPosterPreview" src="" alt="" style="width:54px;height:81px;object-fit:cover;border-radius:5px;background:var(--surface3);display:block">
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="form-group" style="margin-bottom:.55rem">
+            <label>Poster Path <span style="font-size:.68rem;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(TMDB path, e.g. /abc123.jpg)</span></label>
+            <input type="text" id="editPoster" placeholder="/abc123.jpg" oninput="updatePosterPreview()">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>Year</label>
+            <input type="text" id="editYear" placeholder="e.g. 2015" maxlength="4" style="width:100px">
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Runtime <span style="font-size:.68rem;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(mins)</span></label>
+          <input type="number" id="editRuntime" placeholder="e.g. 136" min="1">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>MPAA Rating</label>
+          <select id="editMpaa">
+            <option value="">— None —</option>
+            <option value="G">G</option>
+            <option value="PG">PG</option>
+            <option value="PG-13">PG-13</option>
+            <option value="R">R</option>
+            <option value="NC-17">NC-17</option>
+            <option value="TV-Y">TV-Y</option>
+            <option value="TV-G">TV-G</option>
+            <option value="TV-PG">TV-PG</option>
+            <option value="TV-14">TV-14</option>
+            <option value="TV-MA">TV-MA</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Seasons</label>
+          <input type="number" id="editSeasons" placeholder="e.g. 3" min="1">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Episodes</label>
+          <input type="number" id="editEpisodes" placeholder="e.g. 39" min="1">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:.55rem;margin-bottom:0">
+        <label>Genres <span style="font-size:.68rem;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(comma-separated)</span></label>
+        <input type="text" id="editGenres" placeholder="e.g. Action, Drama, Crime">
+      </div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveEdit()">Save</button>
@@ -1936,6 +2008,7 @@ function render() {
         <td><div class="people-cell">${people}</div></td>
         <td><div class="action-cell">
           ${syncIcon}
+          <button class="icon-btn" onclick="refetchEntry(${gi})" title="Force re-fetch metadata from TMDB">🔄</button>
           <button class="icon-btn" onclick="openEdit(${gi})">✏️</button>
           <button class="icon-btn del" onclick="deleteEntry(${gi})">🗑</button>
         </div></td>
@@ -2292,6 +2365,63 @@ function renderStars(rating, size) {
   return html;
 }
 
+async function refetchEntry(idx) {
+  const e = DATA[idx];
+  const tmdbType = e.type === '🎥' ? 'movie' : 'tv';
+  let tmdbId = e.tmdbId;
+
+  showToast(`Fetching metadata for "${e.title}"...`, 'info');
+
+  try {
+    // If no tmdbId, search by title+year first
+    if (!tmdbId) {
+      const cleanTitle = e.title.replace(/[\u{1F000}-\u{1FFFF}\u{2000}-\u{27BF}\u200d\ufe0f\u20e3]/gu, '').replace(/[^\x00-\x7F\u00C0-\u024F]/g, '').trim();
+      if (!cleanTitle) { showToast('Could not clean title for search', 'err'); return; }
+      const searchRes = await fetch(`https://api.themoviedb.org/3/search/${tmdbType}?api_key=${TMDB_KEY}&query=${encodeURIComponent(cleanTitle)}&page=1`);
+      const searchData = await searchRes.json();
+      const results = searchData.results || [];
+      if (!results.length) { showToast(`No TMDB results for "${e.title}"`, 'err'); return; }
+      const entryYear = (e.year || '').toString().substring(0, 4);
+      const normalize = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const normTitle = normalize(cleanTitle);
+      let best = null;
+      for (const r of results) {
+        const rTitle = normalize(r.title || r.name || '');
+        const rYear = (r.release_date || r.first_air_date || '').substring(0, 4);
+        if (rTitle === normTitle && entryYear && rYear === entryYear) { best = r; break; }
+        if (rTitle === normTitle && !best) best = r;
+      }
+      if (!best) best = results[0];
+      tmdbId = best.id;
+      e.tmdbId = tmdbId;
+      e.year = (best.release_date || best.first_air_date || '').substring(0, 4);
+      if (best.poster_path) e.poster = best.poster_path;
+    }
+
+    // Fetch full details using stored (or just-found) tmdbId
+    const detailRes = await fetch(`https://api.themoviedb.org/3/${tmdbType}/${tmdbId}?api_key=${TMDB_KEY}&append_to_response=release_dates,content_ratings`);
+    if (!detailRes.ok) { showToast('TMDB fetch failed', 'err'); return; }
+    const detail = await detailRes.json();
+    if (detail.poster_path) e.poster = detail.poster_path;
+    const freshYear = (detail.release_date || detail.first_air_date || '').substring(0, 4);
+    if (freshYear) e.year = freshYear;
+    e.genres = (detail.genres || []).map(g => g.name);
+    if (tmdbType === 'movie') {
+      e.runtime = detail.runtime || null;
+      e.mpaa = detail.release_dates?.results?.find(r => r.iso_3166_1 === 'US')?.release_dates?.find(r => r.certification)?.certification || null;
+    } else {
+      e.seasons = detail.number_of_seasons || null;
+      e.episodes = detail.number_of_episodes || null;
+      e.mpaa = detail.content_ratings?.results?.find(r => r.iso_3166_1 === 'US')?.rating || null;
+    }
+    saveLocal(); render();
+    showToast(`Updated "${e.title}"!`, 'ok');
+  } catch(err) {
+    console.error('refetchEntry error:', err);
+    showToast('Error fetching metadata', 'err');
+  }
+}
+
 function deleteEntry(idx) {
   const title=DATA[idx].title; DATA.splice(idx,1); saveLocal(); render(); showToast(`"${title}" removed`,'');
 }
@@ -2313,9 +2443,21 @@ function openEdit(idx) {
   pg.querySelectorAll('.checkbox-item').forEach(el=>el.addEventListener('click',()=>el.classList.toggle('checked')));
   _editRating = e.rating || 0;
   buildRatingStars();
+  // Metadata fields
+  document.getElementById('editPoster').value = e.poster || '';
+  document.getElementById('editYear').value = e.year || '';
+  document.getElementById('editRuntime').value = e.runtime || '';
+  document.getElementById('editSeasons').value = e.seasons || '';
+  document.getElementById('editEpisodes').value = e.episodes || '';
+  document.getElementById('editMpaa').value = e.mpaa || '';
+  document.getElementById('editGenres').value = (e.genres || []).join(', ');
+  updatePosterPreview();
+  // Keep metadata section collapsed by default
+  document.getElementById('metaSection').style.display = 'none';
+  document.getElementById('metaToggleArrow').style.transform = '';
   document.getElementById('editModal').classList.add('open');
 }
-function closeModal() { document.getElementById('editModal').classList.remove('open'); }
+function closeModal() { document.getElementById('editModal').classList.remove('open'); closeMetaSearch(); document.getElementById('metaTmdbSearch').value = ''; }
 function saveEdit() {
   const idx=+document.getElementById('editIndex').value;
   DATA[idx].title=document.getElementById('editTitle').value.trim();
@@ -2328,7 +2470,120 @@ function saveEdit() {
   DATA[idx].franchise=document.getElementById('editFranchise').value.trim();
   DATA[idx].people=Array.from(document.querySelectorAll('#peopleCheckboxes .checkbox-item.checked')).map(el=>el.dataset.person);
   DATA[idx].rating = _editRating;
+  // Metadata fields
+  const posterVal = document.getElementById('editPoster').value.trim();
+  if (posterVal) DATA[idx].poster = posterVal;
+  const yearVal = document.getElementById('editYear').value.trim();
+  if (yearVal) DATA[idx].year = yearVal;
+  const runtimeVal = document.getElementById('editRuntime').value;
+  DATA[idx].runtime = runtimeVal ? parseInt(runtimeVal) : null;
+  const seasonsVal = document.getElementById('editSeasons').value;
+  DATA[idx].seasons = seasonsVal ? parseInt(seasonsVal) : null;
+  const episodesVal = document.getElementById('editEpisodes').value;
+  DATA[idx].episodes = episodesVal ? parseInt(episodesVal) : null;
+  DATA[idx].mpaa = document.getElementById('editMpaa').value || null;
+  const genresVal = document.getElementById('editGenres').value.trim();
+  DATA[idx].genres = genresVal ? genresVal.split(',').map(g => g.trim()).filter(Boolean) : [];
   saveLocal(); closeModal(); render(); showToast('Saved!','ok');
+}
+// ── IN-MODAL TMDB SEARCH ─────────────────────────────────────────────────────
+let _metaSearchTimer = null;
+function onMetaTmdbSearch() {
+  clearTimeout(_metaSearchTimer);
+  const q = document.getElementById('metaTmdbSearch').value.trim();
+  const res = document.getElementById('metaSearchResults');
+  if (!q) { res.style.display = 'none'; return; }
+  res.style.display = 'block';
+  res.innerHTML = '<div style="padding:.75rem 1rem;font-size:.8rem;color:var(--muted);text-align:center">Searching...</div>';
+  _metaSearchTimer = setTimeout(() => doMetaTmdbSearch(q), 350);
+}
+async function doMetaTmdbSearch(q) {
+  const res = document.getElementById('metaSearchResults');
+  const type = document.getElementById('metaTmdbType').value;
+  try {
+    const endpoint = type === 'multi'
+      ? `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&page=1`
+      : `https://api.themoviedb.org/3/search/${type}?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&page=1`;
+    const data = await (await fetch(endpoint)).json();
+    const results = (data.results || []).filter(r => r.media_type !== 'person').slice(0, 8);
+    if (!results.length) { res.innerHTML = '<div style="padding:.75rem 1rem;font-size:.8rem;color:var(--muted);text-align:center">No results</div>'; return; }
+    res.innerHTML = results.map(r => {
+      const isMovie = (r.media_type || type) === 'movie';
+      const title = r.title || r.name || '';
+      const year = (r.release_date || r.first_air_date || '').substring(0, 4);
+      const poster = r.poster_path ? `https://image.tmdb.org/t/p/w92${r.poster_path}` : '';
+      const typeIcon = isMovie ? '🎥' : '📺';
+      return `<div onclick="applyMetaTmdbResult(${r.id},'${isMovie?'movie':'tv'}')" style="display:flex;gap:.65rem;padding:.6rem .9rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;align-items:center" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+        ${poster ? `<img src="${poster}" style="width:30px;height:45px;object-fit:cover;border-radius:3px;flex-shrink:0;background:var(--surface3)">` : `<div style="width:30px;height:45px;border-radius:3px;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.9rem">${typeIcon}</div>`}
+        <div style="min-width:0">
+          <div style="font-size:.84rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">${typeIcon} ${year ? year : 'Unknown year'} · ID: ${r.id}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    res.innerHTML = '<div style="padding:.75rem 1rem;font-size:.8rem;color:var(--muted);text-align:center">Search failed</div>';
+  }
+}
+async function applyMetaTmdbResult(tmdbId, tmdbType) {
+  closeMetaSearch();
+  document.getElementById('metaTmdbSearch').value = '';
+  const res = document.getElementById('metaSearchResults');
+  res.innerHTML = '<div style="padding:.75rem 1rem;font-size:.8rem;color:var(--muted);text-align:center">Fetching details...</div>';
+  res.style.display = 'block';
+  try {
+    const detail = await (await fetch(`https://api.themoviedb.org/3/${tmdbType}/${tmdbId}?api_key=${TMDB_KEY}&append_to_response=release_dates,content_ratings`)).json();
+    // Fill all metadata fields
+    document.getElementById('editTmdbId').value = tmdbId;
+    if (detail.poster_path) {
+      document.getElementById('editPoster').value = detail.poster_path;
+      updatePosterPreview();
+    }
+    const freshYear = (detail.release_date || detail.first_air_date || '').substring(0, 4);
+    if (freshYear) document.getElementById('editYear').value = freshYear;
+    document.getElementById('editGenres').value = (detail.genres || []).map(g => g.name).join(', ');
+    if (tmdbType === 'movie') {
+      if (detail.runtime) document.getElementById('editRuntime').value = detail.runtime;
+      document.getElementById('editSeasons').value = '';
+      document.getElementById('editEpisodes').value = '';
+      const mpaa = detail.release_dates?.results?.find(r => r.iso_3166_1 === 'US')?.release_dates?.find(r => r.certification)?.certification || '';
+      document.getElementById('editMpaa').value = mpaa;
+    } else {
+      document.getElementById('editRuntime').value = '';
+      if (detail.number_of_seasons) document.getElementById('editSeasons').value = detail.number_of_seasons;
+      if (detail.number_of_episodes) document.getElementById('editEpisodes').value = detail.number_of_episodes;
+      const mpaa = detail.content_ratings?.results?.find(r => r.iso_3166_1 === 'US')?.rating || '';
+      document.getElementById('editMpaa').value = mpaa;
+    }
+    res.style.display = 'none';
+    showToast('Metadata loaded — hit Save to apply', 'ok');
+  } catch(e) {
+    res.innerHTML = '<div style="padding:.75rem 1rem;font-size:.8rem;color:var(--muted)">Failed to fetch details</div>';
+  }
+}
+function closeMetaSearch() {
+  const res = document.getElementById('metaSearchResults');
+  if (res) res.style.display = 'none';
+}
+
+function toggleMetaSection() {
+  const sec = document.getElementById('metaSection');
+  const arrow = document.getElementById('metaToggleArrow');
+  const open = sec.style.display === 'none';
+  sec.style.display = open ? 'block' : 'none';
+  arrow.style.transform = open ? 'rotate(180deg)' : '';
+}
+function updatePosterPreview() {
+  const val = document.getElementById('editPoster').value.trim();
+  const img = document.getElementById('editPosterPreview');
+  if (val) {
+    const src = val.startsWith('http') ? val : `https://image.tmdb.org/t/p/w92${val}`;
+    img.src = src;
+    img.style.background = 'var(--surface3)';
+  } else {
+    img.src = '';
+    img.style.background = 'var(--surface3)';
+  }
 }
 function toggleCheck(id) { const el=document.getElementById(id); if(el) el.classList.toggle('checked'); }
 function setCheck(id,val) { const el=document.getElementById(id); if(el) el.classList.toggle('checked',!!val); }
@@ -2746,7 +3001,8 @@ async function backfillMetadata(force = false) {
       if (detailRes.ok) {
         const detail = await detailRes.json();
         if (detail.poster_path) e.poster = detail.poster_path;
-        if (!e.year) e.year = (detail.release_date || detail.first_air_date || '').substring(0, 4);
+        const freshYear = (detail.release_date || detail.first_air_date || '').substring(0, 4);
+        if (freshYear) e.year = freshYear;
         e.genres = (detail.genres||[]).map(g=>g.name);
         if (tmdbType === 'movie') {
           e.runtime = detail.runtime || null;
