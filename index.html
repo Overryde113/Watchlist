@@ -301,7 +301,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v3.8</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.1</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -497,6 +497,7 @@ tr:hover .action-cell{opacity:1}
       <button class="btn btn-ghost" onclick="addManually()">+ Manual</button>
       <button class="btn btn-ghost" onclick="exportTxt()">⬇ Export</button>
       <button class="btn btn-ghost" onclick="exportToFile()" title="Bake current data into the HTML file for GitHub">💾 Save to File</button>
+      <button class="btn btn-ghost" id="selectModeBtn" onclick="toggleSelectMode()" title="Select entries to batch-refetch">☑ Select</button>
       <button class="btn btn-ghost" id="backfillBtn" onclick="backfillMetadata(false)" title="Fetch missing metadata for entries that need it">🔄 Backfill Metadata</button>
       <button class="btn btn-ghost" id="backfillForceBtn" onclick="backfillMetadata(true)" title="Re-fetch ALL metadata from scratch (ignores existing data)">🔄 Force Refetch All</button>
     </div>
@@ -505,7 +506,10 @@ tr:hover .action-cell{opacity:1}
   <div id="backfillProgress" style="display: none; background: var(--surface); border: 1px solid color-mix(in srgb,var(--accent2) 30%,transparent); border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 1rem;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
       <span style="font-size:.82rem;font-weight:500;color:var(--accent2)">🔄 Fetching metadata from TMDB...</span>
-      <span id="backfillCounter" style="font-size:.78rem;color:var(--muted)">222 / 222</span>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <span id="backfillCounter" style="font-size:.78rem;color:var(--muted)">222 / 222</span>
+        <button id="backfillCancelBtn" onclick="cancelBackfill()" style="display:none;font-size:.72rem;padding:.18rem .5rem;border-radius:5px;border:1px solid var(--accent3);background:none;color:var(--accent3);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s" onmouseover="this.style.background='color-mix(in srgb,var(--accent3) 12%,transparent)'" onmouseout="this.style.background='none'">✕ Cancel</button>
+      </div>
     </div>
     <div style="height:4px;background:var(--surface3);border-radius:2px;overflow:hidden">
       <div id="backfillBar" style="height: 100%; background: var(--watching); border-radius: 2px; width: 100%; transition: width 0.3s;"></div>
@@ -513,6 +517,14 @@ tr:hover .action-cell{opacity:1}
     <div id="backfillSub" style="font-size:.72rem;color:var(--muted);margin-top:.4rem">✅ Done! 160 entries updated with metadata.</div>
   </div>
 
+  <div id="selectRefetchBar" style="display:none;background:var(--surface);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:10px;padding:.65rem 1rem;margin-bottom:.75rem;display:none;align-items:center;justify-content:space-between;gap:.75rem">
+    <span style="font-size:.82rem;color:var(--text)"><span id="selectCount" style="color:var(--accent);font-weight:600">0</span> entries selected</span>
+    <div style="display:flex;gap:.4rem">
+      <button class="btn btn-ghost btn-sm" onclick="selectAll()">Select All</button>
+      <button class="btn btn-ghost btn-sm" onclick="deselectAll()">Deselect All</button>
+      <button class="btn btn-primary btn-sm" id="refetchSelectedBtn" onclick="refetchSelected()" disabled>🔄 Refetch Selected</button>
+    </div>
+  </div>
   <div class="results-info"><span id="resultsInfo">Showing 1–75 of 1365 entries</span><span id="pageInfo">Page 1 of 19</span></div>
 
   <div class="table-wrap">
@@ -1997,8 +2009,9 @@ function render() {
         ? `<img class="row-poster" src="https://image.tmdb.org/t/p/w92${e.poster}" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500${e.poster}','${escHtml(e.title)}')" style="cursor:pointer">`
         : `<div class="row-poster-placeholder" style="color:var(--muted)">▪</div>`;
       const ratingEl = renderStars(e.rating);
-      return `<tr data-idx="${gi}">
-        <td class="td-num">${rn}</td>
+      const chk = _selectMode ? `<input type="checkbox" class="row-select-chk" data-idx="${gi}" onchange="onRowCheck()" style="cursor:pointer;accent-color:var(--accent);width:14px;height:14px">` : '';
+      return `<tr data-idx="${gi}" style="${_selectMode ? 'cursor:pointer' : ''}" ${_selectMode ? `onclick="toggleRowCheck(event,${gi})"` : ''}>
+        <td class="td-num" style="${_selectMode ? 'padding-right:.4rem' : ''}">${_selectMode ? chk : rn}</td>
         <td class="poster-cell">${posterEl}</td>
         <td class="type-badge">${e.type}</td>
         <td class="title-cell ${tc}">${pfx}${escHtml(e.title)}${metaStr}</td>
@@ -2136,6 +2149,182 @@ document.addEventListener('click', e => {
 // ── TMDB SEARCH TO ADD ───────────────────────────────────────────────────
 let _searchTimer = null;
 let _lastSearchQuery = '';
+let _backfillCancelled = false;
+let _selectMode = false;
+let _selectedIdxs = new Set();
+
+function toggleSelectMode() {
+  _selectMode = !_selectMode;
+  _selectedIdxs.clear();
+  const btn = document.getElementById('selectModeBtn');
+  const bar = document.getElementById('selectRefetchBar');
+  if (_selectMode) {
+    btn.textContent = '✕ Cancel Select';
+    btn.style.borderColor = 'var(--accent)';
+    btn.style.color = 'var(--accent)';
+    bar.style.display = 'flex';
+  } else {
+    btn.textContent = '☑ Select';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    bar.style.display = 'none';
+  }
+  updateSelectCount();
+  render();
+}
+
+function toggleRowCheck(e, idx) {
+  // Don't fire if they clicked the checkbox itself (it handles its own change event)
+  if (e.target.type === 'checkbox') return;
+  if (_selectedIdxs.has(idx)) _selectedIdxs.delete(idx);
+  else _selectedIdxs.add(idx);
+  // Sync the checkbox visually
+  const chk = document.querySelector(`.row-select-chk[data-idx="${idx}"]`);
+  if (chk) chk.checked = _selectedIdxs.has(idx);
+  updateSelectCount();
+}
+
+function onRowCheck() {
+  // Sync all checkboxes into _selectedIdxs
+  document.querySelectorAll('.row-select-chk').forEach(chk => {
+    const idx = +chk.dataset.idx;
+    if (chk.checked) _selectedIdxs.add(idx);
+    else _selectedIdxs.delete(idx);
+  });
+  updateSelectCount();
+}
+
+function updateSelectCount() {
+  const n = _selectedIdxs.size;
+  const countEl = document.getElementById('selectCount');
+  const refetchBtn = document.getElementById('refetchSelectedBtn');
+  if (countEl) countEl.textContent = n;
+  if (refetchBtn) refetchBtn.disabled = n === 0;
+}
+
+function selectAll() {
+  document.querySelectorAll('.row-select-chk').forEach(chk => {
+    chk.checked = true;
+    _selectedIdxs.add(+chk.dataset.idx);
+  });
+  updateSelectCount();
+}
+
+function deselectAll() {
+  document.querySelectorAll('.row-select-chk').forEach(chk => { chk.checked = false; });
+  _selectedIdxs.clear();
+  updateSelectCount();
+}
+
+async function refetchSelected() {
+  if (!_selectedIdxs.size) return;
+  const idxs = [..._selectedIdxs];
+  const entries = idxs.map(i => DATA[i]).filter(Boolean);
+
+  // Exit select mode and show progress bar
+  toggleSelectMode();
+
+  const progressWrap = document.getElementById('backfillProgress');
+  const progressBar  = document.getElementById('backfillBar');
+  const progressCtr  = document.getElementById('backfillCounter');
+  const progressSub  = document.getElementById('backfillSub');
+  const cancelBtn    = document.getElementById('backfillCancelBtn');
+  const btn          = document.getElementById('backfillBtn');
+  const forceBtnEl   = document.getElementById('backfillForceBtn');
+  progressWrap.style.display = 'block';
+  progressBar.style.width = '0%';
+  progressBar.style.background = 'var(--accent2)';
+  if (cancelBtn) { cancelBtn.style.display = 'inline-block'; cancelBtn.disabled = false; cancelBtn.textContent = '✕ Cancel'; }
+  if (btn) { btn.disabled = true; }
+  if (forceBtnEl) { forceBtnEl.disabled = true; }
+  _backfillCancelled = false;
+
+  let done = 0, updated = 0, noMatch = 0;
+  const total = entries.length;
+  progressCtr.textContent = `0 / ${total}`;
+  progressSub.textContent = 'Starting...';
+
+  for (const e of entries) {
+    if (_backfillCancelled) break;
+    let gotData = false;
+    try {
+      const tmdbType = e.type === '🎥' ? 'movie' : 'tv';
+      let tmdbId = e.tmdbId;
+
+      if (!tmdbId) {
+        const cleanTitle = e.title.replace(/[\u{1F000}-\u{1FFFF}\u{2000}-\u{27BF}\u200d\ufe0f\u20e3]/gu, '').replace(/[^\x00-\x7F\u00C0-\u024F]/g, '').trim();
+        if (!cleanTitle) { done++; noMatch++; await delay(100); continue; }
+        const searchRes = await fetch(`https://api.themoviedb.org/3/search/${tmdbType}?api_key=${TMDB_KEY}&query=${encodeURIComponent(cleanTitle)}&page=1`);
+        const searchData = await searchRes.json();
+        const results = searchData.results || [];
+        if (!results.length) { done++; noMatch++; await delay(100); continue; }
+        const entryYear = (e.year || '').toString().substring(0, 4);
+        const normalize = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const normTitle = normalize(cleanTitle);
+        let best = null, bestTitleOnly = null;
+        for (const r of results) {
+          const rTitle = normalize(r.title || r.name || '');
+          const rYear = (r.release_date || r.first_air_date || '').substring(0, 4);
+          if (rTitle === normTitle && entryYear && rYear === entryYear) { best = r; break; }
+          if (rTitle === normTitle) { if (!bestTitleOnly || (r.popularity||0) > (bestTitleOnly.popularity||0)) bestTitleOnly = r; }
+        }
+        if (!best) best = bestTitleOnly || results.reduce((a,b) => ((b.popularity||0)>(a.popularity||0)?b:a), results[0]);
+        tmdbId = best.id;
+        e.tmdbId = tmdbId;
+        const freshYearS = (best.release_date || best.first_air_date || '').substring(0, 4);
+        if (freshYearS) e.year = freshYearS;
+        if (best.poster_path) e.poster = best.poster_path;
+        gotData = true;
+        await delay(75);
+      }
+
+      const detailRes = await fetch(`https://api.themoviedb.org/3/${tmdbType}/${tmdbId}?api_key=${TMDB_KEY}&append_to_response=release_dates,content_ratings`);
+      if (detailRes.ok) {
+        const detail = await detailRes.json();
+        if (detail.poster_path) e.poster = detail.poster_path;
+        const freshYear = (detail.release_date || detail.first_air_date || '').substring(0, 4);
+        if (freshYear) e.year = freshYear;
+        e.genres = (detail.genres||[]).map(g=>g.name);
+        if (tmdbType === 'movie') {
+          e.runtime = detail.runtime || null;
+          e.mpaa = detail.release_dates?.results?.find(r=>r.iso_3166_1==='US')?.release_dates?.find(r=>r.certification)?.certification || null;
+        } else {
+          e.seasons = detail.number_of_seasons || null;
+          e.episodes = detail.number_of_episodes || null;
+          e.mpaa = detail.content_ratings?.results?.find(r=>r.iso_3166_1==='US')?.rating || null;
+        }
+        gotData = true;
+      }
+    } catch(err) { console.error('refetchSelected error for', e.title, ':', err); }
+
+    done++;
+    if (gotData) updated++;
+    progressBar.style.width = Math.round((done/total)*100) + '%';
+    progressCtr.textContent = `${done} / ${total}`;
+    progressSub.textContent = `${updated} updated · ${noMatch} not found · ${total-done} remaining`;
+    if (done % 25 === 0) saveLocal();
+    await delay(100);
+  }
+
+  saveLocal(); render();
+  if (btn) { btn.disabled = false; }
+  if (forceBtnEl) { forceBtnEl.disabled = false; }
+  if (cancelBtn) { cancelBtn.style.display = 'none'; }
+
+  if (_backfillCancelled) {
+    progressBar.style.background = 'var(--accent3)';
+    progressSub.textContent = `⛔ Cancelled at ${done} / ${total} · ${updated} updated`;
+    showToast(`Cancelled — ${updated} entries updated`, '');
+  } else {
+    progressBar.style.width = '100%';
+    progressBar.style.background = 'var(--watching)';
+    progressCtr.textContent = `${total} / ${total}`;
+    progressSub.textContent = `✅ Done! ${updated} entries updated`;
+    showToast(`Done! ${updated} entries updated`, 'ok');
+  }
+  setTimeout(() => { progressWrap.style.display = 'none'; progressBar.style.background = 'var(--accent2)'; _backfillCancelled = false; }, 5000);
+}
+function cancelBackfill() { _backfillCancelled = true; const btn = document.getElementById('backfillCancelBtn'); if (btn) { btn.disabled = true; btn.textContent = 'Cancelling...'; } }
 
 function onTmdbSearch() {
   const q = document.getElementById('tmdbSearchInput').value.trim();
@@ -2385,13 +2574,16 @@ async function refetchEntry(idx) {
       const normalize = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
       const normTitle = normalize(cleanTitle);
       let best = null;
+      let bestTitleOnly = null;
       for (const r of results) {
         const rTitle = normalize(r.title || r.name || '');
         const rYear = (r.release_date || r.first_air_date || '').substring(0, 4);
         if (rTitle === normTitle && entryYear && rYear === entryYear) { best = r; break; }
-        if (rTitle === normTitle && !best) best = r;
+        if (rTitle === normTitle) {
+          if (!bestTitleOnly || (r.popularity || 0) > (bestTitleOnly.popularity || 0)) bestTitleOnly = r;
+        }
       }
-      if (!best) best = results[0];
+      if (!best) best = bestTitleOnly || results.reduce((a, b) => ((b.popularity || 0) > (a.popularity || 0) ? b : a), results[0]);
       tmdbId = best.id;
       e.tmdbId = tmdbId;
       e.year = (best.release_date || best.first_air_date || '').substring(0, 4);
@@ -2941,9 +3133,12 @@ async function backfillMetadata(force = false) {
   const progressBar  = document.getElementById('backfillBar');
   const progressCtr  = document.getElementById('backfillCounter');
   const progressSub  = document.getElementById('backfillSub');
+  const cancelBtn    = document.getElementById('backfillCancelBtn');
   progressWrap.style.display = 'block';
   progressBar.style.width = '0%';
   progressBar.style.background = 'var(--accent2)';
+  if (cancelBtn) cancelBtn.style.display = 'inline-block';
+  _backfillCancelled = false;
 
   let done = 0, updated = 0, noMatch = 0;
   const total = missing.length;
@@ -2951,6 +3146,7 @@ async function backfillMetadata(force = false) {
   progressSub.textContent = 'Starting...';
 
   for (const e of missing) {
+    if (_backfillCancelled) break;
     let gotData = false;
     try {
       const tmdbType = e.type === '🎥' ? 'movie' : 'tv';
@@ -2970,21 +3166,24 @@ async function backfillMetadata(force = false) {
         const results = searchData.results || [];
         if (!results.length) { done++; noMatch++; await delay(100); continue; }
 
-        // Find best match: prefer title+year match, fall back to closest title match
+        // Find best match: exact title+year > title match (most popular) > most popular overall
         const entryYear = (e.year || '').toString().substring(0, 4);
         const normalize = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
         const normTitle = normalize(cleanTitle);
 
         let best = null;
+        let bestTitleOnly = null;
         for (const r of results) {
           const rTitle = normalize(r.title || r.name || '');
           const rYear = (r.release_date || r.first_air_date || '').substring(0, 4);
           const titleMatch = rTitle === normTitle;
           const yearMatch = entryYear && rYear === entryYear;
           if (titleMatch && yearMatch) { best = r; break; }
-          if (titleMatch && !best) best = r;
+          if (titleMatch) {
+            if (!bestTitleOnly || (r.popularity || 0) > (bestTitleOnly.popularity || 0)) bestTitleOnly = r;
+          }
         }
-        if (!best) best = results[0];
+        if (!best) best = bestTitleOnly || results.reduce((a, b) => ((b.popularity || 0) > (a.popularity || 0) ? b : a), results[0]);
 
         tmdbId = best.id;
         e.tmdbId = tmdbId;
@@ -3032,15 +3231,24 @@ async function backfillMetadata(force = false) {
   btn.textContent = '🔄 Backfill Metadata';
   const forceBtn = document.getElementById('backfillForceBtn');
   if (forceBtn) { forceBtn.disabled = false; forceBtn.textContent = '🔄 Force Refetch All'; }
-  progressBar.style.width = '100%';
-  progressBar.style.background = 'var(--watching)';
-  progressCtr.textContent = `${total} / ${total}`;
-  progressSub.textContent = `✅ Done! ${updated} entries updated · ${noMatch} not found on TMDB`;
+  if (cancelBtn) cancelBtn.style.display = 'none';
+  if (_backfillCancelled) {
+    progressBar.style.width = (Math.round((done / total) * 100)) + '%';
+    progressBar.style.background = 'var(--accent3)';
+    progressSub.textContent = `⛔ Cancelled at ${done} / ${total} · ${updated} updated`;
+    showToast(`Cancelled — ${updated} entries updated before stop`, '');
+  } else {
+    progressBar.style.width = '100%';
+    progressBar.style.background = 'var(--watching)';
+    progressCtr.textContent = `${total} / ${total}`;
+    progressSub.textContent = `✅ Done! ${updated} entries updated · ${noMatch} not found on TMDB`;
+    showToast(`Done! ${updated} entries updated`, 'ok');
+  }
   setTimeout(() => {
     progressWrap.style.display = 'none';
     progressBar.style.background = 'var(--accent2)';
+    _backfillCancelled = false;
   }, 5000);
-  showToast(`Done! ${postersFilled} posters + ${filled - postersFilled} metadata filled`, 'ok');
 }
 
 // ── EXPORT .TXT ───────────────────────────────────────────────────────────────
