@@ -302,7 +302,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.1</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.3</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -446,6 +446,11 @@ tr:hover .action-cell{opacity:1}
       <option value="War">War</option>
       <option value="Western">Western</option>
     </select>
+    <select class="sort-select" id="filterPoster" onchange="render()" title="Filter by poster">
+      <option value="">🖼 Any Poster</option>
+      <option value="missing">No Poster</option>
+      <option value="has">Has Poster</option>
+    </select>
     <select class="sort-select" id="sortSelect" onchange="render()">
       <optgroup label="General">
         <option value="default">Default</option>
@@ -545,7 +550,7 @@ tr:hover .action-cell{opacity:1}
       </thead>
       <tbody id="tableBody"><tr data-idx="0" style="">
         <td class="td-num" style="">1</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/4tblBrslcKSifMVZ3TmtT2ukMor.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/4tblBrslcKSifMVZ3TmtT2ukMor.jpg','Invincible')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/4tblBrslcKSifMVZ3TmtT2ukMor.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/4tblBrslcKSifMVZ3TmtT2ukMor.jpg" data-title="Invincible" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Invincible<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2021 · 5S · 32eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -560,7 +565,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="1" style="">
         <td class="td-num" style="">2</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/QWbPaDxiB6LW2LjASknzYBvjMj.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/QWbPaDxiB6LW2LjASknzYBvjMj.jpg','Daredevil')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/QWbPaDxiB6LW2LjASknzYBvjMj.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/QWbPaDxiB6LW2LjASknzYBvjMj.jpg" data-title="Daredevil" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Daredevil<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2015 · 3S · 39eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -575,7 +580,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="2" style="">
         <td class="td-num" style="">3</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg','🅱 Star Wars Revenge of the Sith')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg" data-title="🅱 Star Wars Revenge of the Sith" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">🅱 Star Wars Revenge of the Sith<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2005 · 2h 20m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -590,7 +595,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="3" style="">
         <td class="td-num" style="">4</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/h1B7tW0t399VDjAcWJh8m87469b.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/h1B7tW0t399VDjAcWJh8m87469b.jpg','Hamilton')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/h1B7tW0t399VDjAcWJh8m87469b.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/h1B7tW0t399VDjAcWJh8m87469b.jpg" data-title="Hamilton" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Hamilton<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2020 · 2h 40m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -605,7 +610,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="4" style="">
         <td class="td-num" style="">5</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/kvDwL2gTf6yxujbsWbsGQB3Z9Wa.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/kvDwL2gTf6yxujbsWbsGQB3Z9Wa.jpg','Pirates of The Caribbean: The Curse of the Black Pearl')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/kvDwL2gTf6yxujbsWbsGQB3Z9Wa.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/kvDwL2gTf6yxujbsWbsGQB3Z9Wa.jpg" data-title="Pirates of The Caribbean: The Curse of the Black Pearl" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Pirates of The Caribbean: The Curse of the Black Pearl<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2003 · 2h 23m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -620,7 +625,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="5" style="">
         <td class="td-num" style="">6</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/uXEqmloGyP7UXAiphJUu2v2pcuE.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/uXEqmloGyP7UXAiphJUu2v2pcuE.jpg','Pirates of The Caribbean: Dead Man's Chest')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/uXEqmloGyP7UXAiphJUu2v2pcuE.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/uXEqmloGyP7UXAiphJUu2v2pcuE.jpg" data-title="Pirates of The Caribbean: Dead Man's Chest" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Pirates of The Caribbean: Dead Man's Chest<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2006 · 2h 31m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -635,7 +640,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="6" style="">
         <td class="td-num" style="">7</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/jGWpG4YhpQwVmjyHEGkxEkeRf0S.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/jGWpG4YhpQwVmjyHEGkxEkeRf0S.jpg','Pirates of The Caribbean: At World's End')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/jGWpG4YhpQwVmjyHEGkxEkeRf0S.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/jGWpG4YhpQwVmjyHEGkxEkeRf0S.jpg" data-title="Pirates of The Caribbean: At World's End" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Pirates of The Caribbean: At World's End<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2007 · 2h 49m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -650,7 +655,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="7" style="">
         <td class="td-num" style="">8</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/keGfSvCmYj7CvdRx36OdVrAEibE.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/keGfSvCmYj7CvdRx36OdVrAEibE.jpg','Pirates of The Caribbean: On Stranger Tides')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/keGfSvCmYj7CvdRx36OdVrAEibE.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/keGfSvCmYj7CvdRx36OdVrAEibE.jpg" data-title="Pirates of The Caribbean: On Stranger Tides" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Pirates of The Caribbean: On Stranger Tides<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2011 · 2h 16m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -665,7 +670,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="8" style="">
         <td class="td-num" style="">9</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/6lAPOAFYFWIO3SQRemEY2wInQMC.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/6lAPOAFYFWIO3SQRemEY2wInQMC.jpg','Pirates of The Caribbean: Dead Men Tell No Tales')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/6lAPOAFYFWIO3SQRemEY2wInQMC.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/6lAPOAFYFWIO3SQRemEY2wInQMC.jpg" data-title="Pirates of The Caribbean: Dead Men Tell No Tales" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Pirates of The Caribbean: Dead Men Tell No Tales<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2017 · 2h 9m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -680,7 +685,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="9" style="">
         <td class="td-num" style="">10</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/m6G92osOtSeXwjSfL21jZCUOvxe.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/m6G92osOtSeXwjSfL21jZCUOvxe.jpg','🅰 Doctor Who')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/m6G92osOtSeXwjSfL21jZCUOvxe.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/m6G92osOtSeXwjSfL21jZCUOvxe.jpg" data-title="🅰 Doctor Who" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">🅰 Doctor Who<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2005 · 13S · 153eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -695,7 +700,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="10" style="">
         <td class="td-num" style="">11</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/9RQhVb3r3mCMqYVhLoCu4EvuipP.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/9RQhVb3r3mCMqYVhLoCu4EvuipP.jpg','Avatar the Last Airbender')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/9RQhVb3r3mCMqYVhLoCu4EvuipP.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/9RQhVb3r3mCMqYVhLoCu4EvuipP.jpg" data-title="Avatar the Last Airbender" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell unreleased">🔜 Avatar the Last Airbender<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2005 · 3S · 61eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -710,7 +715,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="11" style="">
         <td class="td-num" style="">12</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/fDI15gTVbtW5Sbv5QenqecRxWKJ.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/fDI15gTVbtW5Sbv5QenqecRxWKJ.jpg','Psych')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/fDI15gTVbtW5Sbv5QenqecRxWKJ.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/fDI15gTVbtW5Sbv5QenqecRxWKJ.jpg" data-title="Psych" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Psych<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2006 · 8S · 120eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -725,7 +730,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="12" style="">
         <td class="td-num" style="">13</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/fLsaFKExQt05yqjoAvKsmOMYvJR.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/fLsaFKExQt05yqjoAvKsmOMYvJR.jpg','Fantastic Beasts and Where to Find Them')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/fLsaFKExQt05yqjoAvKsmOMYvJR.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/fLsaFKExQt05yqjoAvKsmOMYvJR.jpg" data-title="Fantastic Beasts and Where to Find Them" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Fantastic Beasts and Where to Find Them<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2016 · 2h 13m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -740,7 +745,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="13" style="">
         <td class="td-num" style="">14</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/fMMrl8fD9gRCFJvsx0SuFwkEOop.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/fMMrl8fD9gRCFJvsx0SuFwkEOop.jpg','Fantastic Beasts: The Crimes of Grindelwald')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/fMMrl8fD9gRCFJvsx0SuFwkEOop.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/fMMrl8fD9gRCFJvsx0SuFwkEOop.jpg" data-title="Fantastic Beasts: The Crimes of Grindelwald" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Fantastic Beasts: The Crimes of Grindelwald<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2018 · 2h 14m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -755,7 +760,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="14" style="">
         <td class="td-num" style="">15</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/3c5GNLB4yRSLBby0trHoA1DSQxQ.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/3c5GNLB4yRSLBby0trHoA1DSQxQ.jpg','Fantastic Beasts: The Secrets of Dumbledore')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/3c5GNLB4yRSLBby0trHoA1DSQxQ.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/3c5GNLB4yRSLBby0trHoA1DSQxQ.jpg" data-title="Fantastic Beasts: The Secrets of Dumbledore" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Fantastic Beasts: The Secrets of Dumbledore<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2022 · 2h 22m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -770,7 +775,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="15" style="">
         <td class="td-num" style="">16</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/aP8swke3gmowbkfZ6lmNidu0y9p.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/aP8swke3gmowbkfZ6lmNidu0y9p.jpg','The Bourne Identity')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/aP8swke3gmowbkfZ6lmNidu0y9p.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/aP8swke3gmowbkfZ6lmNidu0y9p.jpg" data-title="The Bourne Identity" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">The Bourne Identity<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2002 · 1h 59m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -785,7 +790,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="16" style="">
         <td class="td-num" style="">17</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/jupG9sFT64YwM8PSkwkUD2wHcYD.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/jupG9sFT64YwM8PSkwkUD2wHcYD.jpg','The Bourne Supremacy')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/jupG9sFT64YwM8PSkwkUD2wHcYD.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/jupG9sFT64YwM8PSkwkUD2wHcYD.jpg" data-title="The Bourne Supremacy" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">The Bourne Supremacy<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2004 · 1h 48m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -800,7 +805,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="17" style="">
         <td class="td-num" style="">18</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/15rMz5MRXFp7CP4VxhjYw4y0FUn.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/15rMz5MRXFp7CP4VxhjYw4y0FUn.jpg','The Bourne Ultimatum')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/15rMz5MRXFp7CP4VxhjYw4y0FUn.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/15rMz5MRXFp7CP4VxhjYw4y0FUn.jpg" data-title="The Bourne Ultimatum" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">The Bourne Ultimatum<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2007 · 1h 55m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -815,7 +820,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="18" style="">
         <td class="td-num" style="">19</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/1aExL5DTGHj25ZfIC3dDwS84RWi.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/1aExL5DTGHj25ZfIC3dDwS84RWi.jpg','The Bourne Legacy')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/1aExL5DTGHj25ZfIC3dDwS84RWi.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/1aExL5DTGHj25ZfIC3dDwS84RWi.jpg" data-title="The Bourne Legacy" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">The Bourne Legacy<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2012 · 2h 15m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -830,7 +835,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="19" style="">
         <td class="td-num" style="">20</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/xA7N41glw17MBQtcWSm2eBlBRuG.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/xA7N41glw17MBQtcWSm2eBlBRuG.jpg','Jason Bourne')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/xA7N41glw17MBQtcWSm2eBlBRuG.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/xA7N41glw17MBQtcWSm2eBlBRuG.jpg" data-title="Jason Bourne" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Jason Bourne<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2016 · 2h 3m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -845,7 +850,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="20" style="">
         <td class="td-num" style="">21</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/4j0PNHkMr5ax3IA8tjtxcmPU3QT.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/4j0PNHkMr5ax3IA8tjtxcmPU3QT.jpg','Encanto')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/4j0PNHkMr5ax3IA8tjtxcmPU3QT.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/4j0PNHkMr5ax3IA8tjtxcmPU3QT.jpg" data-title="Encanto" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Encanto<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2021 · 1h 42m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -860,7 +865,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="21" style="">
         <td class="td-num" style="">22</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/59GoXODSKpd3yMXgM4xXlNmf7jq.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/59GoXODSKpd3yMXgM4xXlNmf7jq.jpg','🅱 Drake &amp; Josh')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/59GoXODSKpd3yMXgM4xXlNmf7jq.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/59GoXODSKpd3yMXgM4xXlNmf7jq.jpg" data-title="🅱 Drake &amp; Josh" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">🅱 Drake &amp; Josh<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2008 · 1h 34m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -875,7 +880,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="22" style="">
         <td class="td-num" style="">23</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/pxL6E4GBOPUG6CdkO9cUQN5VMwI.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/pxL6E4GBOPUG6CdkO9cUQN5VMwI.jpg','National Treasure')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/pxL6E4GBOPUG6CdkO9cUQN5VMwI.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/pxL6E4GBOPUG6CdkO9cUQN5VMwI.jpg" data-title="National Treasure" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">National Treasure<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2004 · 2h 11m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -890,7 +895,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="23" style="">
         <td class="td-num" style="">24</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/dc9F1vNOGbgeZrO9ejNkbgHPlfw.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/dc9F1vNOGbgeZrO9ejNkbgHPlfw.jpg','National Treasure: Book of Secrets')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/dc9F1vNOGbgeZrO9ejNkbgHPlfw.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/dc9F1vNOGbgeZrO9ejNkbgHPlfw.jpg" data-title="National Treasure: Book of Secrets" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">National Treasure: Book of Secrets<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2007 · 2h 4m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -920,7 +925,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="25" style="">
         <td class="td-num" style="">26</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/4GIeI5K5YdDUkR3mNQBoScpSFEf.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/4GIeI5K5YdDUkR3mNQBoScpSFEf.jpg','🅰 Real Steel')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/4GIeI5K5YdDUkR3mNQBoScpSFEf.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/4GIeI5K5YdDUkR3mNQBoScpSFEf.jpg" data-title="🅰 Real Steel" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">🅰 Real Steel<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2011 · 2h 7m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -935,7 +940,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="26" style="">
         <td class="td-num" style="">27</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/gfuF74cwAjViGlCQ5gKcT5FawjN.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/gfuF74cwAjViGlCQ5gKcT5FawjN.jpg','🅱James Bond Movies')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/gfuF74cwAjViGlCQ5gKcT5FawjN.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/gfuF74cwAjViGlCQ5gKcT5FawjN.jpg" data-title="🅱James Bond Movies" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell find">🔍 🅱James Bond Movies<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2008 · 50m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -950,7 +955,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="27" style="">
         <td class="td-num" style="">28</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ceG9VzoRAVGwivFU403Wc3AHRys.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/ceG9VzoRAVGwivFU403Wc3AHRys.jpg','🅱 Raiders of The Lost Ark')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ceG9VzoRAVGwivFU403Wc3AHRys.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/ceG9VzoRAVGwivFU403Wc3AHRys.jpg" data-title="🅱 Raiders of The Lost Ark" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">🅱 Raiders of The Lost Ark<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1981 · 1h 55m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -965,7 +970,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="28" style="">
         <td class="td-num" style="">29</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/gpdVNUaa4LhRMLfJOPj1AZdhAZ3.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/gpdVNUaa4LhRMLfJOPj1AZdhAZ3.jpg','🅱 Indiana Jones and The Temple of Doom')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/gpdVNUaa4LhRMLfJOPj1AZdhAZ3.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/gpdVNUaa4LhRMLfJOPj1AZdhAZ3.jpg" data-title="🅱 Indiana Jones and The Temple of Doom" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">🅱 Indiana Jones and The Temple of Doom<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1984 · 1h 58m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -980,7 +985,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="29" style="">
         <td class="td-num" style="">30</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/sizg1AU8f8JDZX4QIgE4pjUMBvx.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/sizg1AU8f8JDZX4QIgE4pjUMBvx.jpg','🅱 Indiana Jones and The Last Crusade')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/sizg1AU8f8JDZX4QIgE4pjUMBvx.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/sizg1AU8f8JDZX4QIgE4pjUMBvx.jpg" data-title="🅱 Indiana Jones and The Last Crusade" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">🅱 Indiana Jones and The Last Crusade<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1989 · 2h 7m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -995,7 +1000,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="30" style="">
         <td class="td-num" style="">31</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/56As6XEM1flWvprX4LgkPl8ii4K.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/56As6XEM1flWvprX4LgkPl8ii4K.jpg','🅱 Indiana Jones and The Kingdom of The Crystal Skull')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/56As6XEM1flWvprX4LgkPl8ii4K.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/56As6XEM1flWvprX4LgkPl8ii4K.jpg" data-title="🅱 Indiana Jones and The Kingdom of The Crystal Skull" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">🅱 Indiana Jones and The Kingdom of The Crystal Skull<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2008 · 2h 2m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1010,7 +1015,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="31" style="">
         <td class="td-num" style="">32</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/Af4bXE63pVsb2FtbW8uYIyPBadD.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/Af4bXE63pVsb2FtbW8uYIyPBadD.jpg','🅱 Indiana Jones And the Dial of Destiny')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/Af4bXE63pVsb2FtbW8uYIyPBadD.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/Af4bXE63pVsb2FtbW8uYIyPBadD.jpg" data-title="🅱 Indiana Jones And the Dial of Destiny" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">🅱 Indiana Jones And the Dial of Destiny<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2023 · 2h 35m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1025,7 +1030,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="32" style="">
         <td class="td-num" style="">33</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg','Tenet')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg" data-title="Tenet" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Tenet<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2020 · 2h 30m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1040,7 +1045,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="33" style="">
         <td class="td-num" style="">34</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ea5iv7TWMh18fOKoRGgmtcg85Gx.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/ea5iv7TWMh18fOKoRGgmtcg85Gx.jpg','The Butterfly Effect')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ea5iv7TWMh18fOKoRGgmtcg85Gx.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/ea5iv7TWMh18fOKoRGgmtcg85Gx.jpg" data-title="The Butterfly Effect" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">The Butterfly Effect<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2004 · 1h 53m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1055,7 +1060,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="34" style="">
         <td class="td-num" style="">35</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/g87nPhHf2xfENBV6PCbkO88sthd.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/g87nPhHf2xfENBV6PCbkO88sthd.jpg','The Butterfly Effect Two')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/g87nPhHf2xfENBV6PCbkO88sthd.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/g87nPhHf2xfENBV6PCbkO88sthd.jpg" data-title="The Butterfly Effect Two" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">The Butterfly Effect Two<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2006 · 1h 32m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1070,7 +1075,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="35" style="">
         <td class="td-num" style="">36</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/7utgDyfae053YExAuUKcwkzUKMs.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/7utgDyfae053YExAuUKcwkzUKMs.jpg','The Butterfly Effect 3: Revelations')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/7utgDyfae053YExAuUKcwkzUKMs.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/7utgDyfae053YExAuUKcwkzUKMs.jpg" data-title="The Butterfly Effect 3: Revelations" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">The Butterfly Effect 3: Revelations<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2009 · 1h 30m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1085,7 +1090,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="36" style="">
         <td class="td-num" style="">37</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/khZqmwHQicTYoS7Flreb9EddFZC.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/khZqmwHQicTYoS7Flreb9EddFZC.jpg','Andor')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/khZqmwHQicTYoS7Flreb9EddFZC.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/khZqmwHQicTYoS7Flreb9EddFZC.jpg" data-title="Andor" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Andor<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2022 · 2S · 24eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1100,7 +1105,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="37" style="">
         <td class="td-num" style="">38</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/gwtzCwU2wdLLf8oejQu2TINiWfQ.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/gwtzCwU2wdLLf8oejQu2TINiWfQ.jpg','Gilmore Girls')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/gwtzCwU2wdLLf8oejQu2TINiWfQ.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/gwtzCwU2wdLLf8oejQu2TINiWfQ.jpg" data-title="Gilmore Girls" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Gilmore Girls<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2000 · 7S · 153eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1130,7 +1135,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="39" style="">
         <td class="td-num" style="">40</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/kh7B91bMl2lZ0mH9WhPfaNUIEQH.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/kh7B91bMl2lZ0mH9WhPfaNUIEQH.jpg','🅱 Nacho Libre')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/kh7B91bMl2lZ0mH9WhPfaNUIEQH.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/kh7B91bMl2lZ0mH9WhPfaNUIEQH.jpg" data-title="🅱 Nacho Libre" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">🅱 Nacho Libre<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2006 · 1h 32m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1145,7 +1150,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="40" style="">
         <td class="td-num" style="">41</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/jPC2eYub74zwf2tPGVtzSlBW6Oy.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/jPC2eYub74zwf2tPGVtzSlBW6Oy.jpg','The Mask')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/jPC2eYub74zwf2tPGVtzSlBW6Oy.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/jPC2eYub74zwf2tPGVtzSlBW6Oy.jpg" data-title="The Mask" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">The Mask<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1994 · 1h 41m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1160,7 +1165,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="41" style="">
         <td class="td-num" style="">42</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/qdrbSneHZjJG2Dj0hhBxzzAo4HB.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/qdrbSneHZjJG2Dj0hhBxzzAo4HB.jpg','Zoolander')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/qdrbSneHZjJG2Dj0hhBxzzAo4HB.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/qdrbSneHZjJG2Dj0hhBxzzAo4HB.jpg" data-title="Zoolander" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Zoolander<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2001 · 1h 29m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1175,7 +1180,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="42" style="">
         <td class="td-num" style="">43</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/n8AJzALlTPBwe9Tkv3tdxbiAr9i.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/n8AJzALlTPBwe9Tkv3tdxbiAr9i.jpg','Zoolander 2')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/n8AJzALlTPBwe9Tkv3tdxbiAr9i.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/n8AJzALlTPBwe9Tkv3tdxbiAr9i.jpg" data-title="Zoolander 2" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Zoolander 2<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2016 · 1h 40m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1190,7 +1195,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="43" style="">
         <td class="td-num" style="">44</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/pqiRuETmuSybfnVZ7qyeoXhQyN1.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/pqiRuETmuSybfnVZ7qyeoXhQyN1.jpg','Ace Ventura: Pet Detective')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/pqiRuETmuSybfnVZ7qyeoXhQyN1.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/pqiRuETmuSybfnVZ7qyeoXhQyN1.jpg" data-title="Ace Ventura: Pet Detective" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Ace Ventura: Pet Detective<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1994 · 1h 26m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1205,7 +1210,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="44" style="">
         <td class="td-num" style="">45</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/wcinCf1ov2D6M3P7BBZkzQFOiIb.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/wcinCf1ov2D6M3P7BBZkzQFOiIb.jpg','Ace Ventura: When Nature Calls')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/wcinCf1ov2D6M3P7BBZkzQFOiIb.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/wcinCf1ov2D6M3P7BBZkzQFOiIb.jpg" data-title="Ace Ventura: When Nature Calls" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Ace Ventura: When Nature Calls<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1995 · 1h 30m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1220,7 +1225,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="45" style="">
         <td class="td-num" style="">46</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/qM66Hv4ByAxnilr0jaqCA9uOD4Y.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/qM66Hv4ByAxnilr0jaqCA9uOD4Y.jpg','House with a Clock in Its Walls')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/qM66Hv4ByAxnilr0jaqCA9uOD4Y.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/qM66Hv4ByAxnilr0jaqCA9uOD4Y.jpg" data-title="House with a Clock in Its Walls" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">House with a Clock in Its Walls<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2018 · 1h 45m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1235,7 +1240,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="46" style="">
         <td class="td-num" style="">47</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/d26S5EfVXLNxRXqyFy1yyl3qRq3.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/d26S5EfVXLNxRXqyFy1yyl3qRq3.jpg','Pixels')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/d26S5EfVXLNxRXqyFy1yyl3qRq3.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/d26S5EfVXLNxRXqyFy1yyl3qRq3.jpg" data-title="Pixels" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Pixels<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2015 · 1h 46m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1250,7 +1255,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="47" style="">
         <td class="td-num" style="">48</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/e1J2oNzSBdou01sUvriVuoYp0pJ.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/e1J2oNzSBdou01sUvriVuoYp0pJ.jpg','Ghostbusters: Frozen Empire')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/e1J2oNzSBdou01sUvriVuoYp0pJ.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/e1J2oNzSBdou01sUvriVuoYp0pJ.jpg" data-title="Ghostbusters: Frozen Empire" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Ghostbusters: Frozen Empire<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2024 · 1h 55m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1265,7 +1270,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="48" style="">
         <td class="td-num" style="">49</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/uWpG7GqfKGQqX4YMAo3nv5OrglV.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/uWpG7GqfKGQqX4YMAo3nv5OrglV.jpg','The Simpsons')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/uWpG7GqfKGQqX4YMAo3nv5OrglV.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/uWpG7GqfKGQqX4YMAo3nv5OrglV.jpg" data-title="The Simpsons" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">The Simpsons<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1989 · 37S · 801eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1280,7 +1285,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="49" style="">
         <td class="td-num" style="">50</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/3PFsEuAiyLkWsP4GG6dIV37Q6gu.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/3PFsEuAiyLkWsP4GG6dIV37Q6gu.jpg','Family Guy')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/3PFsEuAiyLkWsP4GG6dIV37Q6gu.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/3PFsEuAiyLkWsP4GG6dIV37Q6gu.jpg" data-title="Family Guy" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Family Guy<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1999 · 24S · 456eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1295,7 +1300,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="50" style="">
         <td class="td-num" style="">51</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg','Money Heist')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg" data-title="Money Heist" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Money Heist<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2017 · 3S · 41eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1310,7 +1315,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="51" style="">
         <td class="td-num" style="">52</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/eTemCphrglLKrXOsNRhYezHA7H9.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/eTemCphrglLKrXOsNRhYezHA7H9.jpg','Manifest')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/eTemCphrglLKrXOsNRhYezHA7H9.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/eTemCphrglLKrXOsNRhYezHA7H9.jpg" data-title="Manifest" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Manifest<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2018 · 4S · 62eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1325,7 +1330,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="52" style="">
         <td class="td-num" style="">53</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/kuf6dutpsT0vSVehic3EZIqkOBt.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/kuf6dutpsT0vSVehic3EZIqkOBt.jpg','Puss in Boots')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/kuf6dutpsT0vSVehic3EZIqkOBt.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/kuf6dutpsT0vSVehic3EZIqkOBt.jpg" data-title="Puss in Boots" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Puss in Boots<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2022 · 1h 43m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1340,7 +1345,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="53" style="">
         <td class="td-num" style="">54</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/7cpvdkdVP8lL3q40ovPeIk3zdbZ.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/7cpvdkdVP8lL3q40ovPeIk3zdbZ.jpg','🅱 Puss in Boots 2: The Last Wish')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/7cpvdkdVP8lL3q40ovPeIk3zdbZ.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/7cpvdkdVP8lL3q40ovPeIk3zdbZ.jpg" data-title="🅱 Puss in Boots 2: The Last Wish" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">🅱 Puss in Boots 2: The Last Wish<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2023 · 5m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1355,7 +1360,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="54" style="">
         <td class="td-num" style="">55</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/qg7WXAatXyQq6zO3SnWnRJEayeZ.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/qg7WXAatXyQq6zO3SnWnRJEayeZ.jpg','Series of Unfortunate Events')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/qg7WXAatXyQq6zO3SnWnRJEayeZ.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/qg7WXAatXyQq6zO3SnWnRJEayeZ.jpg" data-title="Series of Unfortunate Events" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Series of Unfortunate Events<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2017 · 3S · 25eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1370,7 +1375,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="55" style="">
         <td class="td-num" style="">56</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/76Xi8z7Whv5WFIdfzzvC5tKSicd.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/76Xi8z7Whv5WFIdfzzvC5tKSicd.jpg','Lemony Snicket's A Series of Unfortunate Events')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/76Xi8z7Whv5WFIdfzzvC5tKSicd.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/76Xi8z7Whv5WFIdfzzvC5tKSicd.jpg" data-title="Lemony Snicket's A Series of Unfortunate Events" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Lemony Snicket's A Series of Unfortunate Events<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2004 · 1h 48m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1385,7 +1390,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="56" style="">
         <td class="td-num" style="">57</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/vN5B5WgYscRGcQpVhHl6p9DDTP0.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/vN5B5WgYscRGcQpVhHl6p9DDTP0.jpg','Back to the Future')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/vN5B5WgYscRGcQpVhHl6p9DDTP0.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/vN5B5WgYscRGcQpVhHl6p9DDTP0.jpg" data-title="Back to the Future" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Back to the Future<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1985 · 1h 56m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1400,7 +1405,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="57" style="">
         <td class="td-num" style="">58</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/eA7oa7uBUpksFkWCXCTPS6un5bm.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/eA7oa7uBUpksFkWCXCTPS6un5bm.jpg','Back to the Future Part 2')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/eA7oa7uBUpksFkWCXCTPS6un5bm.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/eA7oa7uBUpksFkWCXCTPS6un5bm.jpg" data-title="Back to the Future Part 2" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Back to the Future Part 2<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1989 · 27m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1415,7 +1420,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="58" style="">
         <td class="td-num" style="">59</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/crzoVQnMzIrRfHtQw0tLBirNfVg.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/crzoVQnMzIrRfHtQw0tLBirNfVg.jpg','Back to the Future Part 3')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/crzoVQnMzIrRfHtQw0tLBirNfVg.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/crzoVQnMzIrRfHtQw0tLBirNfVg.jpg" data-title="Back to the Future Part 3" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Back to the Future Part 3<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1990 · 1h 59m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1430,7 +1435,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="59" style="">
         <td class="td-num" style="">60</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/4LdpBXiCyGKkR8FGHgjKlphrfUc.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/4LdpBXiCyGKkR8FGHgjKlphrfUc.jpg','Dumb and Dumber')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/4LdpBXiCyGKkR8FGHgjKlphrfUc.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/4LdpBXiCyGKkR8FGHgjKlphrfUc.jpg" data-title="Dumb and Dumber" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Dumb and Dumber<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1994 · 1h 47m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1445,7 +1450,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="60" style="">
         <td class="td-num" style="">61</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/cvEi0xV7TUkabJGuzulhvbMjrHi.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/cvEi0xV7TUkabJGuzulhvbMjrHi.jpg','Dumb and Dumber to')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/cvEi0xV7TUkabJGuzulhvbMjrHi.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/cvEi0xV7TUkabJGuzulhvbMjrHi.jpg" data-title="Dumb and Dumber to" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Dumb and Dumber to<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2014 · 1h 50m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1460,7 +1465,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="61" style="">
         <td class="td-num" style="">62</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/owhkU6KRqdXoUQpjV8uyZGPtX58.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/owhkU6KRqdXoUQpjV8uyZGPtX58.jpg','Rick and Morty')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/owhkU6KRqdXoUQpjV8uyZGPtX58.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/owhkU6KRqdXoUQpjV8uyZGPtX58.jpg" data-title="Rick and Morty" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Rick and Morty<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2013 · 9S · 91eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1475,7 +1480,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="62" style="">
         <td class="td-num" style="">63</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/oxnWofiE9fHOgUfs9NJa6nG6NTR.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/oxnWofiE9fHOgUfs9NJa6nG6NTR.jpg','Jessica Jones')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/oxnWofiE9fHOgUfs9NJa6nG6NTR.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/oxnWofiE9fHOgUfs9NJa6nG6NTR.jpg" data-title="Jessica Jones" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Jessica Jones<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2015 · 3S · 39eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1490,7 +1495,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="63" style="">
         <td class="td-num" style="">64</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/tM6xqRKXoloH9UchaJEyyRE9O1w.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/tM6xqRKXoloH9UchaJEyyRE9O1w.jpg','The Punisher')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/tM6xqRKXoloH9UchaJEyyRE9O1w.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/tM6xqRKXoloH9UchaJEyyRE9O1w.jpg" data-title="The Punisher" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">The Punisher<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2017 · 2S · 26eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1505,7 +1510,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="64" style="">
         <td class="td-num" style="">65</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/1CGwZCFX2qerXaXQJJUB3qUvxq7.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/1CGwZCFX2qerXaXQJJUB3qUvxq7.jpg','South Park')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/1CGwZCFX2qerXaXQJJUB3qUvxq7.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/1CGwZCFX2qerXaXQJJUB3qUvxq7.jpg" data-title="South Park" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">South Park<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">1997 · 29S · 337eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1520,7 +1525,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="65" style="">
         <td class="td-num" style="">66</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/wrY629UTCUAKLJ4CxQXz6DCE7pr.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/wrY629UTCUAKLJ4CxQXz6DCE7pr.jpg','Trainwreck')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/wrY629UTCUAKLJ4CxQXz6DCE7pr.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/wrY629UTCUAKLJ4CxQXz6DCE7pr.jpg" data-title="Trainwreck" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Trainwreck<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2015 · 2h 5m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1535,7 +1540,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="66" style="">
         <td class="td-num" style="">67</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/825ohvC4wZ3gCuncCaqkWeQnK8h.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/825ohvC4wZ3gCuncCaqkWeQnK8h.jpg','Remember The Titans')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/825ohvC4wZ3gCuncCaqkWeQnK8h.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/825ohvC4wZ3gCuncCaqkWeQnK8h.jpg" data-title="Remember The Titans" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Remember The Titans<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2000 · 1h 53m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1550,7 +1555,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="67" style="">
         <td class="td-num" style="">68</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/wWt4JYXTg5Wr3xBW2phBrMKgp3x.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/wWt4JYXTg5Wr3xBW2phBrMKgp3x.jpg','Kung Fu Panda')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/wWt4JYXTg5Wr3xBW2phBrMKgp3x.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/wWt4JYXTg5Wr3xBW2phBrMKgp3x.jpg" data-title="Kung Fu Panda" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Kung Fu Panda<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2008 · 1h 30m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1565,7 +1570,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="68" style="">
         <td class="td-num" style="">69</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/mtqqD00vB4PGRt20gWtGqFhrkd0.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/mtqqD00vB4PGRt20gWtGqFhrkd0.jpg','Kung Fu Panda 2')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/mtqqD00vB4PGRt20gWtGqFhrkd0.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/mtqqD00vB4PGRt20gWtGqFhrkd0.jpg" data-title="Kung Fu Panda 2" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Kung Fu Panda 2<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2011 · 1h 31m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1580,7 +1585,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="69" style="">
         <td class="td-num" style="">70</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/oajNi4Su39WAByHI6EONu8G8HYn.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/oajNi4Su39WAByHI6EONu8G8HYn.jpg','Kung Fu Panda 3')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/oajNi4Su39WAByHI6EONu8G8HYn.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/oajNi4Su39WAByHI6EONu8G8HYn.jpg" data-title="Kung Fu Panda 3" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell ">Kung Fu Panda 3<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2016 · 1h 35m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1595,7 +1600,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="70" style="">
         <td class="td-num" style="">71</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/f2PVrphK0u81ES256lw3oAZuF3x.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/f2PVrphK0u81ES256lw3oAZuF3x.jpg','Dahmer')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/f2PVrphK0u81ES256lw3oAZuF3x.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/f2PVrphK0u81ES256lw3oAZuF3x.jpg" data-title="Dahmer" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Dahmer<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2022 · 1S · 10eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1610,7 +1615,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="71" style="">
         <td class="td-num" style="">72</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/zU0htwkhNvBQdVSIKB9s6hgVeFK.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/zU0htwkhNvBQdVSIKB9s6hgVeFK.jpg','The Queen's Gambit')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/zU0htwkhNvBQdVSIKB9s6hgVeFK.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/zU0htwkhNvBQdVSIKB9s6hgVeFK.jpg" data-title="The Queen's Gambit" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">The Queen's Gambit<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2020 · 1S · 7eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1625,7 +1630,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="72" style="">
         <td class="td-num" style="">73</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg','Breaking Bad')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg" data-title="Breaking Bad" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Breaking Bad<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2008 · 5S · 62eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1640,7 +1645,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="73" style="">
         <td class="td-num" style="">74</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ovDgO2LPfwdVRfvScAqo9aMiIW.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/ovDgO2LPfwdVRfvScAqo9aMiIW.jpg','Outer Banks')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ovDgO2LPfwdVRfvScAqo9aMiIW.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/ovDgO2LPfwdVRfvScAqo9aMiIW.jpg" data-title="Outer Banks" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">Outer Banks<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2020 · 5S · 41eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1655,7 +1660,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="74" style="">
         <td class="td-num" style="">75</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/mZve7vS8S7nyYMIJ5rJrjzOGwAZ.jpg" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500/mZve7vS8S7nyYMIJ5rJrjzOGwAZ.jpg','The Serpent')" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/mZve7vS8S7nyYMIJ5rJrjzOGwAZ.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/mZve7vS8S7nyYMIJ5rJrjzOGwAZ.jpg" data-title="The Serpent" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
         <td class="title-cell ">The Serpent<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2021 · 1S · 8eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1998,6 +2003,10 @@ function getFiltered() {
     // Genre filter
     const genreFilter = document.getElementById('filterGenre')?.value;
     if (genreFilter && !(e.genres||[]).includes(genreFilter)) return false;
+    // Poster filter
+    const posterFilter = document.getElementById('filterPoster')?.value;
+    if (posterFilter === 'missing' && e.poster) return false;
+    if (posterFilter === 'has' && !e.poster) return false;
     if (q) { const hay = (e.title+' '+e.platform+' '+e.people.join(' ')).toLowerCase(); if (!hay.includes(q)) return false; }
     return true;
   });
@@ -2082,7 +2091,7 @@ function render() {
       const people = e.people.length ? e.people.map(p=>`<span class="person-tag">${p}</span>`).join('') : '';
       const syncIcon = e.simklId ? `<span class="icon-btn synced" title="Synced to Simkl">⚡</span>` : '';
       const posterEl = e.poster
-        ? `<img class="row-poster" src="https://image.tmdb.org/t/p/w92${e.poster}" loading="lazy" alt="" onclick="openLightbox('https://image.tmdb.org/t/p/w500${e.poster}','${escHtml(e.title)}')" style="cursor:pointer">`
+        ? `<img class="row-poster" src="https://image.tmdb.org/t/p/w92${e.poster}" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500${e.poster}" data-title="${escHtml(e.title)}" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer">`
         : `<div class="row-poster-placeholder" style="color:var(--muted)">▪</div>`;
       const ratingEl = renderStars(e.rating);
       const chk = _selectMode ? `<input type="checkbox" class="row-select-chk" data-idx="${gi}" onchange="onRowCheck()" style="cursor:pointer;accent-color:var(--accent);width:14px;height:14px">` : '';
