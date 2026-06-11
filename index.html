@@ -313,7 +313,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.4</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.5</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -374,9 +374,24 @@ tr:hover .action-cell{opacity:1}
         <button class="btn btn-ghost btn-sm" onclick="disconnectSimkl()">Disconnect</button>
       </div>
     </div>
-    <div class="sync-status" id="syncStatus"></div>
-    <div class="progress-bar-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
-    <div class="sync-status" id="syncInfo" style="margin-top:.25rem;font-size:.72rem;color:var(--muted)"></div>
+    <div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.25rem">
+      <div id="pushSyncRow" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.2rem">
+          <span style="font-size:.72rem;color:var(--muted)">⬆ Push</span>
+          <span class="sync-status" id="syncStatus" style="font-size:.72rem"></span>
+        </div>
+        <div class="progress-bar-wrap show" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="sync-status" id="syncInfo" style="margin-top:.15rem;font-size:.68rem;color:var(--muted)"></div>
+      </div>
+      <div id="pullSyncRow" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.2rem">
+          <span style="font-size:.72rem;color:var(--muted)">⬇ Pull</span>
+          <span class="sync-status" id="pullSyncStatus" style="font-size:.72rem"></span>
+        </div>
+        <div class="progress-bar-wrap show" id="pullProgressWrap"><div class="progress-bar" id="pullProgressBar"></div></div>
+        <div id="pullSyncInfo" style="margin-top:.15rem;font-size:.68rem;color:var(--muted)"></div>
+      </div>
+    </div>
   </div>
 
   <!-- FILTER BAR -->
@@ -3211,8 +3226,8 @@ async function pushToSimkl() {
 async function pullFromSimkl() {
   if (!simklToken) { showToast('Connect Simkl first','err'); return; }
   console.log('Pull started. DATA length:', DATA.length);
-  setSyncStatus('Fetching your Simkl watch history...','loading');
-  showProgress(0);
+  setPullSyncStatus('Fetching your Simkl watch history...','loading');
+  showPullProgress(0);
 
   try {
     const [moviesRes, showsRes, animeRes] = await Promise.all([
@@ -3221,7 +3236,7 @@ async function pullFromSimkl() {
       fetch(`https://api.simkl.com/sync/all-items/anime/`, {headers:{'Authorization':`Bearer ${simklToken}`,'simkl-api-key':CLIENT_ID}}).then(r=>r.json()),
     ]);
 
-    showProgress(60);
+    showPullProgress(60);
 
     // Build a map of simkl IDs → status
     const watchedIds = new Set();
@@ -3241,7 +3256,7 @@ async function pullFromSimkl() {
     processItems(showsRes?.shows || showsRes);
     processItems(animeRes?.anime || animeRes);
 
-    showProgress(80);
+    showPullProgress(80);
 
     // Update local data
     let updated=0;
@@ -3255,34 +3270,49 @@ async function pullFromSimkl() {
       }
     }
 
-    showProgress(100);
+    showPullProgress(100);
     saveLocal();
-    setTimeout(()=>hideProgress(),1500);
-    setSyncStatus(`Pulled from Simkl — ${updated} items updated`,'ok');
-    setSyncInfo(`${watchedIds.size} completed, ${watchingIds.size} watching on Simkl`);
+    setTimeout(()=>hidePullProgress(),1500);
+    setPullSyncStatus(`Pulled — ${updated} items updated`,'ok');
+    setPullSyncInfo(`${watchedIds.size} completed, ${watchingIds.size} watching on Simkl`);
     render();
     showToast(`${updated} items updated from Simkl`,'ok');
 
   } catch(err) {
-    setSyncStatus('Pull failed — try again','err');
-    hideProgress();
+    setPullSyncStatus('Pull failed — try again','err');
+    hidePullProgress();
   }
 }
 
 // ── PROGRESS ─────────────────────────────────────────────────────────────────
 function showProgress(pct) {
-  document.getElementById('progressWrap').classList.add('show');
-  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('pushSyncRow').style.display = 'block';
+  document.getElementById('progressBar').style.width = pct + '%';
 }
 function hideProgress() {
-  document.getElementById('progressWrap').classList.remove('show');
-  document.getElementById('progressBar').style.width='0%';
+  document.getElementById('pushSyncRow').style.display = 'none';
+  document.getElementById('progressBar').style.width = '0%';
 }
-function setSyncStatus(msg,type) {
-  const el=document.getElementById('syncStatus');
-  el.textContent=msg; el.className='sync-status'+(msg?' '+type:'');
+function setSyncStatus(msg, type) {
+  const el = document.getElementById('syncStatus');
+  el.textContent = msg;
+  el.className = 'sync-status' + (msg ? ' ' + type : '');
 }
-function setSyncInfo(msg) { document.getElementById('syncInfo').textContent=msg; }
+function setSyncInfo(msg) { document.getElementById('syncInfo').textContent = msg; }
+function showPullProgress(pct) {
+  document.getElementById('pullSyncRow').style.display = 'block';
+  document.getElementById('pullProgressBar').style.width = pct + '%';
+}
+function hidePullProgress() {
+  document.getElementById('pullSyncRow').style.display = 'none';
+  document.getElementById('pullProgressBar').style.width = '0%';
+}
+function setPullSyncStatus(msg, type) {
+  const el = document.getElementById('pullSyncStatus');
+  el.textContent = msg;
+  el.className = 'sync-status' + (msg ? ' ' + type : '');
+}
+function setPullSyncInfo(msg) { document.getElementById('pullSyncInfo').textContent = msg; }
 const delay = ms => new Promise(r=>setTimeout(r,ms));
 
 // ── BACKFILL METADATA ────────────────────────────────────────────────────
