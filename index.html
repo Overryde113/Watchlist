@@ -325,7 +325,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.13</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.14</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -3550,11 +3550,15 @@ async function pullFromSimkl() {
   showPullProgress(0);
 
   try {
+    console.log('[Pull] Fetching from Simkl...');
     const [moviesRes, showsRes, animeRes] = await Promise.all([
-      fetch(`https://api.simkl.com/sync/all-items/movies/`, {headers:{'Authorization':`Bearer ${simklToken}`,'simkl-api-key':CLIENT_ID}}).then(r=>r.json()),
-      fetch(`https://api.simkl.com/sync/all-items/shows/`, {headers:{'Authorization':`Bearer ${simklToken}`,'simkl-api-key':CLIENT_ID}}).then(r=>r.json()),
-      fetch(`https://api.simkl.com/sync/all-items/anime/`, {headers:{'Authorization':`Bearer ${simklToken}`,'simkl-api-key':CLIENT_ID}}).then(r=>r.json()),
+      fetch(`https://api.simkl.com/sync/all-items/movies/`, {headers:{'Authorization':`Bearer ${simklToken}`,'simkl-api-key':CLIENT_ID}}).then(r=>{console.log('[Pull] movies status:',r.status); return r.json();}),
+      fetch(`https://api.simkl.com/sync/all-items/shows/`,  {headers:{'Authorization':`Bearer ${simklToken}`,'simkl-api-key':CLIENT_ID}}).then(r=>{console.log('[Pull] shows status:',r.status);  return r.json();}),
+      fetch(`https://api.simkl.com/sync/all-items/anime/`,  {headers:{'Authorization':`Bearer ${simklToken}`,'simkl-api-key':CLIENT_ID}}).then(r=>{console.log('[Pull] anime status:',r.status);  return r.json();}),
     ]);
+    console.log('[Pull] moviesRes:', JSON.stringify(moviesRes).substring(0,200));
+    console.log('[Pull] showsRes:',  JSON.stringify(showsRes).substring(0,200));
+    console.log('[Pull] animeRes:',  JSON.stringify(animeRes).substring(0,200));
 
     showPullProgress(60);
 
@@ -3631,6 +3635,7 @@ async function pullFromSimkl() {
     showToast(`${updated} items updated from Simkl`,'ok');
 
   } catch(err) {
+    console.error('[Pull] ERROR:', err);
     setPullSyncStatus('Pull failed — try again','err');
     hidePullProgress();
   }
