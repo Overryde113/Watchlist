@@ -325,7 +325,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.11</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.13</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -3444,9 +3444,10 @@ async function pushToSimkl() {
       // Determine list(s) to push to
       const getLists = (e) => {
         const lists = [];
-        if (e.watching) lists.push('watching');
-        if (e.rewatching) { lists.push('completed'); lists.push('plantowatch'); }
-        if (!e.watching && !e.rewatching) lists.push('plantowatch');
+        if (e.rewatching)       { lists.push('completed'); lists.push('watching'); }
+        else if (e.watched)     { lists.push('completed'); }
+        else if (e.watching)    { lists.push('watching'); }
+        else                    { lists.push('plantowatch'); }
         return lists;
       };
 
@@ -3612,7 +3613,7 @@ async function pullFromSimkl() {
     saveLocal();
     setTimeout(()=>hidePullProgress(),1500);
     setPullSyncStatus(`Pulled — ${updated} items updated`,'ok');
-    setPullSyncInfo(`${watchedIds.size} completed, ${watchingIds.size} watching on Simkl`);
+    setPullSyncInfo(`${simklWatched.size + tmdbWatched.size} completed, ${simklWatching.size + tmdbWatching.size} watching found on Simkl`);
     render();
     showToast(`${updated} items updated from Simkl`,'ok');
 
