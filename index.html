@@ -15,6 +15,8 @@
   --movie:#c8a96e; --show:#7c6ef5; --anime:#e05c7a;
   --watching:#facc15; --rewatching:#4ade80; --find:#f97316; --unreleased:#a78bfa;
   --simkl:#16b5b5;
+  --trakt:#ed1c24;
+  --letterboxd:#00c030;
   --watched:#a78bfa;
   --franchise:#f472b6;
 }
@@ -48,6 +50,16 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.94);backdrop
 .simkl-panel{background:color-mix(in srgb,var(--simkl) 5%,var(--surface));border:1px solid color-mix(in srgb,var(--simkl) 22%,transparent);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:none}
 .simkl-panel.open{display:block}
 .simkl-panel h3{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.1em;color:var(--simkl);margin-bottom:.9rem}
+.trakt-panel{background:color-mix(in srgb,var(--trakt) 5%,var(--surface));border:1px solid color-mix(in srgb,var(--trakt) 22%,transparent);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:none}
+.trakt-panel.open{display:block}
+.trakt-panel h3{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.1em;color:var(--trakt);margin-bottom:.9rem}
+.lb-panel{background:color-mix(in srgb,var(--letterboxd) 5%,var(--surface));border:1px solid color-mix(in srgb,var(--letterboxd) 22%,transparent);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:none}
+.lb-panel.open{display:block}
+.lb-panel h3{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.1em;color:var(--letterboxd);margin-bottom:.9rem}
+.btn-trakt{border-color:color-mix(in srgb,var(--trakt) 40%,transparent);color:var(--trakt)}
+.btn-trakt:hover{border-color:var(--trakt);background:color-mix(in srgb,var(--trakt) 10%,transparent)}
+.btn-lb{border-color:color-mix(in srgb,var(--letterboxd) 40%,transparent);color:var(--letterboxd)}
+.btn-lb:hover{border-color:var(--letterboxd);background:color-mix(in srgb,var(--letterboxd) 10%,transparent)}
 
 /* auth states */
 .auth-step{display:none;flex-direction:column;gap:.75rem}
@@ -313,7 +325,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.5</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.7</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -324,6 +336,8 @@ tr:hover .action-cell{opacity:1}
       <div class="stat"><div class="stat-num" style="color:var(--show)" id="statShows">232</div><div class="stat-label">Shows</div></div>
       <div class="stat"><div class="stat-num" style="color:var(--anime)" id="statAnime">59</div><div class="stat-label">Anime</div></div>
     </div>
+    <button class="btn btn-ghost btn-sm" id="traktHeaderBtn" onclick="toggleTraktPanel()" style="border-color:color-mix(in srgb,var(--trakt) 40%,transparent);color:var(--trakt);font-size:.72rem;padding:.28rem .7rem">🎬 Trakt</button>
+    <button class="btn btn-ghost btn-sm" id="lbHeaderBtn" onclick="toggleLbPanel()" style="border-color:color-mix(in srgb,var(--letterboxd) 40%,transparent);color:var(--letterboxd);font-size:.72rem;padding:.28rem .7rem">🟢 Letterboxd</button>
     <button class="simkl-btn connected" id="simklHeaderBtn" onclick="toggleSimklPanel()">
       <span class="simkl-dot" id="simklDot"></span>
       <span id="simklHeaderLabel">@undefined</span>
@@ -391,6 +405,65 @@ tr:hover .action-cell{opacity:1}
         <div class="progress-bar-wrap show" id="pullProgressWrap"><div class="progress-bar" id="pullProgressBar"></div></div>
         <div id="pullSyncInfo" style="margin-top:.15rem;font-size:.68rem;color:var(--muted)"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- TRAKT PANEL -->
+  <div class="trakt-panel" id="traktPanel">
+    <h3>🎬 TRAKT SYNC</h3>
+    <div id="traktAuthStep" class="auth-step active">
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">Connect Trakt to pull your watched history. You'll need to create a free Trakt API app to get a Client ID — <a href="https://trakt.tv/oauth/applications/new" target="_blank" style="color:var(--trakt)">create one here ↗</a> (set redirect URI to <code style="font-size:.72rem;background:var(--surface2);padding:.1rem .3rem;border-radius:3px">urn:ietf:wg:oauth:2.0:oob</code>).</p>
+      <div class="form-group" style="margin-bottom:.6rem">
+        <label>Trakt Client ID</label>
+        <input type="text" id="traktClientId" placeholder="Paste your Trakt Client ID here" style="font-size:.8rem">
+      </div>
+      <button class="btn btn-trakt btn-sm" onclick="startTraktAuth()">🔗 Connect Trakt Account</button>
+      <span id="traktAuthStatus" class="sync-status" style="margin-left:.5rem;font-size:.75rem"></span>
+      <div id="traktPinWrap" style="display:none;margin-top:.75rem">
+        <p style="font-size:.82rem;margin-bottom:.5rem">A Trakt authorization page has opened. Enter the code shown there:</p>
+        <div style="display:flex;gap:.5rem">
+          <input type="text" id="traktPinInput" placeholder="Enter code from Trakt..." style="font-size:.9rem;letter-spacing:.1em;text-transform:uppercase;width:160px">
+          <button class="btn btn-trakt btn-sm" onclick="submitTraktPin()">Connect</button>
+        </div>
+      </div>
+    </div>
+    <div id="traktConnectedState" style="display:none">
+      <div class="user-badge" style="margin-bottom:.75rem">
+        <img class="user-avatar" id="traktAvatar" src="" alt="" style="background:var(--surface2)">
+        <div class="user-info">
+          <strong id="traktUserName">Trakt User</strong>
+          <span>Connected to Trakt</span>
+        </div>
+      </div>
+      <div class="sync-actions">
+        <button class="btn btn-trakt btn-sm" onclick="pullFromTrakt()">⬇ Pull watched from Trakt</button>
+        <button class="btn btn-ghost btn-sm" onclick="disconnectTrakt()">Disconnect</button>
+      </div>
+      <div id="traktSyncRow" style="display:none;margin-top:.5rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.2rem">
+          <span style="font-size:.72rem;color:var(--muted)">⬇ Trakt Pull</span>
+          <span id="traktSyncStatus" class="sync-status" style="font-size:.72rem"></span>
+        </div>
+        <div class="progress-bar-wrap show"><div class="progress-bar" id="traktProgressBar"></div></div>
+        <div id="traktSyncInfo" style="margin-top:.15rem;font-size:.68rem;color:var(--muted)"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LETTERBOXD PANEL -->
+  <div class="lb-panel" id="lbPanel">
+    <h3>🟢 LETTERBOXD IMPORT</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">Import your watched movies from a Letterboxd CSV export. Go to <a href="https://letterboxd.com/settings/data/" target="_blank" style="color:var(--letterboxd)">letterboxd.com/settings/data ↗</a>, export your data, then upload the <code style="font-size:.72rem;background:var(--surface2);padding:.1rem .3rem;border-radius:3px">watched.csv</code> file below.</p>
+    <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+      <label class="btn btn-lb btn-sm" style="cursor:pointer">
+        📂 Choose watched.csv
+        <input type="file" id="lbCsvInput" accept=".csv" style="display:none" onchange="importLetterboxdCsv(this)">
+      </label>
+      <span id="lbImportStatus" style="font-size:.78rem;color:var(--muted)"></span>
+    </div>
+    <div id="lbProgressRow" style="display:none;margin-top:.6rem">
+      <div class="progress-bar-wrap show"><div class="progress-bar" id="lbProgressBar"></div></div>
+      <div id="lbSyncInfo" style="margin-top:.15rem;font-size:.68rem;color:var(--muted)"></div>
     </div>
   </div>
 
@@ -3086,6 +3159,237 @@ function showPinStatus(msg, type) {
   el.textContent=msg; el.className='sync-status'+(msg?' show':'')+(type?' '+type:'');
 }
 
+// ── TRAKT ────────────────────────────────────────────────────────────────────
+let traktToken = null, traktUser = null, traktClientId = null;
+
+function toggleTraktPanel() {
+  const p = document.getElementById('traktPanel');
+  p.classList.toggle('open');
+  // Load saved client ID
+  const saved = localStorage.getItem('traktClientId');
+  if (saved) document.getElementById('traktClientId').value = saved;
+  // Show connected state if token exists
+  if (traktToken) {
+    document.getElementById('traktAuthStep').classList.remove('active');
+    document.getElementById('traktConnectedState').style.display = 'block';
+  }
+}
+function toggleLbPanel() { document.getElementById('lbPanel').classList.toggle('open'); }
+
+async function startTraktAuth() {
+  const clientId = document.getElementById('traktClientId').value.trim();
+  if (!clientId) { document.getElementById('traktAuthStatus').textContent = 'Enter a Client ID first'; return; }
+  traktClientId = clientId;
+  localStorage.setItem('traktClientId', clientId);
+  document.getElementById('traktAuthStatus').textContent = 'Opening Trakt...';
+  // Trakt device auth
+  try {
+    const res = await fetch('https://api.trakt.tv/oauth/device/code', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ client_id: clientId })
+    });
+    const d = await res.json();
+    window.open(d.verification_url, '_blank');
+    document.getElementById('traktPinInput').value = d.user_code || '';
+    document.getElementById('traktPinWrap').style.display = 'block';
+    document.getElementById('traktAuthStatus').textContent = `Code: ${d.user_code}`;
+    // Auto-poll
+    window._traktDeviceCode = d.device_code;
+    window._traktPollInterval = d.interval || 5;
+    window._traktPollExpiry = Date.now() + (d.expires_in || 600) * 1000;
+    pollTraktDevice(clientId);
+  } catch(e) {
+    document.getElementById('traktAuthStatus').textContent = 'Failed — check your Client ID';
+  }
+}
+
+async function pollTraktDevice(clientId) {
+  if (Date.now() > window._traktPollExpiry) return;
+  try {
+    const res = await fetch('https://api.trakt.tv/oauth/device/token', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ code: window._traktDeviceCode, client_id: clientId, client_secret: '' })
+    });
+    if (res.status === 200) {
+      const d = await res.json();
+      traktToken = d.access_token;
+      localStorage.setItem('traktToken', traktToken);
+      await loadTraktUser();
+      document.getElementById('traktAuthStep').classList.remove('active');
+      document.getElementById('traktConnectedState').style.display = 'block';
+      document.getElementById('traktAuthStatus').textContent = '';
+      document.getElementById('traktPinWrap').style.display = 'none';
+      showToast('Connected to Trakt!', 'ok');
+      return;
+    }
+  } catch(e) {}
+  if (Date.now() < window._traktPollExpiry) {
+    setTimeout(() => pollTraktDevice(clientId), (window._traktPollInterval || 5) * 1000);
+  }
+}
+
+async function submitTraktPin() {
+  // Manual fallback — user copies the code
+  document.getElementById('traktAuthStatus').textContent = 'Waiting for approval...';
+}
+
+async function loadTraktUser() {
+  const clientId = traktClientId || localStorage.getItem('traktClientId');
+  if (!traktToken || !clientId) return;
+  try {
+    const res = await fetch('https://api.trakt.tv/users/me', {
+      headers: { 'Authorization': `Bearer ${traktToken}`, 'trakt-api-key': clientId, 'trakt-api-version': '2', 'Content-Type': 'application/json' }
+    });
+    traktUser = await res.json();
+    const nameEl = document.getElementById('traktUserName');
+    if (nameEl) nameEl.textContent = traktUser.name || traktUser.username || 'Trakt User';
+    const avEl = document.getElementById('traktAvatar');
+    if (avEl && traktUser.images?.avatar?.full) avEl.src = traktUser.images.avatar.full;
+  } catch(e) {}
+}
+
+function disconnectTrakt() {
+  traktToken = null; traktUser = null;
+  localStorage.removeItem('traktToken');
+  document.getElementById('traktConnectedState').style.display = 'none';
+  document.getElementById('traktAuthStep').classList.add('active');
+  showToast('Disconnected from Trakt', '');
+}
+
+async function pullFromTrakt() {
+  const clientId = traktClientId || localStorage.getItem('traktClientId');
+  if (!traktToken || !clientId) { showToast('Connect Trakt first', 'err'); return; }
+  const row = document.getElementById('traktSyncRow');
+  const bar = document.getElementById('traktProgressBar');
+  const info = document.getElementById('traktSyncInfo');
+  const status = document.getElementById('traktSyncStatus');
+  row.style.display = 'block';
+  bar.style.width = '0%';
+  status.textContent = 'Fetching Trakt history...';
+  status.className = 'sync-status loading';
+
+  try {
+    const headers = { 'Authorization': `Bearer ${traktToken}`, 'trakt-api-key': clientId, 'trakt-api-version': '2', 'Content-Type': 'application/json' };
+    const [moviesRes, showsRes] = await Promise.all([
+      fetch('https://api.trakt.tv/sync/watched/movies', { headers }).then(r => r.json()),
+      fetch('https://api.trakt.tv/sync/watched/shows',  { headers }).then(r => r.json()),
+    ]);
+    bar.style.width = '50%';
+
+    // Build lookup maps
+    const traktTmdbWatched = new Set();
+    const traktTitleWatched = new Set();
+    const processTrakt = (items, mediaKey) => {
+      if (!Array.isArray(items)) return;
+      for (const item of items) {
+        const obj = item[mediaKey];
+        if (!obj) continue;
+        if (obj.ids?.tmdb) traktTmdbWatched.add(obj.ids.tmdb);
+        const key = (obj.title||'').toLowerCase().trim() + '|' + (obj.year||'');
+        traktTitleWatched.add(key);
+      }
+    };
+    processTrakt(moviesRes, 'movie');
+    processTrakt(showsRes, 'show');
+    bar.style.width = '80%';
+
+    let updated = 0;
+    for (const e of DATA) {
+      if (e.watched) continue;
+      const key = (e.title||'').toLowerCase().trim() + '|' + (e.year||'');
+      const hit = (e.tmdbId && traktTmdbWatched.has(e.tmdbId)) || traktTitleWatched.has(key);
+      if (hit) { e.watched = true; updated++; }
+    }
+    // Rewatching always implies watched
+    for (const e of DATA) { if (e.rewatching && !e.watched) { e.watched = true; updated++; } }
+
+    bar.style.width = '100%';
+    bar.style.background = 'var(--watching)';
+    saveLocal(); render();
+    status.textContent = `Pulled — ${updated} updated`;
+    status.className = 'sync-status ok';
+    info.textContent = `${traktTmdbWatched.size} movies + shows found on Trakt`;
+    showToast(`Trakt: ${updated} entries marked watched`, 'ok');
+    setTimeout(() => { row.style.display = 'none'; bar.style.background = ''; }, 5000);
+  } catch(err) {
+    status.textContent = 'Pull failed';
+    status.className = 'sync-status err';
+    row.style.display = 'none';
+  }
+}
+
+// Restore Trakt session on load
+function loadTraktAuth() {
+  const t = localStorage.getItem('traktToken');
+  const c = localStorage.getItem('traktClientId');
+  if (t && c) {
+    traktToken = t;
+    traktClientId = c;
+    document.getElementById('traktClientId').value = c;
+    document.getElementById('traktAuthStep').classList.remove('active');
+    document.getElementById('traktConnectedState').style.display = 'block';
+    loadTraktUser();
+    return true;
+  }
+  return false;
+}
+
+// ── LETTERBOXD CSV IMPORT ─────────────────────────────────────────────────────
+async function importLetterboxdCsv(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('lbImportStatus');
+  const row = document.getElementById('lbProgressRow');
+  const bar = document.getElementById('lbProgressBar');
+  const info = document.getElementById('lbSyncInfo');
+  statusEl.textContent = 'Reading CSV...';
+  row.style.display = 'block';
+  bar.style.width = '0%';
+
+  const text = await file.text();
+  const lines = text.split('
+').map(l => l.trim()).filter(Boolean);
+  if (!lines.length) { statusEl.textContent = 'Empty file'; return; }
+
+  // Parse CSV header
+  const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim().toLowerCase());
+  const col = name => headers.indexOf(name);
+  const nameCol  = col('name');
+  const yearCol  = col('year');
+
+  if (nameCol === -1) { statusEl.textContent = 'Could not find Name column — is this a watched.csv?'; return; }
+
+  let updated = 0, total = lines.length - 1;
+  for (let i = 1; i < lines.length; i++) {
+    // Simple CSV split (handles quoted fields)
+    const parts = lines[i].match(/(".*?"|[^,]+|(?<=,)(?=,)|(?<=,)$|^(?=,))/g) || lines[i].split(',');
+    const clean = p => (p||'').replace(/^"|"$/g,'').trim();
+    const title = clean(parts[nameCol]);
+    const year  = yearCol !== -1 ? clean(parts[yearCol]) : '';
+    if (!title) continue;
+
+    const normTitle = title.toLowerCase().trim();
+    const match = DATA.find(e => {
+      const eNorm = (e.title||'').toLowerCase().trim();
+      return eNorm === normTitle && (!year || (e.year||'').toString() === year.toString());
+    }) || DATA.find(e => (e.title||'').toLowerCase().trim() === normTitle);
+
+    if (match && !match.watched) { match.watched = true; updated++; }
+    if (i % 50 === 0) bar.style.width = Math.round((i / total) * 100) + '%';
+  }
+
+  bar.style.width = '100%';
+  bar.style.background = 'var(--watching)';
+  saveLocal(); render();
+  statusEl.textContent = `Done — ${updated} entries marked watched`;
+  info.textContent = `Matched from ${total} Letterboxd entries`;
+  showToast(`Letterboxd: ${updated} entries marked watched`, 'ok');
+  setTimeout(() => { row.style.display = 'none'; bar.style.background = ''; }, 5000);
+  input.value = ''; // reset file input
+}
+
 // ── SIMKL PUSH (local → Simkl) ───────────────────────────────────────────────
 async function pushToSimkl() {
   if (!simklToken) { showToast('Connect Simkl first','err'); return; }
@@ -3238,36 +3542,55 @@ async function pullFromSimkl() {
 
     showPullProgress(60);
 
-    // Build a map of simkl IDs → status
-    const watchedIds = new Set();
-    const watchingIds = new Set();
+    // Build maps: simklId → status, tmdbId → status, "title|year" → status
+    const simklWatched = new Set(), simklWatching = new Set();
+    const tmdbWatched  = new Set(), tmdbWatching  = new Set();
+    const titleWatched = new Set(), titleWatching = new Set();
 
-    const processItems = (items) => {
+    const processItems = (items, mediaKey) => {
       if (!Array.isArray(items)) return;
       for (const item of items) {
-        const id = item.show?.ids?.simkl || item.movie?.ids?.simkl || item.anime?.ids?.simkl;
-        if (!id) continue;
-        if (item.status === 'completed') watchedIds.add(id);
-        if (item.status === 'watching') watchingIds.add(id);
+        const obj = item[mediaKey] || item.show || item.movie || item.anime;
+        if (!obj) continue;
+        const simklId = obj.ids?.simkl;
+        const tmdbId  = obj.ids?.tmdb;
+        const title   = (obj.title||'').toLowerCase().trim();
+        const year    = (obj.year||'').toString();
+        const key     = title + '|' + year;
+        const isWatched  = item.status === 'completed';
+        const isWatching = item.status === 'watching';
+        if (simklId) { if (isWatched) simklWatched.add(simklId); if (isWatching) simklWatching.add(simklId); }
+        if (tmdbId)  { if (isWatched) tmdbWatched.add(tmdbId);   if (isWatching) tmdbWatching.add(tmdbId); }
+        if (title)   { if (isWatched) titleWatched.add(key);      if (isWatching) titleWatching.add(key); }
       }
     };
 
-    processItems(moviesRes?.movies || moviesRes);
-    processItems(showsRes?.shows || showsRes);
-    processItems(animeRes?.anime || animeRes);
+    processItems(moviesRes?.movies || (Array.isArray(moviesRes) ? moviesRes : []), 'movie');
+    processItems(showsRes?.shows   || (Array.isArray(showsRes)  ? showsRes  : []), 'show');
+    processItems(animeRes?.anime   || (Array.isArray(animeRes)  ? animeRes  : []), 'anime');
 
     showPullProgress(80);
 
-    // Update local data
-    let updated=0;
+    // Update local data — match by simklId, then tmdbId, then title+year
+    let updated = 0;
     for (const e of DATA) {
-      if (!e.simklId) continue;
-      if (watchedIds.has(e.simklId) && !e.watched) {
-        e.watched=true; updated++;
-      }
-      if (watchingIds.has(e.simklId) && !e.watching) {
-        e.watching=true; updated++;
-      }
+      const eTitle = (e.title||'').toLowerCase().trim();
+      const eYear  = (e.year||'').toString();
+      const eKey   = eTitle + '|' + eYear;
+
+      const isWatched  = (e.simklId && simklWatched.has(e.simklId))  || (e.tmdbId && tmdbWatched.has(e.tmdbId))  || titleWatched.has(eKey);
+      const isWatching = (e.simklId && simklWatching.has(e.simklId)) || (e.tmdbId && tmdbWatching.has(e.tmdbId)) || titleWatching.has(eKey);
+
+      // Rewatching implies watched
+      if (e.rewatching && !e.watched) { e.watched = true; updated++; continue; }
+
+      if (isWatched && !e.watched)   { e.watched  = true;  updated++; }
+      if (isWatching && !e.watching) { e.watching = true;  updated++; }
+    }
+
+    // Also mark all rewatching entries as watched regardless of Simkl
+    for (const e of DATA) {
+      if (e.rewatching && !e.watched) { e.watched = true; updated++; }
     }
 
     showPullProgress(100);
@@ -5248,7 +5571,10 @@ const EMBEDDED = [
 
 
   if (!loadLocal()) DATA = EMBEDDED;
+  // Ensure all rewatching entries are also marked watched
+  DATA.forEach(e => { if (e.rewatching) e.watched = true; });
   loadLists();
+  loadTraktAuth();
   if (loadSimklAuth()) {
     showAuthState('connected');
     updateSimklHeader();
