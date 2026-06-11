@@ -3585,6 +3585,19 @@ async function pullFromSimkl() {
     processItems(showsRes?.shows   || (Array.isArray(showsRes)  ? showsRes  : []), 'show');
     processItems(animeRes?.anime   || (Array.isArray(animeRes)  ? animeRes  : []), 'anime');
 
+    // Debug: log a sample of what Simkl returned vs what DATA has
+    console.log('[Pull] simklWatched IDs (sample):', [...simklWatched].slice(0,5));
+    console.log('[Pull] tmdbWatched IDs (sample):', [...tmdbWatched].slice(0,5));
+    console.log('[Pull] titleWatched keys (sample):', [...titleWatched].slice(0,5));
+    console.log('[Pull] DATA sample (simklId/tmdbId/title/year):', DATA.slice(0,5).map(e=>({simklId:e.simklId,tmdbId:e.tmdbId,title:e.title,year:e.year})));
+    // Check a few direct matches
+    const sampleTitle = [...titleWatched][0];
+    const sampleTmdb  = [...tmdbWatched][0];
+    console.log('[Pull] Sample title key from Simkl:', sampleTitle);
+    console.log('[Pull] Does any DATA entry match it?', DATA.some(e => ((e.title||'').toLowerCase().trim()+'|'+(e.year||'').toString()) === sampleTitle));
+    console.log('[Pull] Sample tmdbId from Simkl:', sampleTmdb);
+    console.log('[Pull] Does any DATA entry match it?', DATA.some(e => e.tmdbId === sampleTmdb));
+
     showPullProgress(80);
 
     // Update local data — match by simklId, then tmdbId, then title+year
