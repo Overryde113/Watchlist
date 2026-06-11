@@ -325,7 +325,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.7</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.10</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -420,11 +420,12 @@ tr:hover .action-cell{opacity:1}
       <button class="btn btn-trakt btn-sm" onclick="startTraktAuth()">🔗 Connect Trakt Account</button>
       <span id="traktAuthStatus" class="sync-status" style="margin-left:.5rem;font-size:.75rem"></span>
       <div id="traktPinWrap" style="display:none;margin-top:.75rem">
-        <p style="font-size:.82rem;margin-bottom:.5rem">A Trakt authorization page has opened. Enter the code shown there:</p>
-        <div style="display:flex;gap:.5rem">
-          <input type="text" id="traktPinInput" placeholder="Enter code from Trakt..." style="font-size:.9rem;letter-spacing:.1em;text-transform:uppercase;width:160px">
-          <button class="btn btn-trakt btn-sm" onclick="submitTraktPin()">Connect</button>
+        <p style="font-size:.82rem;margin-bottom:.5rem">1. Go to <a id="traktActivateLink" href="https://trakt.tv/activate" target="_blank" style="color:var(--trakt)">trakt.tv/activate ↗</a><br>2. Enter this code:</p>
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:.5rem">
+          <span id="traktUserCode" style="font-size:1.3rem;font-weight:700;letter-spacing:.18em;color:var(--trakt);font-family:monospace;background:var(--surface2);padding:.3rem .7rem;border-radius:6px"></span>
+          <button class="btn btn-ghost btn-sm" onclick="startTraktAuth()">↻ New Code</button>
         </div>
+        <p style="font-size:.75rem;color:var(--muted)">The app will connect automatically after you approve it on Trakt. This code expires in ~10 minutes.</p>
       </div>
     </div>
     <div id="traktConnectedState" style="display:none">
@@ -3191,9 +3192,13 @@ async function startTraktAuth() {
     });
     const d = await res.json();
     window.open(d.verification_url, '_blank');
-    document.getElementById('traktPinInput').value = d.user_code || '';
+    // Show the actual verification URL so the user can go there manually
+    const traktActivateLink = document.getElementById('traktActivateLink');
+    if (traktActivateLink) { traktActivateLink.href = d.verification_url; traktActivateLink.textContent = d.verification_url + ' ↗'; traktActivateLink.style.display = 'inline'; }
+    const ucEl = document.getElementById('traktUserCode');
+    if (ucEl) ucEl.textContent = d.user_code || '';
     document.getElementById('traktPinWrap').style.display = 'block';
-    document.getElementById('traktAuthStatus').textContent = `Code: ${d.user_code}`;
+    document.getElementById('traktAuthStatus').textContent = '';
     // Auto-poll
     window._traktDeviceCode = d.device_code;
     window._traktPollInterval = d.interval || 5;
@@ -3361,21 +3366,32 @@ async function importLetterboxdCsv(input) {
 
   if (nameCol === -1) { statusEl.textContent = 'Could not find Name column — is this a watched.csv?'; return; }
 
+  // Normalize titles: lowercase, collapse whitespace, replace unicode dashes with hyphen
+  const normTitle = t => (t||'').toLowerCase().trim()
+    .replace(/[\u2013\u2014\u2015]/g, '-')   // em/en dashes → hyphen
+    .replace(/[^a-z0-9\s\-:'&]/g, '')           // strip special chars
+    .replace(/\s+/g, ' ').trim();
+
+  // Pre-build a map from DATA for fast lookup
+  const dataByTitleYear = new Map();
+  const dataByTitle = new Map();
+  for (const e of DATA) {
+    const nt = normTitle(e.title);
+    const key = nt + '|' + (e.year||'');
+    if (!dataByTitleYear.has(key)) dataByTitleYear.set(key, e);
+    if (!dataByTitle.has(nt)) dataByTitle.set(nt, e);
+  }
+
   let updated = 0, total = lines.length - 1;
   for (let i = 1; i < lines.length; i++) {
-    // Simple CSV split (handles quoted fields)
-    const parts = lines[i].match(/(".*?"|[^,]+|(?<=,)(?=,)|(?<=,)$|^(?=,))/g) || lines[i].split(',');
+    const parts = lines[i].match(/(".*?"|[^,]+)/g) || lines[i].split(',');
     const clean = p => (p||'').replace(/^"|"$/g,'').trim();
     const title = clean(parts[nameCol]);
     const year  = yearCol !== -1 ? clean(parts[yearCol]) : '';
     if (!title) continue;
 
-    const normTitle = title.toLowerCase().trim();
-    const match = DATA.find(e => {
-      const eNorm = (e.title||'').toLowerCase().trim();
-      return eNorm === normTitle && (!year || (e.year||'').toString() === year.toString());
-    }) || DATA.find(e => (e.title||'').toLowerCase().trim() === normTitle);
-
+    const nt = normTitle(title);
+    const match = dataByTitleYear.get(nt + '|' + year) || dataByTitle.get(nt);
     if (match && !match.watched) { match.watched = true; updated++; }
     if (i % 50 === 0) bar.style.width = Math.round((i / total) * 100) + '%';
   }
