@@ -325,7 +325,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.14</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.15</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -3579,9 +3579,9 @@ async function pullFromSimkl() {
         const key     = title + '|' + year;
         const isWatched  = item.status === 'completed';
         const isWatching = item.status === 'watching';
-        if (simklId) { if (isWatched) simklWatched.add(simklId); if (isWatching) simklWatching.add(simklId); }
-        if (tmdbId)  { if (isWatched) tmdbWatched.add(tmdbId);   if (isWatching) tmdbWatching.add(tmdbId); }
-        if (title)   { if (isWatched) titleWatched.add(key);      if (isWatching) titleWatching.add(key); }
+        if (simklId) { if (isWatched) simklWatched.add(+simklId); if (isWatching) simklWatching.add(+simklId); }
+        if (tmdbId)  { if (isWatched) tmdbWatched.add(+tmdbId);   if (isWatching) tmdbWatching.add(+tmdbId); }
+        if (title)   { if (isWatched) titleWatched.add(key);       if (isWatching) titleWatching.add(key); }
       }
     };
 
@@ -3611,8 +3611,8 @@ async function pullFromSimkl() {
       const eYear  = (e.year||'').toString();
       const eKey   = eTitle + '|' + eYear;
 
-      const isWatched  = (e.simklId && simklWatched.has(e.simklId))  || (e.tmdbId && tmdbWatched.has(e.tmdbId))  || titleWatched.has(eKey);
-      const isWatching = (e.simklId && simklWatching.has(e.simklId)) || (e.tmdbId && tmdbWatching.has(e.tmdbId)) || titleWatching.has(eKey);
+      const isWatched  = (e.simklId && simklWatched.has(+e.simklId))  || (e.tmdbId && tmdbWatched.has(+e.tmdbId))  || titleWatched.has(eKey);
+      const isWatching = (e.simklId && simklWatching.has(+e.simklId)) || (e.tmdbId && tmdbWatching.has(+e.tmdbId)) || titleWatching.has(eKey);
 
       // Rewatching implies watched
       if (e.rewatching && !e.watched) { e.watched = true; updated++; continue; }
