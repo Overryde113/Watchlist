@@ -325,7 +325,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.15</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.16</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -1847,7 +1847,7 @@ tr:hover .action-cell{opacity:1}
     <div class="form-group"><label>TMDB ID <span style="font-size:.68rem;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(override for Force Refetch)</span></label><input type="number" id="editTmdbId" placeholder="e.g. 61889 — leave blank to auto-search"></div>
     <div class="form-group">
       <label>Franchise / Universe</label>
-      <input type="text" id="editFranchise" placeholder="Auto-detected or enter manually">
+      <input type="text" id="editFranchise" placeholder="Auto-detected · comma-separate for multiple, e.g. Freddy, Jason">
     </div>
     <div class="form-group">
       <label>Rating</label>
@@ -2097,16 +2097,39 @@ const FRANCHISE_MAP = {
 function getFranchise(title) {
   if (!title) return null;
   const t = title.toLowerCase();
+  const matches = [];
   for (const [franchise, data] of Object.entries(FRANCHISE_MAP)) {
-    if (data.keywords.some(k => t.includes(k))) return franchise;
+    if (data.keywords.some(k => t.includes(k))) matches.push(franchise);
   }
-  return null;
+  return matches.length ? matches[0] : null; // primary for backward compat
+}
+
+function getFranchises(title, manualFranchise) {
+  // Returns array of all franchises for an entry
+  const manual = manualFranchise
+    ? (Array.isArray(manualFranchise) ? manualFranchise : manualFranchise.split(',').map(s=>s.trim()).filter(Boolean))
+    : [];
+  if (manual.length) return manual;
+  if (!title) return [];
+  const t = title.toLowerCase();
+  const matches = [];
+  for (const [franchise, data] of Object.entries(FRANCHISE_MAP)) {
+    if (data.keywords.some(k => t.includes(k))) matches.push(franchise);
+  }
+  return matches;
 }
 
 function getFranchiseEmoji(title, manualFranchise) {
-  const name = manualFranchise || getFranchise(title);
-  if (!name) return null;
-  return FRANCHISE_MAP[name]?.emoji || '🎬';
+  const franchises = getFranchises(title, manualFranchise);
+  if (!franchises.length) return null;
+  // Return emoji for first franchise, or 🎬 if not in map
+  return FRANCHISE_MAP[franchises[0]]?.emoji || '🎬';
+}
+
+function getFranchiseEmojis(title, manualFranchise) {
+  const franchises = getFranchises(title, manualFranchise);
+  if (!franchises.length) return '';
+  return franchises.map(f => FRANCHISE_MAP[f]?.emoji || '🎬').join('');
 }
 
 
@@ -2154,8 +2177,8 @@ function getFiltered() {
     if (filters.status === 'find' && !e.find) return false;
     if (filters.status === 'unreleased' && !e.unreleased) return false;
     if (filters.status === 'watched' && !e.watched) return false;
-    if (filters.status === 'franchise' && !getFranchise(e.title)) return false;
-    if (filters.franchise && getFranchise(e.title) !== filters.franchise && e.franchise !== filters.franchise) return false;
+    if (filters.status === 'franchise' && !getFranchises(e.title, e.franchise).length) return false;
+    if (filters.franchise && !getFranchises(e.title, e.franchise).includes(filters.franchise)) return false;
     // Rating filter
     const ratingFilter = document.getElementById('filterRating')?.value;
     if (ratingFilter === 'rated' && !e.rating) return false;
@@ -2208,7 +2231,7 @@ function getFiltered() {
   });
   else if (sort === 'people') arr.sort((a,b) => (a.people||[]).join().localeCompare((b.people||[]).join()));
   else if (sort === 'people-desc') arr.sort((a,b) => (b.people||[]).join().localeCompare((a.people||[]).join()));
-  else if (sort === 'franchise') arr.sort((a,b) => (getFranchise(a.title)||'zzz').localeCompare(getFranchise(b.title)||'zzz'));
+  else if (sort === 'franchise') arr.sort((a,b) => (getFranchises(a.title,a.franchise)[0]||'zzz').localeCompare(getFranchises(b.title,b.franchise)[0]||'zzz'));
   else if (sort === 'rating-desc') arr.sort((a,b) => (b.rating||0)-(a.rating||0));
   else if (sort === 'rating-asc') arr.sort((a,b) => (a.rating||0)-(b.rating||0));
   else if (sort === 'genre') arr.sort((a,b) => ((a.genres||[])[0]||'zzz').localeCompare((b.genres||[])[0]||'zzz'));
@@ -2260,7 +2283,7 @@ function render() {
         e.watched?`<span class="dot dot-watched" title="Watched"></span>`:'',
         e.find?`<span class="dot dot-find" title="No Platform"></span>`:'',
         e.unreleased?`<span class="dot dot-unreleased" title="Upcoming"></span>`:'',
-        franchise?`<span title="${franchise} · ${getFranchiseEmoji(e.title,e.franchise)}" style="font-size:.8rem;line-height:1">${getFranchiseEmoji(e.title,e.franchise)}</span>`:''  
+        getFranchises(e.title,e.franchise).length?`<span title="${getFranchises(e.title,e.franchise).join(', ')}" style="font-size:.8rem;line-height:1">${getFranchiseEmojis(e.title,e.franchise)}</span>`:''  
       ].join('');
       const plats = e.platform ? e.platform.split(',').map(p=>p.trim()).filter(Boolean)
         .map(p=>`<span class="platform-badge ${getPlatClass(p)}">${p}</span>`).join(' ') : '';
@@ -2361,8 +2384,7 @@ function buildFranchiseDropdown() {
   // Get all franchises present in DATA
   const present = new Set();
   DATA.forEach(e => {
-    const f = e.franchise || getFranchise(e.title);
-    if (f) present.add(f);
+    getFranchises(e.title, e.franchise).forEach(f => present.add(f));
   });
   // Build sorted list
   const sorted = Array.from(present).sort();
@@ -2920,7 +2942,7 @@ function saveEdit() {
   if (rawTmdb) DATA[idx].tmdbId = parseInt(rawTmdb, 10);
   DATA[idx].watching=isChecked('ckWatching'); DATA[idx].rewatching=isChecked('ckRewatching');
   DATA[idx].watched=isChecked('ckWatched'); DATA[idx].find=isChecked('ckFind'); DATA[idx].unreleased=isChecked('ckUnreleased');
-  DATA[idx].franchise=document.getElementById('editFranchise').value.trim();
+  DATA[idx].franchise=document.getElementById('editFranchise').value.trim(); // comma-separated for multi-franchise
   DATA[idx].people=Array.from(document.querySelectorAll('#peopleCheckboxes .checkbox-item.checked')).map(el=>el.dataset.person);
   DATA[idx].rating = _editRating;
   // Metadata fields
@@ -3593,14 +3615,15 @@ async function pullFromSimkl() {
     console.log('[Pull] simklWatched IDs (sample):', [...simklWatched].slice(0,5));
     console.log('[Pull] tmdbWatched IDs (sample):', [...tmdbWatched].slice(0,5));
     console.log('[Pull] titleWatched keys (sample):', [...titleWatched].slice(0,5));
-    console.log('[Pull] DATA sample (simklId/tmdbId/title/year):', DATA.slice(0,5).map(e=>({simklId:e.simklId,tmdbId:e.tmdbId,title:e.title,year:e.year})));
-    // Check a few direct matches
-    const sampleTitle = [...titleWatched][0];
-    const sampleTmdb  = [...tmdbWatched][0];
-    console.log('[Pull] Sample title key from Simkl:', sampleTitle);
-    console.log('[Pull] Does any DATA entry match it?', DATA.some(e => ((e.title||'').toLowerCase().trim()+'|'+(e.year||'').toString()) === sampleTitle));
-    console.log('[Pull] Sample tmdbId from Simkl:', sampleTmdb);
-    console.log('[Pull] Does any DATA entry match it?', DATA.some(e => e.tmdbId === sampleTmdb));
+    // Check tmdb 539 specifically (Psycho)
+    const t539 = DATA.find(e => e.tmdbId === 539 || e.tmdbId === '539');
+    console.log('[Pull] DATA entry with tmdbId 539:', t539 ? {title:t539.title, tmdbId:t539.tmdbId, typeof:typeof t539.tmdbId, watched:t539.watched} : 'NOT FOUND');
+    console.log('[Pull] tmdbWatched.has(539):', tmdbWatched.has(539));
+    console.log('[Pull] tmdbWatched.has("539"):', tmdbWatched.has('539'));
+    // Sample of DATA tmdbIds
+    console.log('[Pull] DATA tmdbId types (first 5):', DATA.slice(0,5).map(e=>({title:e.title,tmdbId:e.tmdbId,type:typeof e.tmdbId,watched:e.watched})));
+    // How many DATA entries already watched?
+    console.log('[Pull] Already watched in DATA:', DATA.filter(e=>e.watched).length);
 
     showPullProgress(80);
 
@@ -4198,7 +4221,7 @@ function renderStats() {
   const totalRuntime = DATA.filter(e=>e.runtime).reduce((s,e)=>s+(e.runtime||0),0);
   const hrs = Math.floor(totalRuntime/60);
   const franchiseCounts = {};
-  DATA.forEach(e=>{ const f=e.franchise||getFranchise(e.title); if(f) franchiseCounts[f]=(franchiseCounts[f]||0)+1; });
+  DATA.forEach(e=>{ getFranchises(e.title,e.franchise).forEach(f=>{ franchiseCounts[f]=(franchiseCounts[f]||0)+1; }); });
   const topFranchises = Object.entries(franchiseCounts).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const platformCounts = {};
   DATA.forEach(e=>{ if(e.platform){ e.platform.split(',').forEach(p=>{ p=p.trim(); if(p) platformCounts[p]=(platformCounts[p]||0)+1; }); }});
