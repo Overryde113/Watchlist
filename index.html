@@ -328,7 +328,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.19</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.20</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -660,6 +660,7 @@ tr:hover .action-cell{opacity:1}
       </select>
       <button class="btn btn-ghost" onclick="addManually()">+ Manual</button>
       <button class="btn btn-ghost" onclick="exportTxt()">⬇ Export</button>
+      <button class="btn btn-ghost" onclick="copyForQueue()" title="Copy a clean title list to paste into Queue's import">📋 Copy for Queue</button>
       <button class="btn btn-ghost" onclick="exportToFile()" title="Bake current data into the HTML file for GitHub">💾 Save to File</button>
       <button class="btn btn-ghost" id="selectModeBtn" onclick="toggleSelectMode()" title="Select entries to batch-refetch">☑ Select</button>
       <button class="btn btn-ghost" id="backfillBtn" onclick="backfillMetadata(false)" title="Fetch missing metadata for entries that need it">🔄 Backfill Metadata</button>
@@ -4365,6 +4366,37 @@ async function backfillMetadata(force = false) {
 }
 
 // ── EXPORT .TXT ───────────────────────────────────────────────────────────────
+// ── COPY FOR QUEUE ───────────────────────────────────────────────────────────
+async function copyForQueue() {
+  // Clean title list for pasting into Queue's "import a list" feature.
+  // Only unwatched entries (things still to watch), one per line, "Title (Year)".
+  const lines = DATA
+    .filter(e => !e.watched)
+    .map(e => e.year ? `${e.title} (${e.year})` : e.title);
+
+  const text = lines.join('\n');
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast(`Copied ${lines.length} titles for Queue!`, 'ok');
+  } catch (err) {
+    // Fallback for browsers/contexts that block clipboard API
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      showToast(`Copied ${lines.length} titles for Queue!`, 'ok');
+    } catch (e2) {
+      showToast('Could not copy — clipboard blocked', 'err');
+    }
+    document.body.removeChild(ta);
+  }
+}
+
 function exportTxt() {
   const KEY='🔗=Linkin, 🚢=Noah, ✝️=Josh, 🅰️=Ari, 🍞=T, Ⓜ️=Mama, 🅱️=Brent, 🔵=Brooklin, ❌=Briley, ⭐=Watching, 🟩=Rewatching, 🎥=Movie, 📺=Show, 🎌=Anime, 🔜=Unreleased/Coming Soon, \t\t\t(FIND)=Platform Unknown';
   const PE={'Josh':'✝️','Ari':'🅰️','Mama':'Ⓜ️','Brent':'🅱️','Brooklin':'🔵','Briley':'❌','Noah':'🚢','Linkin':'🔗','T':'🍞','Anton':'🅰️'};
