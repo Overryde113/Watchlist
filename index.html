@@ -329,7 +329,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.23</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.24</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -4759,7 +4759,7 @@ function openCalDetail(idx) {
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
         ${inWatchlist
           ? `<button class="btn btn-ghost btn-sm" disabled style="opacity:.5">✓ Already in watchlist</button>`
-          : `<button class="btn btn-primary btn-sm" onclick="addCalEntryToWatchlist(${r.id||'null'},'${(r.title||'').replace(/'/g,"\'")}','${r.type||'🎥'}','${r.poster||''}','${r.date||''}')">+ Add to Watchlist</button>`}
+          : `<button class="btn btn-primary btn-sm" onclick="addCalEntryToWatchlist(${idx})">+ Add to Watchlist</button>`}
       </div>
     </div>`;
 
@@ -4795,12 +4795,14 @@ function openCalDetail(idx) {
   }
 }
 
-function addCalEntryToWatchlist(tmdbId, title, type, poster, date) {
-  const year = (date||'').substring(0,4);
+function addCalEntryToWatchlist(idx) {
+  const r = (window._calReleases || [])[idx];
+  if (!r) return;
+  const year = (r.date||'').substring(0,4);
   const newEntry = {
-    type, title, platform: '', watching: false, rewatching: false,
+    type: r.type || '🎥', title: r.title, platform: '', watching: false, rewatching: false,
     people: [], find: false, unreleased: true,
-    tmdbId: tmdbId || null, year, poster: poster || '',
+    tmdbId: r.id || null, year, poster: r.poster || '',
     genres: [], mpaa: null
   };
   DATA.unshift(newEntry);
@@ -4817,7 +4819,7 @@ function addCalEntryToWatchlist(tmdbId, title, type, poster, date) {
       btn.classList.add('btn-ghost');
     }
   }
-  showToast(`"${title}" added to watchlist`, 'ok');
+  showToast(`"${r.title}" added to watchlist`, 'ok');
 }
 
 // ── STATS ────────────────────────────────────────────────────────────────────
