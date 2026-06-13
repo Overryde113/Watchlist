@@ -329,7 +329,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.21</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.23</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -4621,20 +4621,65 @@ async function renderCalendar() {
 
   let releases = [];
   try {
-    const [movRes, tvRes] = await Promise.all([
-      fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&primary_release_date.gte=${startDate}&primary_release_date.lte=${endStr}&sort_by=popularity.desc&page=1`).then(r=>r.json()),
-      fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&first_air_date.gte=${startDate}&first_air_date.lte=${endStr}&sort_by=popularity.desc&page=1`).then(r=>r.json()),
-    ]);
-    (movRes.results||[]).forEach(m => releases.push({ date: m.release_date, title: m.title, poster: m.poster_path, type:'🎥', id:m.id }));
-    (tvRes.results||[]).forEach(t => releases.push({ date: t.first_air_date, title: t.name, poster: t.poster_path, type:'📺', id:t.id }));
+    // Fetch multiple pages from TMDB discover since each page only returns 20 results
+    const movPages = [], tvPages = [];
+    for (let p = 1; p <= 3; p++) {
+      movPages.push(fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&primary_release_date.gte=${startDate}&primary_release_date.lte=${endStr}&sort_by=popularity.desc&with_original_language=en&page=${p}`).then(r=>r.json()));
+      tvPages.push(fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&first_air_date.gte=${startDate}&first_air_date.lte=${endStr}&sort_by=popularity.desc&with_original_language=en&page=${p}`).then(r=>r.json()));
+    }
+    const [movResults, tvResults] = await Promise.all([Promise.all(movPages), Promise.all(tvPages)]);
+
+    const seenMovieIds = new Set(), seenTvIds = new Set();
+    for (const movRes of movResults) {
+      if (movRes.page > (movRes.total_pages||1)) continue;
+      (movRes.results||[]).forEach(m => {
+        if (seenMovieIds.has(m.id)) return;
+        seenMovieIds.add(m.id);
+        releases.push({ date: m.release_date, title: m.title, poster: m.poster_path, type:'🎥', id:m.id });
+      });
+    }
+    for (const tvRes of tvResults) {
+      if (tvRes.page > (tvRes.total_pages||1)) continue;
+      (tvRes.results||[]).forEach(t => {
+        if (seenTvIds.has(t.id)) return;
+        seenTvIds.add(t.id);
+        releases.push({ date: t.first_air_date, title: t.name, poster: t.poster_path, type:'📺', id:t.id });
+      });
+    }
   } catch(e) {}
 
-  // Also include items from user's own watchlist that have a release date this month
-  DATA.forEach(e => {
-    if (e.year && parseInt(e.year) === year && e.unreleased) {
-      releases.push({ date: `${year}-${String(month+1).padStart(2,'0')}-01`, title: e.title, poster: e.poster, type: e.type, id: e.tmdbId, inWatchlist: true });
-    }
-  });
+  // Also include items from user's own watchlist with a release date this month.
+  // Fetch the precise date from TMDB (cached) so they land on the correct day instead of always day 1.
+  const watchlistThisMonth = DATA.filter(e => e.year && parseInt(e.year) === year && (e.unreleased || e.find));
+  if (watchlistThisMonth.length) {
+    if (!window._calDateCache) window._calDateCache = {};
+    const dateFetches = watchlistThisMonth.map(async e => {
+      if (!e.tmdbId) return null;
+      const cacheKey = `${e.type}-${e.tmdbId}`;
+      let dateStr = window._calDateCache[cacheKey];
+      if (dateStr === undefined) {
+        try {
+          const tmdbType = e.type === '🎥' ? 'movie' : 'tv';
+          const detail = await fetch(`https://api.themoviedb.org/3/${tmdbType}/${e.tmdbId}?api_key=${TMDB_KEY}`).then(r=>r.json());
+          dateStr = detail.release_date || detail.first_air_date || null;
+        } catch(err) { dateStr = null; }
+        window._calDateCache[cacheKey] = dateStr;
+      }
+      // Only include if the precise date falls in this month/year
+      if (dateStr && dateStr.substring(0,4) == year && parseInt(dateStr.substring(5,7)) === month+1) {
+        return { date: dateStr, title: e.title, poster: e.poster, type: e.type, id: e.tmdbId, inWatchlist: true };
+      }
+      return null;
+    });
+    const resolved = await Promise.all(dateFetches);
+    resolved.forEach(r => {
+      if (!r) return;
+      // If this title is already in the discover results, just tag it as inWatchlist instead of duplicating
+      const existing = releases.find(rel => rel.id === r.id && rel.type === r.type);
+      if (existing) existing.inWatchlist = true;
+      else releases.push(r);
+    });
+  }
 
   // Group by day
   const byDay = {};
