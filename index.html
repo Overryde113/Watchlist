@@ -164,18 +164,20 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.94);backdrop
 .cal-release.cal-lg .cal-release-title{font-size:.88rem;line-height:1.35;align-self:center}
 .cal-release.cal-lg .cal-release-inlist{font-size:.68rem;align-self:center}
 .cal-release.cal-md{gap:.35rem;padding:.2rem;margin-bottom:.25rem}
+.cal-release.cal-search-match{background:color-mix(in srgb,var(--accent) 18%,transparent);box-shadow:0 0 0 1px var(--accent);}
+.cal-release.cal-search-dim{opacity:.25}
 .cal-release.cal-md img{width:30px;height:45px;border-radius:3px}
 .cal-release.cal-md .cal-release-title{font-size:.7rem;line-height:1.3;align-self:center}
 .cal-release.cal-md .cal-release-inlist{font-size:.6rem;align-self:center}
 .cal-release img.cal-poster-zoom{cursor:zoom-in}
 .cal-detail-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.cal-detail-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.4rem;max-width:380px;width:calc(100% - 2rem);max-height:80vh;overflow-y:auto;position:relative}
-.cal-detail-box h3{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em;margin:0 0 .25rem;padding-right:1.5rem}
-.cal-detail-meta{font-size:.75rem;color:var(--muted);margin-bottom:.8rem}
-.cal-detail-body{display:flex;gap:.9rem;margin-bottom:.85rem}
-.cal-detail-poster{width:80px;height:120px;object-fit:cover;border-radius:7px;flex-shrink:0;background:var(--surface2)}
-.cal-detail-info{flex:1;min-width:0;font-size:.78rem;line-height:1.6;color:var(--text)}
-.cal-detail-close{position:absolute;top:.75rem;right:.9rem;background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;line-height:1;padding:.1rem .3rem;border-radius:4px}
+.cal-detail-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2.5rem;max-width:840px;width:calc(100% - 3rem);max-height:92vh;overflow-y:auto;position:relative}
+.cal-detail-box h3{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:.06em;margin:0 0 .5rem;padding-right:2.6rem;line-height:1.1}
+.cal-detail-meta{font-size:1rem;color:var(--muted);margin-bottom:1.5rem}
+.cal-detail-body{display:flex;gap:2rem;margin-bottom:1.4rem}
+.cal-detail-poster{width:240px;height:360px;object-fit:cover;border-radius:12px;flex-shrink:0;background:var(--surface2)}
+.cal-detail-info{flex:1;min-width:0;font-size:1.08rem;line-height:1.75;color:var(--text)}
+.cal-detail-close{position:absolute;top:1.3rem;right:1.4rem;background:none;border:none;color:var(--muted);font-size:1.8rem;cursor:pointer;line-height:1;padding:.2rem .4rem;border-radius:4px}
 .cal-detail-close:hover{color:var(--text)}
 .cal-loading{text-align:center;padding:3rem;color:var(--muted);font-size:.85rem}
 
@@ -340,7 +342,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.25</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.27</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -1887,6 +1889,12 @@ tr:hover .action-cell{opacity:1}
       </div>
     </div>
     <div class="cal-loading" id="calLoading" style="display: none;">Loading releases...</div>
+    <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem;flex-wrap:wrap">
+      <input type="text" id="calSearchInput" placeholder="Search title, actor, or director..." style="flex:1;min-width:200px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;padding:.5rem .8rem;outline:none" onkeydown="if(event.key==='Enter')runCalSearch()">
+      <button class="btn btn-ghost btn-sm" onclick="runCalSearch()">🔍 Search</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearCalSearch()" id="calSearchClearBtn" style="display:none">✕ Clear</button>
+      <span id="calSearchStatus" style="font-size:.75rem;color:var(--muted)"></span>
+    </div>
     <div id="calWrap" style="display: block;">
       <div class="cal-grid" id="calGrid"><div class="cal-day-header">Sun</div><div class="cal-day-header">Mon</div><div class="cal-day-header">Tue</div><div class="cal-day-header">Wed</div><div class="cal-day-header">Thu</div><div class="cal-day-header">Fri</div><div class="cal-day-header">Sat</div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day" style="min-height:200px">
       <div class="cal-day-num">1 <span style="color:var(--muted);font-size:.58rem;font-weight:400">5</span></div>
@@ -4533,6 +4541,12 @@ let _calDate = new Date();
 function calNav(dir) {
   if (dir === 0) _calDate = new Date();
   else _calDate = new Date(_calDate.getFullYear(), _calDate.getMonth() + dir, 1);
+  const searchInput = document.getElementById('calSearchInput');
+  if (searchInput) searchInput.value = '';
+  const statusEl = document.getElementById('calSearchStatus');
+  if (statusEl) statusEl.textContent = '';
+  const clearBtn = document.getElementById('calSearchClearBtn');
+  if (clearBtn) clearBtn.style.display = 'none';
   renderCalendar();
 }
 
@@ -4554,8 +4568,9 @@ async function renderCalendar() {
     // Fetch multiple pages from TMDB discover since each page only returns 20 results
     const movPages = [], tvPages = [];
     for (let p = 1; p <= 3; p++) {
-      movPages.push(fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&primary_release_date.gte=${startDate}&primary_release_date.lte=${endStr}&sort_by=popularity.desc&with_original_language=en&page=${p}`).then(r=>r.json()));
-      tvPages.push(fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&first_air_date.gte=${startDate}&first_air_date.lte=${endStr}&sort_by=popularity.desc&with_original_language=en&page=${p}`).then(r=>r.json()));
+      // Exclude Documentary (genre 99), exclude short films (<40min runtime), restrict to English-speaking production countries
+      movPages.push(fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&primary_release_date.gte=${startDate}&primary_release_date.lte=${endStr}&sort_by=popularity.desc&with_original_language=en&without_genres=99&with_runtime.gte=40&with_origin_country=US|GB|CA|AU|IE|NZ&page=${p}`).then(r=>r.json()));
+      tvPages.push(fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&first_air_date.gte=${startDate}&first_air_date.lte=${endStr}&sort_by=popularity.desc&with_original_language=en&without_genres=99&with_origin_country=US|GB|CA|AU|IE|NZ&page=${p}`).then(r=>r.json()));
     }
     const [movResults, tvResults] = await Promise.all([Promise.all(movPages), Promise.all(tvPages)]);
 
@@ -4650,7 +4665,7 @@ async function renderCalendar() {
         const imgEl = r.poster
           ? `<img class="cal-poster-zoom" src="${posterThumb}" loading="lazy" data-src="${posterFull}" data-title="${escHtml(r.title)}" onclick="event.stopPropagation();openLightbox(this.dataset.src,this.dataset.title)">`
           : `<span style="font-size:.75rem;line-height:30px">${r.type||'🎬'}</span>`;
-        return `<div class="cal-release ${sizeClass}" onclick="openCalDetail(${idx})">
+        return `<div class="cal-release ${sizeClass}" data-idx="${idx}" onclick="openCalDetail(${idx})">
           ${imgEl}
           <span class="cal-release-title">${escHtml(r.title)}</span>
           ${r.inWatchlist?'<span class="cal-release-inlist">✓ list</span>':''}
@@ -4662,6 +4677,136 @@ async function renderCalendar() {
   document.getElementById('calGrid').innerHTML = html;
   document.getElementById('calLoading').style.display='none';
   document.getElementById('calWrap').style.display='block';
+}
+
+// ── CALENDAR SEARCH ──────────────────────────────────────────────────────────
+async function runCalSearch() {
+  const q = document.getElementById('calSearchInput').value.trim();
+  const statusEl = document.getElementById('calSearchStatus');
+  const clearBtn = document.getElementById('calSearchClearBtn');
+  if (!q) { clearCalSearch(); return; }
+
+  const releases = window._calReleases || [];
+  const normQ = q.toLowerCase();
+  const matchedIdxs = new Set();
+
+  // 1. Title match (instant, client-side)
+  releases.forEach((r, idx) => {
+    if ((r.title || '').toLowerCase().includes(normQ)) matchedIdxs.add(idx);
+  });
+
+  statusEl.textContent = 'Searching cast & crew...';
+
+  // 2. Actor/director match via TMDB person search + discover
+  try {
+    const personRes = await fetch(`https://api.themoviedb.org/3/search/person?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&page=1`).then(r=>r.json());
+    const person = (personRes.results || [])[0];
+    if (person) {
+      const year = _calDate.getFullYear();
+      const month = _calDate.getMonth();
+      const startDate = `${year}-${String(month+1).padStart(2,'0')}-01`;
+      const endDate = new Date(year, month+1, 0);
+      const endStr = `${year}-${String(month+1).padStart(2,'0')}-${endDate.getDate()}`;
+
+      const [castMov, castTv, crewMov, crewTv] = await Promise.all([
+        fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_cast=${person.id}&primary_release_date.gte=${startDate}&primary_release_date.lte=${endStr}&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
+        fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&with_cast=${person.id}&first_air_date.gte=${startDate}&first_air_date.lte=${endStr}&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
+        fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_crew=${person.id}&primary_release_date.gte=${startDate}&primary_release_date.lte=${endStr}&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
+        fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&with_crew=${person.id}&first_air_date.gte=${startDate}&first_air_date.lte=${endStr}&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
+      ]);
+
+      const personMatches = [
+        ...(castMov.results||[]).map(m => ({date:m.release_date, title:m.title, poster:m.poster_path, type:'🎥', id:m.id})),
+        ...(castTv.results||[]).map(t => ({date:t.first_air_date, title:t.name, poster:t.poster_path, type:'📺', id:t.id})),
+        ...(crewMov.results||[]).map(m => ({date:m.release_date, title:m.title, poster:m.poster_path, type:'🎥', id:m.id})),
+        ...(crewTv.results||[]).map(t => ({date:t.first_air_date, title:t.name, poster:t.poster_path, type:'📺', id:t.id})),
+      ];
+
+      // Merge into _calReleases, matching by id+type to avoid duplicates
+      for (const pm of personMatches) {
+        let existingIdx = releases.findIndex(r => r.id === pm.id && r.type === pm.type);
+        if (existingIdx === -1) {
+          releases.push(pm);
+          existingIdx = releases.length - 1;
+        }
+        matchedIdxs.add(existingIdx);
+      }
+
+      // If new releases were added, the grid needs rebuilding
+      if (personMatches.some(pm => !window._calReleases.includes(pm))) {
+        // releases array was mutated in place (same reference), rebuild grid to include new entries
+        rebuildCalGridWithReleases(releases);
+      }
+    }
+  } catch(e) { /* ignore person search errors */ }
+
+  // Apply highlight/dim classes
+  document.querySelectorAll('.cal-release').forEach(el => {
+    const idx = +el.dataset.idx;
+    el.classList.remove('cal-search-match','cal-search-dim');
+    if (matchedIdxs.has(idx)) el.classList.add('cal-search-match');
+    else el.classList.add('cal-search-dim');
+  });
+
+  clearBtn.style.display = 'inline-block';
+  statusEl.textContent = matchedIdxs.size
+    ? `${matchedIdxs.size} match${matchedIdxs.size===1?'':'es'} found`
+    : 'No matches found';
+}
+
+function clearCalSearch() {
+  document.getElementById('calSearchInput').value = '';
+  document.getElementById('calSearchStatus').textContent = '';
+  document.getElementById('calSearchClearBtn').style.display = 'none';
+  document.querySelectorAll('.cal-release').forEach(el => {
+    el.classList.remove('cal-search-match','cal-search-dim');
+  });
+}
+
+// Rebuilds the calendar grid using an updated releases array (used when search adds new entries)
+function rebuildCalGridWithReleases(releases) {
+  const year = _calDate.getFullYear();
+  const month = _calDate.getMonth();
+  const byDay = {};
+  releases.forEach((r, idx) => {
+    const d = parseInt((r.date||'').split('-')[2]);
+    if (!d) return;
+    if (!byDay[d]) byDay[d] = [];
+    byDay[d].push({...r, _idx: idx});
+  });
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear()===year && today.getMonth()===month;
+
+  let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-day-header">${d}</div>`).join('');
+  for (let i=0;i<firstDay;i++) html += '<div class="cal-day empty"></div>';
+  for (let d=1;d<=daysInMonth;d++) {
+    const isToday = isCurrentMonth && d===today.getDate();
+    const items = (byDay[d]||[]).sort((a,b)=>(b.inWatchlist?1:0)-(a.inWatchlist?1:0));
+    const count = items.length;
+    const sizeClass = count <= 2 ? 'cal-lg' : count <= 4 ? 'cal-md' : '';
+    const perEntryH = sizeClass === 'cal-lg' ? 80 : sizeClass === 'cal-md' ? 52 : 30;
+    const minH = count > 0 ? Math.max(90, 50 + count * perEntryH) : 90;
+    html += `<div class="cal-day${isToday?' today':''}" style="min-height:${minH}px">
+      <div class="cal-day-num">${d}${count>0?` <span style="color:var(--muted);font-size:.58rem;font-weight:400">${count}</span>`:''}</div>
+      ${items.map(r => {
+        const idx = r._idx;
+        const posterFull = r.poster ? `https://image.tmdb.org/t/p/w500${r.poster}` : '';
+        const posterThumb = r.poster ? `https://image.tmdb.org/t/p/w92${r.poster}` : '';
+        const imgEl = r.poster
+          ? `<img class="cal-poster-zoom" src="${posterThumb}" loading="lazy" data-src="${posterFull}" data-title="${escHtml(r.title)}" onclick="event.stopPropagation();openLightbox(this.dataset.src,this.dataset.title)">`
+          : `<span style="font-size:.75rem;line-height:30px">${r.type||'🎬'}</span>`;
+        return `<div class="cal-release ${sizeClass}" data-idx="${idx}" onclick="openCalDetail(${idx})">
+          ${imgEl}
+          <span class="cal-release-title">${escHtml(r.title)}</span>
+          ${r.inWatchlist?'<span class="cal-release-inlist">✓ list</span>':''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
 }
 
 // ── CALENDAR DETAIL ─────────────────────────────────────────────────────────
@@ -4693,10 +4838,10 @@ function openCalDetail(idx) {
           <div style="color:var(--muted);font-size:.72rem">Loading details...</div>
         </div>
       </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem">
         ${inWatchlist
-          ? `<button class="btn btn-ghost btn-sm" disabled style="opacity:.5">✓ Already in watchlist</button>`
-          : `<button class="btn btn-primary btn-sm" onclick="addCalEntryToWatchlist(${idx})">+ Add to Watchlist</button>`}
+          ? `<button class="btn btn-ghost" disabled style="opacity:.5">✓ Already in watchlist</button>`
+          : `<button class="btn btn-primary" onclick="addCalEntryToWatchlist(${idx})">+ Add to Watchlist</button>`}
       </div>
     </div>`;
 
@@ -4733,11 +4878,11 @@ function openCalDetail(idx) {
         const cast = (credits?.cast || []).slice(0, 4).map(c => c.name);
 
         infoEl.innerHTML = `
-          ${extra ? `<div style="margin-bottom:.3rem;font-weight:500">${extra}</div>` : ''}
-          ${genres ? `<div style="color:var(--muted);font-size:.72rem;margin-bottom:.4rem">${genres}</div>` : ''}
-          ${directors.length ? `<div style="font-size:.72rem;margin-bottom:.2rem"><span style="color:var(--muted)">${directorLabel}${directors.length>1?'s':''}:</span> ${directors.join(', ')}</div>` : ''}
-          ${cast.length ? `<div style="font-size:.72rem;margin-bottom:.4rem"><span style="color:var(--muted)">Cast:</span> ${cast.join(', ')}</div>` : ''}
-          ${overview ? `<div style="font-size:.75rem;color:var(--muted);line-height:1.5">${overview}</div>` : '<div style="color:var(--muted);font-size:.72rem">No description available.</div>'}`;
+          ${extra ? `<div style="margin-bottom:.5rem;font-weight:600;font-size:1.1rem">${extra}</div>` : ''}
+          ${genres ? `<div style="color:var(--muted);font-size:.9rem;margin-bottom:.6rem">${genres}</div>` : ''}
+          ${directors.length ? `<div style="font-size:.92rem;margin-bottom:.35rem"><span style="color:var(--muted)">${directorLabel}${directors.length>1?'s':''}:</span> ${directors.join(', ')}</div>` : ''}
+          ${cast.length ? `<div style="font-size:.92rem;margin-bottom:.6rem"><span style="color:var(--muted)">Cast:</span> ${cast.join(', ')}</div>` : ''}
+          ${overview ? `<div style="font-size:.95rem;color:var(--muted);line-height:1.65">${overview}</div>` : '<div style="color:var(--muted);font-size:.92rem">No description available.</div>'}`;
       })
       .catch(() => {
         const infoEl = document.getElementById('calDetailInfo');
@@ -6218,12 +6363,14 @@ const EMBEDDED = [
 <div id="give-freely-root-kkkbiiikppgjdiebcabomlbidfodipjg" class="give-freely-root" data-extension-id="kkkbiiikppgjdiebcabomlbidfodipjg" data-extension-name="Substital: Add subtitles to videos and movies" style="display: block;"></div><div id="vcaptions-subtitle-iframe" style="transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: none; position: fixed;"></div>
 <!-- Poster Lightbox -->
 <div id="poster-lightbox" onclick="closeLightbox()" style="display: none; position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.85); z-index: 9999; align-items: center; justify-content: center; cursor: zoom-out;">
-  <img id="poster-lightbox-img" src="https://image.tmdb.org/t/p/w780/qzUd0Zm0eBSllJcfiZDWPvcYKTs.jpg" alt="The Tragedy of the Bernalillo County Detectives" style="max-height:90vh;max-width:90vw;border-radius:8px;box-shadow:0 8px 40px #000;object-fit:contain">
+  <img id="poster-lightbox-img" src="" alt="" style="max-height:96vh;max-width:96vw;border-radius:10px;box-shadow:0 12px 60px #000;object-fit:contain">
 </div>
 <script>
 function openLightbox(src,title){
   const lb=document.getElementById('poster-lightbox');
-  document.getElementById('poster-lightbox-img').src=src;
+  // Upgrade to highest resolution available
+  const fullSrc = src.replace(/\/w(92|154|185|342|500|780)\//, '/original/');
+  document.getElementById('poster-lightbox-img').src=fullSrc;
   document.getElementById('poster-lightbox-img').alt=title;
   lb.style.display='flex';
   document.body.style.overflow='hidden';
