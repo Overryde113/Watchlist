@@ -164,8 +164,8 @@ header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.94);backdrop
 .cal-release.cal-lg .cal-release-title{font-size:.88rem;line-height:1.35;align-self:center}
 .cal-release.cal-lg .cal-release-inlist{font-size:.68rem;align-self:center}
 .cal-release.cal-md{gap:.35rem;padding:.2rem;margin-bottom:.25rem}
-.cal-release.cal-search-match{background:color-mix(in srgb,var(--accent) 18%,transparent);box-shadow:0 0 0 1px var(--accent);}
-.cal-release.cal-search-dim{opacity:.25}
+.cal-release.cal-search-hidden{display:none}
+.cal-day.cal-day-empty-after-filter{opacity:.3}
 .cal-release.cal-md img{width:30px;height:45px;border-radius:3px}
 .cal-release.cal-md .cal-release-title{font-size:.7rem;line-height:1.3;align-self:center}
 .cal-release.cal-md .cal-release-inlist{font-size:.6rem;align-self:center}
@@ -342,7 +342,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.27</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.29</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -1888,13 +1888,37 @@ tr:hover .action-cell{opacity:1}
         <button onclick="calNav(1)">Next ›</button>
       </div>
     </div>
-    <div class="cal-loading" id="calLoading" style="display: none;">Loading releases...</div>
-    <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem;flex-wrap:wrap">
+    <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.5rem;flex-wrap:wrap">
       <input type="text" id="calSearchInput" placeholder="Search title, actor, or director..." style="flex:1;min-width:200px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;padding:.5rem .8rem;outline:none" onkeydown="if(event.key==='Enter')runCalSearch()">
       <button class="btn btn-ghost btn-sm" onclick="runCalSearch()">🔍 Search</button>
-      <button class="btn btn-ghost btn-sm" onclick="clearCalSearch()" id="calSearchClearBtn" style="display:none">✕ Clear</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearCalSearch()" id="calSearchClearBtn" style="display:none">✕ Clear Search</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleCalFilterPanel()" id="calFilterBtn">⚙ Filters</button>
       <span id="calSearchStatus" style="font-size:.75rem;color:var(--muted)"></span>
     </div>
+    <div id="calFilterPanel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.75rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
+        <span style="font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">Exclude from Calendar</span>
+        <button class="btn btn-ghost btn-sm" onclick="resetCalFilters()">Reset</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem">
+        <div>
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:.35rem">Format</div>
+          <div id="calFilterFormats" style="display:flex;flex-direction:column;gap:.25rem;font-size:.8rem"></div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:.35rem">Genre</div>
+          <div id="calFilterGenres" style="display:flex;flex-direction:column;gap:.25rem;font-size:.8rem;max-height:160px;overflow-y:auto"></div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:.35rem">Franchise</div>
+          <div id="calFilterFranchises" style="display:flex;flex-direction:column;gap:.25rem;font-size:.8rem;max-height:160px;overflow-y:auto"></div>
+        </div>
+      </div>
+      <div style="margin-top:.8rem">
+        <button class="btn btn-primary btn-sm" onclick="applyCalFilters()">Apply Filters</button>
+      </div>
+    </div>
+    <div class="cal-loading" id="calLoading" style="display: none;">Loading releases...</div>
     <div id="calWrap" style="display: block;">
       <div class="cal-grid" id="calGrid"><div class="cal-day-header">Sun</div><div class="cal-day-header">Mon</div><div class="cal-day-header">Tue</div><div class="cal-day-header">Wed</div><div class="cal-day-header">Thu</div><div class="cal-day-header">Fri</div><div class="cal-day-header">Sat</div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day" style="min-height:200px">
       <div class="cal-day-num">1 <span style="color:var(--muted);font-size:.58rem;font-weight:400">5</span></div>
@@ -4547,6 +4571,8 @@ function calNav(dir) {
   if (statusEl) statusEl.textContent = '';
   const clearBtn = document.getElementById('calSearchClearBtn');
   if (clearBtn) clearBtn.style.display = 'none';
+  window._calSearchActive = false;
+  window._calSearchMatches = null;
   renderCalendar();
 }
 
@@ -4568,9 +4594,8 @@ async function renderCalendar() {
     // Fetch multiple pages from TMDB discover since each page only returns 20 results
     const movPages = [], tvPages = [];
     for (let p = 1; p <= 3; p++) {
-      // Exclude Documentary (genre 99), exclude short films (<40min runtime), restrict to English-speaking production countries
-      movPages.push(fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&primary_release_date.gte=${startDate}&primary_release_date.lte=${endStr}&sort_by=popularity.desc&with_original_language=en&without_genres=99&with_runtime.gte=40&with_origin_country=US|GB|CA|AU|IE|NZ&page=${p}`).then(r=>r.json()));
-      tvPages.push(fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&first_air_date.gte=${startDate}&first_air_date.lte=${endStr}&sort_by=popularity.desc&with_original_language=en&without_genres=99&with_origin_country=US|GB|CA|AU|IE|NZ&page=${p}`).then(r=>r.json()));
+      movPages.push(fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&primary_release_date.gte=${startDate}&primary_release_date.lte=${endStr}&sort_by=popularity.desc&with_original_language=en&without_genres=99,10770&with_runtime.gte=40&vote_count.gte=1&page=${p}`).then(r=>r.json()));
+      tvPages.push(fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&first_air_date.gte=${startDate}&first_air_date.lte=${endStr}&sort_by=popularity.desc&with_original_language=en&without_genres=99,10763,10767,10764&vote_count.gte=1&page=${p}`).then(r=>r.json()));
     }
     const [movResults, tvResults] = await Promise.all([Promise.all(movPages), Promise.all(tvPages)]);
 
@@ -4580,7 +4605,7 @@ async function renderCalendar() {
       (movRes.results||[]).forEach(m => {
         if (seenMovieIds.has(m.id)) return;
         seenMovieIds.add(m.id);
-        releases.push({ date: m.release_date, title: m.title, poster: m.poster_path, type:'🎥', id:m.id });
+        releases.push({ date: m.release_date, title: m.title, poster: m.poster_path, type:'🎥', id:m.id, genreIds: m.genre_ids||[] });
       });
     }
     for (const tvRes of tvResults) {
@@ -4588,7 +4613,7 @@ async function renderCalendar() {
       (tvRes.results||[]).forEach(t => {
         if (seenTvIds.has(t.id)) return;
         seenTvIds.add(t.id);
-        releases.push({ date: t.first_air_date, title: t.name, poster: t.poster_path, type:'📺', id:t.id });
+        releases.push({ date: t.first_air_date, title: t.name, poster: t.poster_path, type:'📺', id:t.id, genreIds: t.genre_ids||[] });
       });
     }
   } catch(e) {}
@@ -4635,144 +4660,42 @@ async function renderCalendar() {
     byDay[d].push(r);
   });
 
-  // Build calendar grid
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const today = new Date();
-  const isCurrentMonth = today.getFullYear()===year && today.getMonth()===month;
-
   // Store all releases globally so onclick can reference by index safely
   window._calReleases = releases;
+  window._calYear = year;
+  window._calMonth = month;
 
-  // Compute max entries per day to scale cell heights
-  const maxEntries = Math.max(1, ...Object.values(byDay).map(a => a.length));
+  renderCalGrid();
 
-  let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-day-header">${d}</div>`).join('');
-  for (let i=0;i<firstDay;i++) html += '<div class="cal-day empty"></div>';
-  for (let d=1;d<=daysInMonth;d++) {
-    const isToday = isCurrentMonth && d===today.getDate();
-    const items = (byDay[d]||[]).sort((a,b)=>(b.inWatchlist?1:0)-(a.inWatchlist?1:0));
-    const count = items.length;
-    const sizeClass = count <= 2 ? 'cal-lg' : count <= 4 ? 'cal-md' : '';
-    const perEntryH = sizeClass === 'cal-lg' ? 80 : sizeClass === 'cal-md' ? 52 : 30;
-    const minH = count > 0 ? Math.max(90, 50 + count * perEntryH) : 90;
-    html += `<div class="cal-day${isToday?' today':''}" style="min-height:${minH}px">
-      <div class="cal-day-num">${d}${count>0?` <span style="color:var(--muted);font-size:.58rem;font-weight:400">${count}</span>`:''}</div>
-      ${items.map(r => {
-        const idx = window._calReleases.indexOf(r);
-        const posterFull = r.poster ? `https://image.tmdb.org/t/p/w500${r.poster}` : '';
-        const posterThumb = r.poster ? `https://image.tmdb.org/t/p/w92${r.poster}` : '';
-        const imgEl = r.poster
-          ? `<img class="cal-poster-zoom" src="${posterThumb}" loading="lazy" data-src="${posterFull}" data-title="${escHtml(r.title)}" onclick="event.stopPropagation();openLightbox(this.dataset.src,this.dataset.title)">`
-          : `<span style="font-size:.75rem;line-height:30px">${r.type||'🎬'}</span>`;
-        return `<div class="cal-release ${sizeClass}" data-idx="${idx}" onclick="openCalDetail(${idx})">
-          ${imgEl}
-          <span class="cal-release-title">${escHtml(r.title)}</span>
-          ${r.inWatchlist?'<span class="cal-release-inlist">✓ list</span>':''}
-        </div>`;
-      }).join('')}
-    </div>`;
-  }
-
-  document.getElementById('calGrid').innerHTML = html;
   document.getElementById('calLoading').style.display='none';
   document.getElementById('calWrap').style.display='block';
+  buildCalFilterOptions();
 }
 
-// ── CALENDAR SEARCH ──────────────────────────────────────────────────────────
-async function runCalSearch() {
-  const q = document.getElementById('calSearchInput').value.trim();
-  const statusEl = document.getElementById('calSearchStatus');
-  const clearBtn = document.getElementById('calSearchClearBtn');
-  if (!q) { clearCalSearch(); return; }
-
+// Builds (or rebuilds) the calendar grid from window._calReleases, applying any active exclusion filters.
+function renderCalGrid() {
   const releases = window._calReleases || [];
-  const normQ = q.toLowerCase();
-  const matchedIdxs = new Set();
+  const year = window._calYear;
+  const month = window._calMonth;
+  const excluded = window._calExcluded || { formats: new Set(), genres: new Set(), franchises: new Set() };
 
-  // 1. Title match (instant, client-side)
-  releases.forEach((r, idx) => {
-    if ((r.title || '').toLowerCase().includes(normQ)) matchedIdxs.add(idx);
-  });
-
-  statusEl.textContent = 'Searching cast & crew...';
-
-  // 2. Actor/director match via TMDB person search + discover
-  try {
-    const personRes = await fetch(`https://api.themoviedb.org/3/search/person?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&page=1`).then(r=>r.json());
-    const person = (personRes.results || [])[0];
-    if (person) {
-      const year = _calDate.getFullYear();
-      const month = _calDate.getMonth();
-      const startDate = `${year}-${String(month+1).padStart(2,'0')}-01`;
-      const endDate = new Date(year, month+1, 0);
-      const endStr = `${year}-${String(month+1).padStart(2,'0')}-${endDate.getDate()}`;
-
-      const [castMov, castTv, crewMov, crewTv] = await Promise.all([
-        fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_cast=${person.id}&primary_release_date.gte=${startDate}&primary_release_date.lte=${endStr}&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
-        fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&with_cast=${person.id}&first_air_date.gte=${startDate}&first_air_date.lte=${endStr}&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
-        fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&with_crew=${person.id}&primary_release_date.gte=${startDate}&primary_release_date.lte=${endStr}&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
-        fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&with_crew=${person.id}&first_air_date.gte=${startDate}&first_air_date.lte=${endStr}&page=1`).then(r=>r.json()).catch(()=>({results:[]})),
-      ]);
-
-      const personMatches = [
-        ...(castMov.results||[]).map(m => ({date:m.release_date, title:m.title, poster:m.poster_path, type:'🎥', id:m.id})),
-        ...(castTv.results||[]).map(t => ({date:t.first_air_date, title:t.name, poster:t.poster_path, type:'📺', id:t.id})),
-        ...(crewMov.results||[]).map(m => ({date:m.release_date, title:m.title, poster:m.poster_path, type:'🎥', id:m.id})),
-        ...(crewTv.results||[]).map(t => ({date:t.first_air_date, title:t.name, poster:t.poster_path, type:'📺', id:t.id})),
-      ];
-
-      // Merge into _calReleases, matching by id+type to avoid duplicates
-      for (const pm of personMatches) {
-        let existingIdx = releases.findIndex(r => r.id === pm.id && r.type === pm.type);
-        if (existingIdx === -1) {
-          releases.push(pm);
-          existingIdx = releases.length - 1;
-        }
-        matchedIdxs.add(existingIdx);
-      }
-
-      // If new releases were added, the grid needs rebuilding
-      if (personMatches.some(pm => !window._calReleases.includes(pm))) {
-        // releases array was mutated in place (same reference), rebuild grid to include new entries
-        rebuildCalGridWithReleases(releases);
-      }
+  const passesFilters = (r) => {
+    if (excluded.formats.has(r.type)) return false;
+    if (r.genreIds && r.genreIds.some(gid => excluded.genres.has(gid))) return false;
+    if (excluded.franchises.size) {
+      const fr = getFranchises(r.title, r.franchise);
+      if (fr.some(f => excluded.franchises.has(f))) return false;
     }
-  } catch(e) { /* ignore person search errors */ }
+    return true;
+  };
 
-  // Apply highlight/dim classes
-  document.querySelectorAll('.cal-release').forEach(el => {
-    const idx = +el.dataset.idx;
-    el.classList.remove('cal-search-match','cal-search-dim');
-    if (matchedIdxs.has(idx)) el.classList.add('cal-search-match');
-    else el.classList.add('cal-search-dim');
-  });
-
-  clearBtn.style.display = 'inline-block';
-  statusEl.textContent = matchedIdxs.size
-    ? `${matchedIdxs.size} match${matchedIdxs.size===1?'':'es'} found`
-    : 'No matches found';
-}
-
-function clearCalSearch() {
-  document.getElementById('calSearchInput').value = '';
-  document.getElementById('calSearchStatus').textContent = '';
-  document.getElementById('calSearchClearBtn').style.display = 'none';
-  document.querySelectorAll('.cal-release').forEach(el => {
-    el.classList.remove('cal-search-match','cal-search-dim');
-  });
-}
-
-// Rebuilds the calendar grid using an updated releases array (used when search adds new entries)
-function rebuildCalGridWithReleases(releases) {
-  const year = _calDate.getFullYear();
-  const month = _calDate.getMonth();
   const byDay = {};
   releases.forEach((r, idx) => {
+    if (!passesFilters(r)) return;
     const d = parseInt((r.date||'').split('-')[2]);
     if (!d) return;
     if (!byDay[d]) byDay[d] = [];
-    byDay[d].push({...r, _idx: idx});
+    byDay[d].push({ ...r, _idx: idx });
   });
 
   const firstDay = new Date(year, month, 1).getDay();
@@ -4806,10 +4729,182 @@ function rebuildCalGridWithReleases(releases) {
       }).join('')}
     </div>`;
   }
+
   document.getElementById('calGrid').innerHTML = html;
+
+  // Re-apply any active search filter after rebuilding
+  if (window._calSearchActive) applyCalSearchVisibility();
 }
 
 // ── CALENDAR DETAIL ─────────────────────────────────────────────────────────
+// ── CALENDAR FILTERS (exclude by format/genre/franchise) ───────────────────────
+const TMDB_GENRE_MAP = {
+  28:'Action', 12:'Adventure', 16:'Animation', 35:'Comedy', 80:'Crime', 18:'Drama',
+  10751:'Family', 14:'Fantasy', 36:'History', 27:'Horror', 10402:'Music', 9648:'Mystery',
+  10749:'Romance', 878:'Sci-Fi', 53:'Thriller', 10752:'War', 37:'Western',
+  10759:'Action & Adventure', 10762:'Kids', 10765:'Sci-Fi & Fantasy', 10766:'Soap', 10768:'War & Politics'
+};
+
+if (!window._calExcluded) window._calExcluded = { formats: new Set(), genres: new Set(), franchises: new Set() };
+
+function toggleCalFilterPanel() {
+  const panel = document.getElementById('calFilterPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function buildCalFilterOptions() {
+  const releases = window._calReleases || [];
+
+  // Formats present
+  const formatsEl = document.getElementById('calFilterFormats');
+  const formats = [
+    { val: '🎥', label: '🎥 Movies' },
+    { val: '📺', label: '📺 Shows' },
+  ];
+  formatsEl.innerHTML = formats.map(f => `
+    <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer">
+      <input type="checkbox" data-filter-type="format" value="${f.val}" ${window._calExcluded.formats.has(f.val)?'checked':''}>
+      ${f.label}
+    </label>`).join('');
+
+  // Genres present in this month's releases
+  const genreIdsPresent = new Set();
+  releases.forEach(r => (r.genreIds||[]).forEach(g => genreIdsPresent.add(g)));
+  const genresEl = document.getElementById('calFilterGenres');
+  const sortedGenres = [...genreIdsPresent].filter(g => TMDB_GENRE_MAP[g]).sort((a,b) => TMDB_GENRE_MAP[a].localeCompare(TMDB_GENRE_MAP[b]));
+  genresEl.innerHTML = sortedGenres.map(g => `
+    <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer">
+      <input type="checkbox" data-filter-type="genre" value="${g}" ${window._calExcluded.genres.has(g)?'checked':''}>
+      ${TMDB_GENRE_MAP[g]}
+    </label>`).join('') || '<span style="color:var(--muted);font-size:.75rem">None detected</span>';
+
+  // Franchises present (only ones that match titles via existing franchise detection)
+  const franchisesPresent = new Set();
+  releases.forEach(r => getFranchises(r.title, r.franchise).forEach(f => franchisesPresent.add(f)));
+  const franchisesEl = document.getElementById('calFilterFranchises');
+  const sortedFranchises = [...franchisesPresent].sort();
+  franchisesEl.innerHTML = sortedFranchises.map(f => `
+    <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer">
+      <input type="checkbox" data-filter-type="franchise" value="${f.replace(/"/g,'&quot;')}" ${window._calExcluded.franchises.has(f)?'checked':''}>
+      ${getFranchiseEmojiFor ? getFranchiseEmojiFor(f) : ''} ${f}
+    </label>`).join('') || '<span style="color:var(--muted);font-size:.75rem">None detected</span>';
+}
+
+function applyCalFilters() {
+  const formats = new Set(), genres = new Set(), franchises = new Set();
+  document.querySelectorAll('#calFilterPanel input[type=checkbox]:checked').forEach(cb => {
+    const type = cb.dataset.filterType;
+    if (type === 'format') formats.add(cb.value);
+    else if (type === 'genre') genres.add(parseInt(cb.value));
+    else if (type === 'franchise') franchises.add(cb.value);
+  });
+  window._calExcluded = { formats, genres, franchises };
+  renderCalGrid();
+  showToast('Calendar filters applied', 'ok');
+}
+
+function resetCalFilters() {
+  window._calExcluded = { formats: new Set(), genres: new Set(), franchises: new Set() };
+  buildCalFilterOptions();
+  renderCalGrid();
+  showToast('Calendar filters reset', '');
+}
+
+// ── CALENDAR SEARCH (filter-mode: only shows matches) ──────────────────────────
+async function runCalSearch() {
+  const q = document.getElementById('calSearchInput').value.trim();
+  const statusEl = document.getElementById('calSearchStatus');
+  const clearBtn = document.getElementById('calSearchClearBtn');
+  if (!q) { clearCalSearch(); return; }
+
+  const releases = window._calReleases || [];
+  const normQ = q.toLowerCase();
+  const matchedIdxs = new Set();
+
+  // 1. Title match (instant, client-side)
+  releases.forEach((r, idx) => {
+    if ((r.title || '').toLowerCase().includes(normQ)) matchedIdxs.add(idx);
+  });
+
+  statusEl.textContent = 'Searching cast & crew...';
+
+  // 2. Actor/director match via TMDB person search + combined_credits
+  try {
+    const personRes = await fetch(`https://api.themoviedb.org/3/search/person?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&page=1`).then(r=>r.json());
+    const candidates = (personRes.results || []).filter(p => (p.known_for_department === 'Acting' || p.known_for_department === 'Directing'));
+    const person = candidates[0] || (personRes.results || [])[0];
+
+    if (person) {
+      const year = window._calYear;
+      const month = window._calMonth;
+      const credits = await fetch(`https://api.themoviedb.org/3/person/${person.id}/combined_credits?api_key=${TMDB_KEY}`).then(r=>r.json()).catch(()=>null);
+
+      const personMatches = [];
+      const seen = new Set();
+      const allCredits = [...(credits?.cast || []), ...(credits?.crew || [])];
+      for (const c of allCredits) {
+        const dateStr = c.release_date || c.first_air_date;
+        if (!dateStr) continue;
+        const [cy, cm] = dateStr.split('-').map(Number);
+        if (cy !== year || cm !== (month+1)) continue;
+        const key = `${c.media_type}-${c.id}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        personMatches.push({
+          date: dateStr, title: c.title || c.name, poster: c.poster_path,
+          type: c.media_type === 'movie' ? '🎥' : '📺', id: c.id, genreIds: c.genre_ids||[]
+        });
+      }
+
+      let addedNew = false;
+      for (const pm of personMatches) {
+        let existingIdx = releases.findIndex(r => r.id === pm.id && r.type === pm.type);
+        if (existingIdx === -1) {
+          releases.push(pm);
+          existingIdx = releases.length - 1;
+          addedNew = true;
+        }
+        matchedIdxs.add(existingIdx);
+      }
+      if (addedNew) renderCalGrid();
+    }
+  } catch(e) { /* ignore person search errors */ }
+
+  window._calSearchActive = true;
+  window._calSearchMatches = matchedIdxs;
+  applyCalSearchVisibility();
+
+  clearBtn.style.display = 'inline-block';
+  statusEl.textContent = matchedIdxs.size
+    ? `${matchedIdxs.size} match${matchedIdxs.size===1?'':'es'} found — showing only matches`
+    : 'No matches found';
+}
+
+// Hides all non-matching entries (filter mode, not just highlight)
+function applyCalSearchVisibility() {
+  const matchedIdxs = window._calSearchMatches || new Set();
+  document.querySelectorAll('.cal-release').forEach(el => {
+    const idx = +el.dataset.idx;
+    if (matchedIdxs.has(idx)) el.classList.remove('cal-search-hidden');
+    else el.classList.add('cal-search-hidden');
+  });
+  // Dim out days with zero visible entries
+  document.querySelectorAll('.cal-day:not(.empty)').forEach(dayEl => {
+    const visibleCount = [...dayEl.querySelectorAll('.cal-release')].filter(el => !el.classList.contains('cal-search-hidden')).length;
+    dayEl.classList.toggle('cal-day-empty-after-filter', visibleCount === 0);
+  });
+}
+
+function clearCalSearch() {
+  document.getElementById('calSearchInput').value = '';
+  document.getElementById('calSearchStatus').textContent = '';
+  document.getElementById('calSearchClearBtn').style.display = 'none';
+  window._calSearchActive = false;
+  window._calSearchMatches = null;
+  document.querySelectorAll('.cal-release').forEach(el => el.classList.remove('cal-search-hidden'));
+  document.querySelectorAll('.cal-day').forEach(el => el.classList.remove('cal-day-empty-after-filter'));
+}
+
 function openCalDetail(idx) {
   const r = (window._calReleases || [])[idx];
   if (!r) return;
@@ -4838,7 +4933,7 @@ function openCalDetail(idx) {
           <div style="color:var(--muted);font-size:.72rem">Loading details...</div>
         </div>
       </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem">
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
         ${inWatchlist
           ? `<button class="btn btn-ghost" disabled style="opacity:.5">✓ Already in watchlist</button>`
           : `<button class="btn btn-primary" onclick="addCalEntryToWatchlist(${idx})">+ Add to Watchlist</button>`}
@@ -6368,7 +6463,6 @@ const EMBEDDED = [
 <script>
 function openLightbox(src,title){
   const lb=document.getElementById('poster-lightbox');
-  // Upgrade to highest resolution available
   const fullSrc = src.replace(/\/w(92|154|185|342|500|780)\//, '/original/');
   document.getElementById('poster-lightbox-img').src=fullSrc;
   document.getElementById('poster-lightbox-img').alt=title;
