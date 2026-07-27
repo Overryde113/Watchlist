@@ -2206,9 +2206,9 @@ tr:hover .action-cell{opacity:1}
         <h2 id="listViewTitle"></h2>
         <button class="btn btn-ghost btn-sm" onclick="deleteCurrentList()">🗑 Delete</button>
       </div>
-      <div style="margin-bottom:.75rem;display:flex;gap:.5rem;flex-wrap:wrap">
+      <div style="margin-bottom:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;position:relative">
         <input type="text" id="listSearchInput" placeholder="Search to add..." style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;padding:.4rem .7rem;outline:none;flex:1;min-width:180px" oninput="onListSearchInput()" onkeydown="if(event.key==='Escape')document.getElementById('listAddResults').style.display='none'">
-        <div id="listAddResults" style="display:none;position:absolute;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:8px;max-height:200px;overflow-y:auto;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,.4)"></div>
+        <div id="listAddResults" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:8px;max-height:200px;overflow-y:auto;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,.4)"></div>
       </div>
       <div id="listItemsWrap"></div>
     </div>
