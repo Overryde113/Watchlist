@@ -354,9 +354,9 @@ tr:hover .action-cell{opacity:1}
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
     </div>
     <div class="header-stats">
-      <div class="stat"><div class="stat-num" id="statTotal">1690</div><div class="stat-label">Total</div></div>
-      <div class="stat"><div class="stat-num" style="color:var(--movie)" id="statMovies">1309</div><div class="stat-label">Movies</div></div>
-      <div class="stat"><div class="stat-num" style="color:var(--show)" id="statShows">322</div><div class="stat-label">Shows</div></div>
+      <div class="stat"><div class="stat-num" id="statTotal">1703</div><div class="stat-label">Total</div></div>
+      <div class="stat"><div class="stat-num" style="color:var(--movie)" id="statMovies">1318</div><div class="stat-label">Movies</div></div>
+      <div class="stat"><div class="stat-num" style="color:var(--show)" id="statShows">326</div><div class="stat-label">Shows</div></div>
       <div class="stat"><div class="stat-num" style="color:var(--anime)" id="statAnime">59</div><div class="stat-label">Anime</div></div>
     </div>
     <button class="btn btn-ghost btn-sm" id="traktHeaderBtn" onclick="toggleTraktPanel()" style="border-color:color-mix(in srgb,var(--trakt) 40%,transparent);color:var(--trakt);font-size:.72rem;padding:.28rem .7rem">🎬 Trakt</button>
@@ -412,21 +412,44 @@ tr:hover .action-cell{opacity:1}
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.25rem">
-      <div id="pushSyncRow" style="display:none">
+      <div id="pushSyncRow" style="display: none;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.2rem">
           <span style="font-size:.72rem;color:var(--muted)">⬆ Push</span>
-          <span class="sync-status" id="syncStatus" style="font-size:.72rem"></span>
+          <span class="sync-status ok" id="syncStatus" style="font-size:.72rem">Done! 1668 matched by ID, 24 pushed by title only</span>
         </div>
-        <div class="progress-bar-wrap show" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
-        <div class="sync-status" id="syncInfo" style="margin-top:.15rem;font-size:.68rem;color:var(--muted)"></div>
+        <div class="progress-bar-wrap show" id="progressWrap"><div class="progress-bar" id="progressBar" style="width: 0%;"></div></div>
+        <div class="sync-status" id="syncInfo" style="margin-top:.15rem;font-size:.68rem;color:var(--muted)"><div style="margin-bottom: 0.3rem; color: var(--muted); font-size: 0.75rem;">Title-only (24) — Simkl will try to match these:</div><div style="max-height: 180px; overflow-y: auto; font-size: 0.72rem; color: var(--muted); line-height: 1.75; padding: 0.5rem 0.6rem; background: var(--surface3); border-radius: 6px; border: 1px solid var(--border); white-space: pre;">Untitled Teenage Mutant Ninja Turtles Film
+Loose Ends: Coup de Grâce
+Once Upon a Time In Gotham
+iCarly [new and old]
+Good Burger
+Death's Roulette
+Heath Ledger: The Unauthorized Story
+Based On A True Story Season 3
+America Has Fallen
+Earth Has Fallen
+Will Trent Season 3
+XO Kitty Season 4
+Blitz (2011)
+Look at Me: XXXTentacion
+Good Burger 2
+Regretting You
+The God 4
+Echo Valley
+Nymphomaniac: Volumes I &amp; II
+Mr Student Body President
+Don't Trust the B---- In Apartment Twenty 3
+The Testament of Ann Lee
+Paris Has Fallen
+My Hero Academy</div></div>
       </div>
-      <div id="pullSyncRow" style="display:none">
+      <div id="pullSyncRow" style="display: none;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.2rem">
           <span style="font-size:.72rem;color:var(--muted)">⬇ Pull</span>
-          <span class="sync-status" id="pullSyncStatus" style="font-size:.72rem"></span>
+          <span class="sync-status ok" id="pullSyncStatus" style="font-size:.72rem">Pulled — 18 items updated</span>
         </div>
-        <div class="progress-bar-wrap show" id="pullProgressWrap"><div class="progress-bar" id="pullProgressBar"></div></div>
-        <div id="pullSyncInfo" style="margin-top:.15rem;font-size:.68rem;color:var(--muted)"></div>
+        <div class="progress-bar-wrap show" id="pullProgressWrap"><div class="progress-bar" id="pullProgressBar" style="width: 0%;"></div></div>
+        <div id="pullSyncInfo" style="margin-top:.15rem;font-size:.68rem;color:var(--muted)">335 completed, 79 watching found on Simkl</div>
       </div>
     </div>
   </div>
@@ -463,12 +486,12 @@ tr:hover .action-cell{opacity:1}
         <button class="btn btn-trakt btn-sm" onclick="pullFromTrakt()">⬇ Pull watched from Trakt</button>
         <button class="btn btn-ghost btn-sm" onclick="disconnectTrakt()">Disconnect</button>
       </div>
-      <div id="traktSyncRow" style="display:none;margin-top:.5rem">
+      <div id="traktSyncRow" style="display: none; margin-top: 0.5rem;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.2rem">
           <span style="font-size:.72rem;color:var(--muted)">⬇ Trakt Pull</span>
-          <span id="traktSyncStatus" class="sync-status" style="font-size:.72rem"></span>
+          <span id="traktSyncStatus" class="sync-status err" style="font-size:.72rem">Pull failed</span>
         </div>
-        <div class="progress-bar-wrap show"><div class="progress-bar" id="traktProgressBar"></div></div>
+        <div class="progress-bar-wrap show"><div class="progress-bar" id="traktProgressBar" style="width: 0%;"></div></div>
         <div id="traktSyncInfo" style="margin-top:.15rem;font-size:.68rem;color:var(--muted)"></div>
       </div>
     </div>
@@ -913,92 +936,26 @@ tr:hover .action-cell{opacity:1}
     <div class="add-bar" style="margin-bottom:.5rem">
       <div class="search-dropdown" id="tmdbSearchWrap">
         <input type="text" id="tmdbSearchInput" placeholder="Search movies, shows, anime..." autocomplete="off" oninput="onTmdbSearch()" onkeydown="if(event.key==='Escape')closeSearchResults()">
-        <div class="search-results" id="searchResults"><div class="search-result-item" onclick="selectSearchResult({&quot;tmdbId&quot;:1280738,&quot;title&quot;:&quot;The Furious&quot;,&quot;year&quot;:&quot;2026&quot;,&quot;poster&quot;:&quot;/zP19YO60jwEsfKd5Qf1UvA5uJu8.jpg&quot;,&quot;mediaType&quot;:&quot;movie&quot;,&quot;overview&quot;:&quot;After a criminal network kidnaps Wang Wei's daughter and the corrupt police refuse to assist him, Wei sets out on his own to locate her. Navin, a tenacious journalist whose wife has mysteriously vanished, is his only ally. In this explosive martial arts showdown, the unlikely duo fights the kidnappers ruthlessly driven by a furious vengeance.&quot;,&quot;runtime&quot;:113,&quot;seasons&quot;:null,&quot;episodes&quot;:null})">
-        <img class="result-poster" src="https://image.tmdb.org/t/p/w92/zP19YO60jwEsfKd5Qf1UvA5uJu8.jpg" loading="lazy" alt="">
+        <div class="search-results" id="searchResults"><div class="search-result-item" onclick="selectSearchResult(0)">
+        <img class="result-poster" src="https://image.tmdb.org/t/p/w92/9htMnu5Zg3WEpz6SccgzfxWfDPw.jpg" loading="lazy" alt="">
         <div class="result-info">
-          <div class="result-title">The Furious</div>
+          <div class="result-title">Confessions of a Brazilian Call Girl</div>
           <div class="result-meta">
-            2026
-            · 1h 53m
+            2011
+            · 1h 49m
             
             <span class="result-type">🎥 Movie</span>
           </div>
         </div>
-      </div><div class="search-result-item" onclick="selectSearchResult({&quot;tmdbId&quot;:168259,&quot;title&quot;:&quot;Furious 7&quot;,&quot;year&quot;:&quot;2015&quot;,&quot;poster&quot;:&quot;/ktofZ9Htrjiy0P6LEowsDaxd3Ri.jpg&quot;,&quot;mediaType&quot;:&quot;movie&quot;,&quot;overview&quot;:&quot;Deckard Shaw seeks revenge against Dominic Toretto and his family for his comatose brother.&quot;,&quot;runtime&quot;:138,&quot;seasons&quot;:null,&quot;episodes&quot;:null})">
-        <img class="result-poster" src="https://image.tmdb.org/t/p/w92/ktofZ9Htrjiy0P6LEowsDaxd3Ri.jpg" loading="lazy" alt="">
+      </div><div class="search-result-item" onclick="selectSearchResult(1)">
+        <img class="result-poster" src="https://image.tmdb.org/t/p/w92/jn3bV2L73VimOaPFkQAPc6nHrfk.jpg" loading="lazy" alt="">
         <div class="result-info">
-          <div class="result-title">Furious 7</div>
-          <div class="result-meta">
-            2015
-            · 2h 18m
-            
-            <span class="result-type">🎥 Movie</span>
-          </div>
-        </div>
-      </div><div class="search-result-item" onclick="selectSearchResult({&quot;tmdbId&quot;:337339,&quot;title&quot;:&quot;The Fate of the Furious&quot;,&quot;year&quot;:&quot;2017&quot;,&quot;poster&quot;:&quot;/dImWM7GJqryWJO9LHa3XQ8DD5NH.jpg&quot;,&quot;mediaType&quot;:&quot;movie&quot;,&quot;overview&quot;:&quot;When a mysterious woman seduces Dom into the world of crime and a betrayal of those closest to him, the crew face trials that will test them as never before.&quot;,&quot;runtime&quot;:136,&quot;seasons&quot;:null,&quot;episodes&quot;:null})">
-        <img class="result-poster" src="https://image.tmdb.org/t/p/w92/dImWM7GJqryWJO9LHa3XQ8DD5NH.jpg" loading="lazy" alt="">
-        <div class="result-info">
-          <div class="result-title">The Fate of the Furious</div>
-          <div class="result-meta">
-            2017
-            · 2h 16m
-            
-            <span class="result-type">🎥 Movie</span>
-          </div>
-        </div>
-      </div><div class="search-result-item" onclick="selectSearchResult({&quot;tmdbId&quot;:384018,&quot;title&quot;:&quot;Fast &amp; Furious Presents: Hobbs &amp; Shaw&quot;,&quot;year&quot;:&quot;2019&quot;,&quot;poster&quot;:&quot;/qRyy2UmjC5ur9bDi3kpNNRCc5nc.jpg&quot;,&quot;mediaType&quot;:&quot;movie&quot;,&quot;overview&quot;:&quot;Ever since US Diplomatic Security Service Agent Hobbs and lawless outcast Shaw first faced off, they just have traded smack talk and body blows. But when cyber-genetically enhanced anarchist Brixton's ruthless actions threaten the future of humanity, they join forces to defeat him.&quot;,&quot;runtime&quot;:137,&quot;seasons&quot;:null,&quot;episodes&quot;:null})">
-        <img class="result-poster" src="https://image.tmdb.org/t/p/w92/qRyy2UmjC5ur9bDi3kpNNRCc5nc.jpg" loading="lazy" alt="">
-        <div class="result-info">
-          <div class="result-title">Fast &amp; Furious Presents: Hobbs &amp; Shaw</div>
-          <div class="result-meta">
-            2019
-            · 2h 17m
-            
-            <span class="result-type">🎥 Movie</span>
-          </div>
-        </div>
-      </div><div class="search-result-item" onclick="selectSearchResult({&quot;tmdbId&quot;:287238,&quot;title&quot;:&quot;Furious&quot;,&quot;year&quot;:&quot;2026&quot;,&quot;poster&quot;:&quot;/qcTNUGkxpaFycXkItD3Jpn0Mcox.jpg&quot;,&quot;mediaType&quot;:&quot;tv&quot;,&quot;overview&quot;:&quot;FBI agent Alice Black is on the hunt for a mysterious and calculating female serial killer. Both walk their own paths toward justice, and as their lives start to intertwine, the line between right and wrong begins to blur.&quot;,&quot;runtime&quot;:null,&quot;seasons&quot;:1,&quot;episodes&quot;:8})">
-        <img class="result-poster" src="https://image.tmdb.org/t/p/w92/qcTNUGkxpaFycXkItD3Jpn0Mcox.jpg" loading="lazy" alt="">
-        <div class="result-info">
-          <div class="result-title">Furious</div>
+          <div class="result-title">Confessions of a Brazilian Call Girl 2</div>
           <div class="result-meta">
             2026
             
-            · 1 season, 8 eps
-            <span class="result-type">📺 Show</span>
-          </div>
-        </div>
-      </div><div class="search-result-item" onclick="selectSearchResult({&quot;tmdbId&quot;:95594,&quot;title&quot;:&quot;Fast &amp; Furious Spy Racers&quot;,&quot;year&quot;:&quot;2019&quot;,&quot;poster&quot;:&quot;/cI7zYWuYTmKEdXITcUKPzjc2EW5.jpg&quot;,&quot;mediaType&quot;:&quot;tv&quot;,&quot;overview&quot;:&quot;A government agency recruits teen driver Tony Toretto and his thrill-seeking friends to infiltrate a criminal street racing circuit as undercover spies.&quot;,&quot;runtime&quot;:null,&quot;seasons&quot;:6,&quot;episodes&quot;:52})">
-        <img class="result-poster" src="https://image.tmdb.org/t/p/w92/cI7zYWuYTmKEdXITcUKPzjc2EW5.jpg" loading="lazy" alt="">
-        <div class="result-info">
-          <div class="result-title">Fast &amp; Furious Spy Racers</div>
-          <div class="result-meta">
-            2019
             
-            · 6 seasons, 52 eps
-            <span class="result-type">📺 Show</span>
-          </div>
-        </div>
-      </div><div class="search-result-item" onclick="selectSearchResult({&quot;tmdbId&quot;:99138,&quot;title&quot;:&quot;The Furious Yama&quot;,&quot;year&quot;:&quot;2020&quot;,&quot;poster&quot;:&quot;/lL1zpbe1WjlTUSGxuFcmFwQMJgP.jpg&quot;,&quot;mediaType&quot;:&quot;tv&quot;,&quot;overview&quot;:&quot;Xiao Luo, a young yama (god and judge of the dead), is afraid of ghosts. In order to properly reign in the underworld, she will have to face her fears.&quot;,&quot;runtime&quot;:null,&quot;seasons&quot;:2,&quot;episodes&quot;:24})">
-        <img class="result-poster" src="https://image.tmdb.org/t/p/w92/lL1zpbe1WjlTUSGxuFcmFwQMJgP.jpg" loading="lazy" alt="">
-        <div class="result-info">
-          <div class="result-title">The Furious Yama</div>
-          <div class="result-meta">
-            2020
-            
-            · 2 seasons, 24 eps
-            <span class="result-type">📺 Show</span>
-          </div>
-        </div>
-      </div><div class="search-result-item" onclick="selectSearchResult({&quot;tmdbId&quot;:218580,&quot;title&quot;:&quot;Icons Unearthed: Fast &amp; Furious&quot;,&quot;year&quot;:&quot;2023&quot;,&quot;poster&quot;:&quot;/mHbd5QanOrSYchEENvI31kODGgd.jpg&quot;,&quot;mediaType&quot;:&quot;tv&quot;,&quot;overview&quot;:&quot;What should have been a one-off summer flick became one of the largest film franchises of all time. Fast &amp; Furious has spawned merchandise, spin-offs, and theme park attractions, and put a series of increasingly amazing stunts on screens across the world. Cast, crew, and experts will reveal never-before-heard stories about the Fast &amp; Furious franchise.&quot;,&quot;runtime&quot;:null,&quot;seasons&quot;:1,&quot;episodes&quot;:6})">
-        <img class="result-poster" src="https://image.tmdb.org/t/p/w92/mHbd5QanOrSYchEENvI31kODGgd.jpg" loading="lazy" alt="">
-        <div class="result-info">
-          <div class="result-title">Icons Unearthed: Fast &amp; Furious</div>
-          <div class="result-meta">
-            2023
-            
-            · 1 season, 6 eps
-            <span class="result-type">📺 Show</span>
+            <span class="result-type">🎥 Movie</span>
           </div>
         </div>
       </div></div>
@@ -1041,7 +998,7 @@ tr:hover .action-cell{opacity:1}
       <button class="btn btn-primary btn-sm" id="refetchSelectedBtn" onclick="refetchSelected()" disabled="">🔄 Refetch Selected</button>
     </div>
   </div>
-  <div class="results-info"><span id="resultsInfo">Showing 1–75 of 1690 entries</span><span id="pageInfo">Page 1 of 23</span></div>
+  <div class="results-info"><span id="resultsInfo">Showing 1–75 of 1703 entries</span><span id="pageInfo">Page 1 of 23</span></div>
 
   <div class="table-wrap">
     <table>
@@ -1062,10 +1019,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">1</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/hdKkVb8ylvg7xm9W2IAhd5ydp73.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/hdKkVb8ylvg7xm9W2IAhd5ydp73.jpg" data-title="Haunted Heist" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Haunted Heist<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Haunted Heist<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 27m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1077,10 +1034,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">2</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/8dq7vaUkXPqwqKxBFW4qJNBWeop.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/8dq7vaUkXPqwqKxBFW4qJNBWeop.jpg" data-title="The Dink" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Dink<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">The Dink<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 43m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1092,10 +1049,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">3</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/raWg26WVDQeqbTizRjdgJpCHssd.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/raWg26WVDQeqbTizRjdgJpCHssd.jpg" data-title="Bad Counselors" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Bad Counselors<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Bad Counselors<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 45m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1107,10 +1064,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">4</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/piWo0Sal5TjkrbBDxB6VWMDcrVN.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/piWo0Sal5TjkrbBDxB6VWMDcrVN.jpg" data-title="The F Ward" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
-        <td class="title-cell unreleased">🔜 The F Ward<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">The F Ward<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1S · 6eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1122,10 +1079,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">5</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/uWqEnvpwa2U28QheMdUdEcr4U0M.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/uWqEnvpwa2U28QheMdUdEcr4U0M.jpg" data-title="Ride or Die" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
-        <td class="title-cell unreleased">🔜 Ride or Die<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Ride or Die<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1S · 8eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1137,10 +1094,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">6</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/mcrx2gcVd5mVVOQrdEWXayFbvVB.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/mcrx2gcVd5mVVOQrdEWXayFbvVB.jpg" data-title="The Dark" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
-        <td class="title-cell unreleased">🔜 The Dark<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">The Dark<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1S · 6eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1152,10 +1109,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">7</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/2aIycYKCLMuXaQnTdzYJev2X3Vg.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/2aIycYKCLMuXaQnTdzYJev2X3Vg.jpg" data-title="What Happens After Murder" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 What Happens After Murder<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">What Happens After Murder<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 2h 41m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1180,7 +1137,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="8" style="">
         <td class="td-num" style="">9</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/5YowGwH2vvA0R0eIq5HAQODf6cG.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/5YowGwH2vvA0R0eIq5HAQODf6cG.jpg" data-title="Hexed" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/zO1r0TvdmnUSO1aAtFaVeT5h1KW.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/zO1r0TvdmnUSO1aAtFaVeT5h1KW.jpg" data-title="Hexed" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell unreleased">🔜 Hexed<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1212,7 +1169,7 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">11</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/onZIFslULiG6aKgGFMZkAAWy2QV.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/onZIFslULiG6aKgGFMZkAAWy2QV.jpg" data-title="Way of the Warrior Kid" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Way of the Warrior Kid<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Way of the Warrior Kid<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 46m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1225,7 +1182,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="11" style="">
         <td class="td-num" style="">12</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/9v0QSzKscxuorhk8d9Z11ixzIWE.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/9v0QSzKscxuorhk8d9Z11ixzIWE.jpg" data-title="I Play Rocky" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/gYnp0VAzcScVfTn4wLGa8nlrgeb.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/gYnp0VAzcScVfTn4wLGa8nlrgeb.jpg" data-title="I Play Rocky" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell unreleased">🔜 I Play Rocky<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1240,9 +1197,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="12" style="">
         <td class="td-num" style="">13</td>
-        <td class="poster-cell"><div class="row-poster-placeholder" style="color:var(--muted)">▪</div></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/wmuMZrelOQBAN2KlA30yOIeIUJl.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/wmuMZrelOQBAN2KlA30yOIeIUJl.jpg" data-title="Ebenezer" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Ebenezer: A Christmas Carol<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Ebenezer<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1257,10 +1214,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">14</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/8NI00eKWTGKTpBjQEMJRzOWGA4h.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/8NI00eKWTGKTpBjQEMJRzOWGA4h.jpg" data-title="The Good Daughter" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
-        <td class="title-cell unreleased">🔜 The Good Daughter<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 41m</div></td>
+        <td class="title-cell ">The Good Daughter<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 41m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1272,7 +1229,7 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">15</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/tAcBlP72m0x3ZXZfJV4AGKr4nUo.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/tAcBlP72m0x3ZXZfJV4AGKr4nUo.jpg" data-title="The Great Beyond" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Great Beyond<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 The Great Beyond<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2027</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1287,7 +1244,7 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">16</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/dNJFRtVg3xLQ7dbNIQ55cmmIniD.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/dNJFRtVg3xLQ7dbNIQ55cmmIniD.jpg" data-title="Wild Horse Nine" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Wild Horse Nine<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Wild Horse Nine<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 58m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1302,7 +1259,7 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">17</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/eoyLMVeP1cuQRTU74W5NAFJBvsu.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/eoyLMVeP1cuQRTU74W5NAFJBvsu.jpg" data-title="Wife &amp; Dog" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Wife &amp; Dog<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Wife &amp; Dog<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2027</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1332,10 +1289,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">19</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/eqMWdviWwaRahQ7QkHLpXCpqIfu.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/eqMWdviWwaRahQ7QkHLpXCpqIfu.jpg" data-title="Josephine" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Josephine<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Josephine<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 2h 1m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1345,9 +1302,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="19" style="">
         <td class="td-num" style="">20</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/k8T3CHeykqrRVNCmYSgz4kacP9K.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/k8T3CHeykqrRVNCmYSgz4kacP9K.jpg" data-title="Klara and the Sun" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/xqovj2p6HRsgHxN81qYAYF4StgM.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/xqovj2p6HRsgHxN81qYAYF4StgM.jpg" data-title="Klara and the Sun" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Klara and the Sun<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Klara and the Sun<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 56m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1360,7 +1317,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="20" style="">
         <td class="td-num" style="">21</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/feyEk59rpGXZHKqej9HkUHOnIg2.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/feyEk59rpGXZHKqej9HkUHOnIg2.jpg" data-title="Wildwood" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/2nHPVmDxSZhtjdJWtl4G0CaVORj.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/2nHPVmDxSZhtjdJWtl4G0CaVORj.jpg" data-title="Wildwood" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell unreleased">🔜 Wildwood<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1375,7 +1332,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="21" style="">
         <td class="td-num" style="">22</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/aAtsAukFvHWsQFaBn2HqR0rd3RJ.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/aAtsAukFvHWsQFaBn2HqR0rd3RJ.jpg" data-title="Other Mommy" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/8CXwxpyvQiz9COMLZov4Oae8NKb.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/8CXwxpyvQiz9COMLZov4Oae8NKb.jpg" data-title="Other Mommy" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell unreleased">🔜 Other Mommy<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1407,7 +1364,7 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">24</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/51VDtNQFuD2I86hrT4ekytg9Dq3.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/51VDtNQFuD2I86hrT4ekytg9Dq3.jpg" data-title="Primetime" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Primetime<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Primetime<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 47m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1422,7 +1379,7 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">25</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/dZ25ve1QeX0JliOh24kqevZzKFi.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/dZ25ve1QeX0JliOh24kqevZzKFi.jpg" data-title="Victorian Psycho" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Victorian Psycho<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Victorian Psycho<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 30m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1450,9 +1407,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="26" style="">
         <td class="td-num" style="">27</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/44RMjgvpZmHU3aGmX3IQAaHtEw9.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/44RMjgvpZmHU3aGmX3IQAaHtEw9.jpg" data-title="Forgotten Island" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/kW1fH2jZZM5tVHwNaDdUOUXJvWU.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/kW1fH2jZZM5tVHwNaDdUOUXJvWU.jpg" data-title="Forgotten Island" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Forgotten Island<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Forgotten Island<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 38m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1480,7 +1437,7 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="28" style="">
         <td class="td-num" style="">29</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/yJsGgMrE2wE1rdtu70LI6rrF3mo.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/yJsGgMrE2wE1rdtu70LI6rrF3mo.jpg" data-title="Rolling Loud" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/z2EwfMhkGIHhF337c19fd1NNjN1.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/z2EwfMhkGIHhF337c19fd1NNjN1.jpg" data-title="Rolling Loud" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
         <td class="title-cell unreleased">🔜 Rolling Loud<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
@@ -1497,7 +1454,7 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">30</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/x4HFddDKpla5gFUiM8mmFIirML5.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/x4HFddDKpla5gFUiM8mmFIirML5.jpg" data-title="The Weight" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Weight<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 The Weight<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 55m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1510,9 +1467,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="30" style="">
         <td class="td-num" style="">31</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/xBn14Qxc7jYpl5GVVfKRMRE52k8.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/xBn14Qxc7jYpl5GVVfKRMRE52k8.jpg" data-title="The Uprising" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/7TUl15TOsIvndKlgMWTtLgtEzZP.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/7TUl15TOsIvndKlgMWTtLgtEzZP.jpg" data-title="The Uprising" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Uprising<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 The Uprising<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 2h 7m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1542,7 +1499,7 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">33</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/9hwBNpCArXXUuHNbZnVcYwgyMcM.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/9hwBNpCArXXUuHNbZnVcYwgyMcM.jpg" data-title="Bad Apples" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Bad Apples<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Bad Apples<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 40m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1555,9 +1512,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="33" style="">
         <td class="td-num" style="">34</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/3k69IPJEoLBMB3J5FCYehL8NMs2.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/3k69IPJEoLBMB3J5FCYehL8NMs2.jpg" data-title="Onslaught" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/qg5U3trH8yEk94Iee9pFFxy8VzK.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/qg5U3trH8yEk94Iee9pFFxy8VzK.jpg" data-title="Onslaught" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Onslaught<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Onslaught<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 32m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1600,9 +1557,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="36" style="">
         <td class="td-num" style="">37</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/yNkLRFmy6yblMHYjht77Hbd9qsp.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/yNkLRFmy6yblMHYjht77Hbd9qsp.jpg" data-title="The Whisper Man" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/6UqflU8Qqkz7Dq4swJPqs0ZJjY4.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/6UqflU8Qqkz7Dq4swJPqs0ZJjY4.jpg" data-title="The Whisper Man" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Whisper Man<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 The Whisper Man<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 51m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1615,9 +1572,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="37" style="">
         <td class="td-num" style="">38</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ePWFnyCQQr4fvBOD1lgKtcvfnCd.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/ePWFnyCQQr4fvBOD1lgKtcvfnCd.jpg" data-title="The Dog Stars" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/A7i16oDi03qrKep5pBfuTWNUTb.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/A7i16oDi03qrKep5pBfuTWNUTb.jpg" data-title="The Dog Stars" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Dog Stars<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 The Dog Stars<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 40m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1632,7 +1589,7 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">39</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/d2Ga7lZI4c19YGcIH09vj9mDZKU.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/d2Ga7lZI4c19YGcIH09vj9mDZKU.jpg" data-title="Spa Weekend" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Spa Weekend<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Spa Weekend<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 37m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1660,9 +1617,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="40" style="">
         <td class="td-num" style="">41</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ubVMXPp9OmLjET8NYbZZHQCFMcx.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/ubVMXPp9OmLjET8NYbZZHQCFMcx.jpg" data-title="The Brink of War" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/mWv5dRbs7GxSfpZNXfU75mhVOI9.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/mWv5dRbs7GxSfpZNXfU75mhVOI9.jpg" data-title="The Brink of War" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Brink of War<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 The Brink of War<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 57m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1675,9 +1632,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="41" style="">
         <td class="td-num" style="">42</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/aebmSpFu1lUV78PtOpqMUn4d82B.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/aebmSpFu1lUV78PtOpqMUn4d82B.jpg" data-title="Nimrods" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/tDTfqu5XJbtUwstRRnWaUcoHxM2.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/tDTfqu5XJbtUwstRRnWaUcoHxM2.jpg" data-title="Nimrods" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Nimrods<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Nimrods<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 56m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1692,7 +1649,7 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">43</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/d7yOPcBc099HHhmZGS9eMzMruAL.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/d7yOPcBc099HHhmZGS9eMzMruAL.jpg" data-title="Sunny Dancer" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Sunny Dancer<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Sunny Dancer<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 46m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1705,9 +1662,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="43" style="">
         <td class="td-num" style="">44</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/iCLsQ34OMyOS1zN8yUhE59SZnfK.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/iCLsQ34OMyOS1zN8yUhE59SZnfK.jpg" data-title="Late Fame" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/bcyXE0p4XmZUlcxvTDbvdG9lgsN.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/bcyXE0p4XmZUlcxvTDbvdG9lgsN.jpg" data-title="Late Fame" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Late Fame<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Late Fame<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 37m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1720,9 +1677,9 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="44" style="">
         <td class="td-num" style="">45</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/3WN0JWwRI7oGH7Ni2R6poVWej05.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/3WN0JWwRI7oGH7Ni2R6poVWej05.jpg" data-title="Tony" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/z39nccQLIc9LnhJOusvN03KvMpb.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/z39nccQLIc9LnhJOusvN03KvMpb.jpg" data-title="Tony" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Tony<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell unreleased">🔜 Tony<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 46m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
         <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
@@ -1752,10 +1709,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">47</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/qcTNUGkxpaFycXkItD3Jpn0Mcox.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/qcTNUGkxpaFycXkItD3Jpn0Mcox.jpg" data-title="Furious" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
-        <td class="title-cell unreleased">🔜 Furious<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1S · 8eps</div></td>
+        <td class="title-cell ">Furious<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1S · 8eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1765,12 +1722,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="47" style="">
         <td class="td-num" style="">48</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ifuzZizxgZA1HT9sp667BqIqjXe.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/ifuzZizxgZA1HT9sp667BqIqjXe.jpg" data-title="72 HOURS" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/9Bu1PW2R1XayqRqnl0aDOgMcrdS.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/9Bu1PW2R1XayqRqnl0aDOgMcrdS.jpg" data-title="72 HOURS" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 72 HOURS<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">72 HOURS<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 42m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1797,10 +1754,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">50</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/cEnUUeiiMnhrciM7aMKVP5mCyz2.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/cEnUUeiiMnhrciM7aMKVP5mCyz2.jpg" data-title="I, Object" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 I, Object<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">I, Object<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 32m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1810,12 +1767,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="50" style="">
         <td class="td-num" style="">51</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/kncKYCe4stYQ1YPAmIcvtjpF1Bc.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/kncKYCe4stYQ1YPAmIcvtjpF1Bc.jpg" data-title="Her Private Hell" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/kiFacg75KVjy0AM3S4QmbPas8zL.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/kiFacg75KVjy0AM3S4QmbPas8zL.jpg" data-title="Her Private Hell" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Her Private Hell<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Her Private Hell<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 50m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1827,10 +1784,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">52</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/lGovcOtxugJPhfJjFKud9EbWtOA.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/lGovcOtxugJPhfJjFKud9EbWtOA.jpg" data-title="Motor City" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Motor City<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Motor City<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 43m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1840,12 +1797,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="52" style="">
         <td class="td-num" style="">53</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/5BeEJFsxlp8lvhcbhl73l508yTZ.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/5BeEJFsxlp8lvhcbhl73l508yTZ.jpg" data-title="Nation's Dumbest" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/oP47JcqMrab8gbRqWfDiMes1urS.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/oP47JcqMrab8gbRqWfDiMes1urS.jpg" data-title="Nation's Dumbest" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
-        <td class="title-cell unreleased">🔜 Nation's Dumbest<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Nation's Dumbest<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1S · 2eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1855,12 +1812,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="53" style="">
         <td class="td-num" style="">54</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/ckyYa7G7IZ7HpoTcaAenJlKL9aH.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/ckyYa7G7IZ7HpoTcaAenJlKL9aH.jpg" data-title="The Westies" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/6nNxw6SsbEtSpktVEGdoYDqPH7C.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/6nNxw6SsbEtSpktVEGdoYDqPH7C.jpg" data-title="The Westies" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
-        <td class="title-cell unreleased">🔜 The Westies<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">The Westies<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1S · 8eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1872,10 +1829,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">55</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/98T4bnMjJs71WOVZoeY8edZhfgZ.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/98T4bnMjJs71WOVZoeY8edZhfgZ.jpg" data-title="Gail Daughtry and the Celebrity Sex Pass" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Gail Daughtry and the Celebrity Sex Pass<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Gail Daughtry and the Celebrity Sex Pass<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 33m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1887,10 +1844,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">56</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/oWUGSadxC9vQPOCeHDDVfDezmQC.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/oWUGSadxC9vQPOCeHDDVfDezmQC.jpg" data-title="Little House on the Prairie" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
-        <td class="title-cell unreleased">🔜 Little House on the Prairie<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Little House on the Prairie<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 2S · 8eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1900,12 +1857,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="56" style="">
         <td class="td-num" style="">57</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/fiqScwDv0FSQlMtIJxzPi9Xz78T.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/fiqScwDv0FSQlMtIJxzPi9Xz78T.jpg" data-title="Man of War" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/vt0RqHlqfUzeiBEVQvp43yY2076.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/vt0RqHlqfUzeiBEVQvp43yY2076.jpg" data-title="Man of War" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Man of War<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Man of War<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 51m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1917,10 +1874,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">58</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/hIJpXb7Xaje2mebN9ylsS7blQzP.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/hIJpXb7Xaje2mebN9ylsS7blQzP.jpg" data-title="Little Brother" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Little Brother<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Little Brother<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 41m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1930,12 +1887,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="58" style="">
         <td class="td-num" style="">59</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/vJRFj5ri9Zm7Tg0Tn7pBmOtXqKb.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/vJRFj5ri9Zm7Tg0Tn7pBmOtXqKb.jpg" data-title="The Invite" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/b7Dr8Chzse8VagexAporUu2RtLx.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/b7Dr8Chzse8VagexAporUu2RtLx.jpg" data-title="The Invite" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Invite<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">The Invite<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 47m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1947,10 +1904,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">60</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/tfgccePxnswMqhmtxafliLlcCVR.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/tfgccePxnswMqhmtxafliLlcCVR.jpg" data-title="Jackass: Best and Last" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Jackass: Best and Last<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Jackass: Best and Last<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 32m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1960,12 +1917,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="60" style="">
         <td class="td-num" style="">61</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/nmGIRyuMH72WHJengMo8LQjnZQn.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/nmGIRyuMH72WHJengMo8LQjnZQn.jpg" data-title="Voicemails for Isabelle" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/canZTWSxACSnAluir3dCtMxKpA1.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/canZTWSxACSnAluir3dCtMxKpA1.jpg" data-title="Voicemails for Isabelle" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Voicemails for Isabelle<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Voicemails for Isabelle<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 59m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1977,10 +1934,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">62</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/v2IRWIhbyaQLx0LF14TUfFy47N7.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/v2IRWIhbyaQLx0LF14TUfFy47N7.jpg" data-title="Sidemen Present: SideMenu" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">📺</td>
-        <td class="title-cell unreleased">🔜 Sidemen Present: SideMenu<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Sidemen Present: SideMenu<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1S · 4eps</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -1990,12 +1947,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="62" style="">
         <td class="td-num" style="">63</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/dKoz9NKjqFkurpSE5BPe3JUvncL.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/dKoz9NKjqFkurpSE5BPe3JUvncL.jpg" data-title="The Get Out" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/zlkeH0s7dDxcnuPcHBqAyXFUxqN.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/zlkeH0s7dDxcnuPcHBqAyXFUxqN.jpg" data-title="The Get Out" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Get Out<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">The Get Out<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 51m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2005,12 +1962,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="63" style="">
         <td class="td-num" style="">64</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/4cD7KeABHyzeJmzdA6QKe36fp2d.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/4cD7KeABHyzeJmzdA6QKe36fp2d.jpg" data-title="The Death of Robin Hood" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/13MmRwmG5NmaMfU8qNrtgGXisiD.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/13MmRwmG5NmaMfU8qNrtgGXisiD.jpg" data-title="The Death of Robin Hood" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Death of Robin Hood<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">The Death of Robin Hood<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 2h 3m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2022,10 +1979,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">65</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/nLxu237EJAisFCYKK48hN9Plobx.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/nLxu237EJAisFCYKK48hN9Plobx.jpg" data-title="Your Fault: London" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Your Fault: London<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Your Fault: London<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 2h 3m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2035,12 +1992,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="65" style="">
         <td class="td-num" style="">66</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/pxG26JdyuiDvJbSoucknaFiLeZD.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/pxG26JdyuiDvJbSoucknaFiLeZD.jpg" data-title="Toy Story 5" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/sfQtVlIHljToOwYjhe21KPGzZWK.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/sfQtVlIHljToOwYjhe21KPGzZWK.jpg" data-title="Toy Story 5" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Toy Story 5<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Toy Story 5<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 42m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span><span title="Toy Story / Pixar" style="font-size:.8rem;line-height:1">🧸</span></div></td>
+        <td><div class="status-dots"><span title="Toy Story / Pixar" style="font-size:.8rem;line-height:1">🧸</span></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2052,10 +2009,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">67</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/lWEhjO801M52CY5Gx6OAwZZ6m7o.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/lWEhjO801M52CY5Gx6OAwZZ6m7o.jpg" data-title="40 Dates and 40 Nights" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 40 Dates and 40 Nights<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">40 Dates and 40 Nights<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 41m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2067,10 +2024,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">68</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/nPPIufTBnzEg0d7NoR5RLL1oPra.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/nPPIufTBnzEg0d7NoR5RLL1oPra.jpg" data-title="In the Hand of Dante" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 In the Hand of Dante<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">In the Hand of Dante<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 2h 33m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2082,10 +2039,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">69</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/oIBCo9NCFTXe1v49DTUHlYXcQx4.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/oIBCo9NCFTXe1v49DTUHlYXcQx4.jpg" data-title="Let's Love" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Let's Love<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Let's Love<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 30m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2097,10 +2054,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">70</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/btK2kz5XgoMdvJfOw2axKj4P5ja.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/btK2kz5XgoMdvJfOw2axKj4P5ja.jpg" data-title="Tony Hinchcliffe: Man of the People" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Tony Hinchcliffe: Man of the People<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Tony Hinchcliffe: Man of the People<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 55m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2112,10 +2069,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">71</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/tIYqwFRYqWNiDoVpUQBMbMMl40V.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/tIYqwFRYqWNiDoVpUQBMbMMl40V.jpg" data-title="The Leader" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 The Leader<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">The Leader<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 44m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2127,10 +2084,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">72</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/s06sbzsQd7WDxDUJC1ZVSWqGhml.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/s06sbzsQd7WDxDUJC1ZVSWqGhml.jpg" data-title="Hannah Berner: None of My Business" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Hannah Berner: None of My Business<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Hannah Berner: None of My Business<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 52m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2142,10 +2099,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">73</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/EOsiEeVhXPA7GUtF7I7PpyaN3R.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/EOsiEeVhXPA7GUtF7I7PpyaN3R.jpg" data-title="NASCAR vs. Navy: The San Diego Mini Movie" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 NASCAR vs. Navy: The San Diego Mini Movie<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">NASCAR vs. Navy: The San Diego Mini Movie<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 28m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2157,10 +2114,10 @@ tr:hover .action-cell{opacity:1}
         <td class="td-num" style="">74</td>
         <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/9Jkylw7Y5NQyi7C8IwXLBvVSrH2.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/9Jkylw7Y5NQyi7C8IwXLBvVSrH2.jpg" data-title="Carolina Caroline" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Carolina Caroline<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Carolina Caroline<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 1h 47m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -2170,12 +2127,12 @@ tr:hover .action-cell{opacity:1}
         </div></td>
       </tr><tr data-idx="74" style="">
         <td class="td-num" style="">75</td>
-        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/k13xVzLmfSdzSLwKs1or8drgBzD.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/k13xVzLmfSdzSLwKs1or8drgBzD.jpg" data-title="Confessions II – The Film" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
+        <td class="poster-cell"><img class="row-poster" src="https://image.tmdb.org/t/p/w92/r9xJtmh1Lb2xlVWvGIz10Gl1PjY.jpg" loading="lazy" alt="" data-src="https://image.tmdb.org/t/p/w500/r9xJtmh1Lb2xlVWvGIz10Gl1PjY.jpg" data-title="Confessions II – The Film" onclick="openLightbox(this.dataset.src,this.dataset.title)" style="cursor:pointer"></td>
         <td class="type-badge">🎥</td>
-        <td class="title-cell unreleased">🔜 Confessions II – The Film<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026</div></td>
+        <td class="title-cell ">Confessions II – The Film<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">2026 · 14m</div></td>
         <td><span style="color:var(--muted);font-size:.72rem">—</span></td>
         <td><div class="plat-wrap"></div></td>
-        <td><div class="status-dots"><span class="dot dot-unreleased" title="Upcoming"></span></div></td>
+        <td><div class="status-dots"></div></td>
         <td><div class="people-cell"></div></td>
         <td><div class="action-cell">
           
@@ -3220,7 +3177,7 @@ tr:hover .action-cell{opacity:1}
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <h2>EDIT ENTRY</h2>
-    <input type="hidden" id="editIndex" value="29">
+    <input type="hidden" id="editIndex" value="1276">
     <div class="form-group"><label>Title</label><input type="text" id="editTitle"></div>
     <div class="form-group">
       <label>Type</label>
@@ -3287,7 +3244,7 @@ tr:hover .action-cell{opacity:1}
         <div class="checkbox-item" id="ckRewatching">🟩 Rewatching</div>
         <div class="checkbox-item" id="ckWatched">✅ Watched</div>
         <div class="checkbox-item" id="ckFind">🔍 Need Platform</div>
-        <div class="checkbox-item checked" id="ckUnreleased">🔜 Upcoming</div>
+        <div class="checkbox-item" id="ckUnreleased">🔜 Upcoming</div>
       </div>
     </div>
     <div class="form-group">
@@ -3313,59 +3270,11 @@ tr:hover .action-cell{opacity:1}
             <option value="tv">📺 Show</option>
           </select>
         </div>
-        <div id="metaSearchResults" style="display: none; position: absolute; top: calc(100% + 2px); left: 0px; right: 0px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; z-index: 300; max-height: 280px; overflow-y: auto; box-shadow: rgba(0, 0, 0, 0.6) 0px 8px 32px;"><div onclick="applyMetaTmdbResult(138949,'tv')" style="display:flex;gap:.65rem;padding:.6rem .9rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;align-items:center" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-        <img src="https://image.tmdb.org/t/p/w92/wHAACNTMIEjYzYFc06LRKOuAsx5.jpg" style="width:30px;height:45px;object-fit:cover;border-radius:3px;flex-shrink:0;background:var(--surface3)">
-        <div style="min-width:0">
-          <div style="font-size:.84rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">The Goodbye Girl</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">📺 2022 · ID: 138949</div>
-        </div>
-      </div><div onclick="applyMetaTmdbResult(14741,'movie')" style="display: flex; gap: 0.65rem; padding: 0.6rem 0.9rem; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; align-items: center;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-        <img src="https://image.tmdb.org/t/p/w92/xdaPFRARLPJuSdQIfxKVJSCOsmD.jpg" style="width:30px;height:45px;object-fit:cover;border-radius:3px;flex-shrink:0;background:var(--surface3)">
-        <div style="min-width:0">
-          <div style="font-size:.84rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">The Goodbye Girl</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">🎥 1977 · ID: 14741</div>
-        </div>
-      </div><div onclick="applyMetaTmdbResult(1629199,'movie')" style="display:flex;gap:.65rem;padding:.6rem .9rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;align-items:center" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-        <div style="width:30px;height:45px;border-radius:3px;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.9rem">🎥</div>
-        <div style="min-width:0">
-          <div style="font-size:.84rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Goodbye Girl</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">🎥 Unknown year · ID: 1629199</div>
-        </div>
-      </div><div onclick="applyMetaTmdbResult(564462,'movie')" style="display:flex;gap:.65rem;padding:.6rem .9rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;align-items:center" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-        <img src="https://image.tmdb.org/t/p/w92/1yu71Bjp71oCOf8gu0VKM8ctnYz.jpg" style="width:30px;height:45px;object-fit:cover;border-radius:3px;flex-shrink:0;background:var(--surface3)">
-        <div style="min-width:0">
-          <div style="font-size:.84rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">The Goodbye Girl</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">🎥 2013 · ID: 564462</div>
-        </div>
-      </div><div onclick="applyMetaTmdbResult(66722,'movie')" style="display:flex;gap:.65rem;padding:.6rem .9rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;align-items:center" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-        <img src="https://image.tmdb.org/t/p/w92/fYNAWxYgHjONccHJazSOc9wIeQK.jpg" style="width:30px;height:45px;object-fit:cover;border-radius:3px;flex-shrink:0;background:var(--surface3)">
-        <div style="min-width:0">
-          <div style="font-size:.84rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">The Goodbye Girl</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">🎥 2004 · ID: 66722</div>
-        </div>
-      </div><div onclick="applyMetaTmdbResult(729985,'movie')" style="display: flex; gap: 0.65rem; padding: 0.6rem 0.9rem; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; align-items: center;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-        <img src="https://image.tmdb.org/t/p/w92/lHKSpt3UV3Qzha5p7JajQMn2bxB.jpg" style="width:30px;height:45px;object-fit:cover;border-radius:3px;flex-shrink:0;background:var(--surface3)">
-        <div style="min-width:0">
-          <div style="font-size:.84rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">The Goodbye Girl</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">🎥 2018 · ID: 729985</div>
-        </div>
-      </div><div onclick="applyMetaTmdbResult(685975,'movie')" style="display:flex;gap:.65rem;padding:.6rem .9rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;align-items:center" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-        <img src="https://image.tmdb.org/t/p/w92/1uXdUXWdbn40A4VZfoL7Mt5GGkb.jpg" style="width:30px;height:45px;object-fit:cover;border-radius:3px;flex-shrink:0;background:var(--surface3)">
-        <div style="min-width:0">
-          <div style="font-size:.84rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Goodbye Shirazi Girl</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">🎥 2019 · ID: 685975</div>
-        </div>
-      </div><div onclick="applyMetaTmdbResult(1101641,'movie')" style="display:flex;gap:.65rem;padding:.6rem .9rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;align-items:center" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-        <div style="width:30px;height:45px;border-radius:3px;background:var(--surface3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.9rem">🎥</div>
-        <div style="min-width:0">
-          <div style="font-size:.84rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">The Making of 'The Goodbye Girl'</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">🎥 1977 · ID: 1101641</div>
-        </div>
-      </div></div>
+        <div id="metaSearchResults" style="display: none; position: absolute; top: calc(100% + 2px); left: 0px; right: 0px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; z-index: 300; max-height: 280px; overflow-y: auto; box-shadow: rgba(0, 0, 0, 0.6) 0px 8px 32px;"><div style="padding:.75rem 1rem;font-size:.8rem;color:var(--muted);text-align:center">Fetching details...</div></div>
       </div>
       <div style="display:flex;gap:.75rem;margin-bottom:.75rem">
         <div style="flex-shrink:0">
-          <img id="editPosterPreview" src="" alt="" style="width:54px;height:81px;object-fit:cover;border-radius:5px;background:var(--surface3);display:block">
+          <img id="editPosterPreview" src="https://image.tmdb.org/t/p/w92/lV8YHwGkYZsm6EfIqnhaSz2avKt.jpg" alt="" style="width:54px;height:81px;object-fit:cover;border-radius:5px;background:var(--surface3);display:block">
         </div>
         <div style="flex:1;min-width:0">
           <div class="form-group" style="margin-bottom:.55rem">
@@ -3421,7 +3330,7 @@ tr:hover .action-cell{opacity:1}
   </div>
 </div>
 
-<div class="toast ok" id="toast">"Haunted Heist" added to watchlist</div>
+<div class="toast ok" id="toast">Exported!</div>
 
 <script>
 const TMDB_KEY = '014a12827b82585392041c087cee3ffa';
@@ -7521,7 +7430,7 @@ const EMBEDDED = [
 <div id="give-freely-root-kkkbiiikppgjdiebcabomlbidfodipjg" class="give-freely-root" data-extension-id="kkkbiiikppgjdiebcabomlbidfodipjg" data-extension-name="Substital: Add subtitles to videos and movies" style="display: block;"></div><div id="vcaptions-subtitle-iframe" style="transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: none; position: fixed;"></div>
 <!-- Poster Lightbox -->
 <div id="poster-lightbox" onclick="closeLightbox()" style="display: none; position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.85); z-index: 9999; align-items: center; justify-content: center; cursor: zoom-out;">
-  <img id="poster-lightbox-img" src="https://image.tmdb.org/t/p/original/8dq7vaUkXPqwqKxBFW4qJNBWeop.jpg" alt="The Dink" style="max-height:96vh;max-width:96vw;border-radius:10px;box-shadow:0 12px 60px #000;object-fit:contain">
+  <img id="poster-lightbox-img" src="https://image.tmdb.org/t/p/original/tyPemOZK2TUoJqoJ9BiDYJhCvtY.jpg" alt="Once Upon a Time In Gotham" style="max-height:96vh;max-width:96vw;border-radius:10px;box-shadow:0 12px 60px #000;object-fit:contain">
 </div>
 <script>
 function openLightbox(src,title){
