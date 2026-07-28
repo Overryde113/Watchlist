@@ -348,7 +348,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.33</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.34</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -973,6 +973,7 @@ My Hero Academy</div></div>
       <button class="btn btn-ghost" id="selectModeBtn" onclick="toggleSelectMode()" title="Select entries to batch-refetch">☑ Select</button>
       <button class="btn btn-ghost" id="backfillBtn" onclick="backfillMetadata(false)" title="Fetch missing metadata for entries that need it">🔄 Backfill Metadata</button>
       <button class="btn btn-ghost" id="backfillForceBtn" onclick="backfillMetadata(true)" title="Re-fetch ALL metadata from scratch (ignores existing data)">🔄 Force Refetch All</button>
+      <button class="btn btn-ghost" id="checkUpcomingBtn" onclick="checkUpcomingReleases(true)" title="Check real release dates and un-tag anything that has already released">🔜 Check Upcoming</button>
     </div>
   </div>
 
@@ -3909,6 +3910,7 @@ async function refetchSelected() {
         if (detail.poster_path) e.poster = detail.poster_path;
         const freshYear = (detail.release_date || detail.first_air_date || '').substring(0, 4);
         if (freshYear) e.year = freshYear;
+        e.releaseDate = detail.release_date || detail.first_air_date || e.releaseDate || null;
         e.genres = (detail.genres||[]).map(g=>g.name);
         if (tmdbType === 'movie') {
           e.runtime = detail.runtime || null;
@@ -4225,6 +4227,7 @@ async function refetchEntry(idx) {
     if (detail.poster_path) e.poster = detail.poster_path;
     const freshYear = (detail.release_date || detail.first_air_date || '').substring(0, 4);
     if (freshYear) e.year = freshYear;
+    e.releaseDate = detail.release_date || detail.first_air_date || e.releaseDate || null;
     e.genres = (detail.genres || []).map(g => g.name);
     if (tmdbType === 'movie') {
       e.runtime = detail.runtime || null;
@@ -5138,6 +5141,7 @@ async function backfillMetadata(force = false) {
         if (detail.poster_path) e.poster = detail.poster_path;
         const freshYear = (detail.release_date || detail.first_air_date || '').substring(0, 4);
         if (freshYear) e.year = freshYear;
+        e.releaseDate = detail.release_date || detail.first_air_date || e.releaseDate || null;
         e.genres = (detail.genres||[]).map(g=>g.name);
         if (tmdbType === 'movie') {
           e.runtime = detail.runtime || null;
@@ -5185,6 +5189,51 @@ async function backfillMetadata(force = false) {
     progressBar.style.background = 'var(--accent2)';
     _backfillCancelled = false;
   }, 5000);
+}
+
+// ── AUTO-UNTAG RELEASED ITEMS ─────────────────────────────────────────────────
+// Compares each 🔜 Upcoming entry's real release date (not just year) against today.
+// Entries that already have a stored releaseDate need no network call at all — only
+// ones missing that field (e.g. added before this feature, or added manually) get a
+// one-time lightweight TMDB lookup, after which the date is cached on the entry.
+async function checkUpcomingReleases(manual = false) {
+  const candidates = DATA.filter(e => e.unreleased);
+  if (!candidates.length) {
+    if (manual) showToast('No upcoming entries to check.', 'ok');
+    return;
+  }
+
+  const btn = document.getElementById('checkUpcomingBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '🔜 Checking...'; }
+
+  const today = new Date().toISOString().slice(0, 10);
+  let releasedCount = 0, fetchedCount = 0;
+
+  for (const e of candidates) {
+    if (e.releaseDate) {
+      if (e.releaseDate <= today) { e.unreleased = false; releasedCount++; }
+      continue;
+    }
+    if (!e.tmdbId) continue; // nothing to look up without an ID
+    try {
+      const tmdbType = e.type === '🎥' ? 'movie' : 'tv';
+      const detail = await (await fetch(`https://api.themoviedb.org/3/${tmdbType}/${e.tmdbId}?api_key=${TMDB_KEY}`)).json();
+      const releaseDate = detail.release_date || detail.first_air_date || null;
+      if (releaseDate) {
+        e.releaseDate = releaseDate;
+        fetchedCount++;
+        if (releaseDate <= today) { e.unreleased = false; releasedCount++; }
+      }
+      await delay(120);
+    } catch (err) { console.error('checkUpcomingReleases error for', e.title, err); }
+  }
+
+  if (releasedCount || fetchedCount) { saveLocal(); render(); }
+  if (btn) { btn.disabled = false; btn.textContent = '🔜 Check Upcoming'; }
+  if (manual) {
+    showToast(releasedCount ? `${releasedCount} item${releasedCount > 1 ? 's' : ''} marked as released!` : 'Everything upcoming is still upcoming.', 'ok');
+  }
+  return releasedCount;
 }
 
 // ── EXPORT .TXT ───────────────────────────────────────────────────────────────
@@ -5969,6 +6018,7 @@ function addCalEntryToWatchlist(idx) {
     type: r.type || '🎥', title: r.title, platform: '', watching: false, rewatching: false,
     people: [], find: false, unreleased: true,
     tmdbId: r.id || null, year, poster: r.poster || '',
+    releaseDate: r.date || null,
     genres: [], mpaa: null
   };
   DATA.unshift(newEntry);
@@ -7424,6 +7474,13 @@ const EMBEDDED = [
   }
 
   render();
+
+  // Auto-check upcoming releases once per day (not on every reload, to avoid unnecessary TMDB calls)
+  const _todayStr = new Date().toISOString().slice(0, 10);
+  if (localStorage.getItem('wl_lastUpcomingCheck') !== _todayStr) {
+    localStorage.setItem('wl_lastUpcomingCheck', _todayStr);
+    checkUpcomingReleases(false);
+  }
 }); // end DOMContentLoaded
 </script>
 
