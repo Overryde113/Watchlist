@@ -348,7 +348,7 @@ tr:hover .action-cell{opacity:1}
 
 <header>
   <div class="header-inner">
-    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.34</span></div>
+    <div class="logo">WATCHLIST <span>/</span> BRILEY <span style="font-size:.7rem;opacity:.4;letter-spacing:.05em;font-family:'DM Sans',sans-serif;vertical-align:middle">v4.37</span></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search titles, platforms, people...">
@@ -3288,6 +3288,14 @@ My Hero Academy</div></div>
           </div>
         </div>
       </div>
+      <div class="form-group" style="margin-bottom:.55rem">
+        <label>Release Date <span style="font-size:.68rem;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(used to auto-clear the 🔜 Upcoming tag once this has actually released)</span></label>
+        <input type="date" id="editReleaseDate" style="width:180px">
+      </div>
+      <div class="form-group" style="margin-bottom:.55rem">
+        <label>End Date <span style="font-size:.68rem;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(shows only — last air date, if the show has ended)</span></label>
+        <input type="date" id="editEndDate" style="width:180px">
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem">
         <div class="form-group" style="margin-bottom:0">
           <label>Runtime <span style="font-size:.68rem;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(mins)</span></label>
@@ -3602,6 +3610,16 @@ function render() {
       const pfx = e.find?'🔍 ':e.unreleased?'🔜 ':'';
       const metaParts = [];
       if (e.year) metaParts.push(e.year);
+      if (e.releaseDate) {
+        const rd = new Date(e.releaseDate + 'T00:00:00');
+        const rdStr = rd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        if (e.type === '📺' && e.endDate && e.endDate !== e.releaseDate) {
+          const ed = new Date(e.endDate + 'T00:00:00');
+          metaParts.push(`${rdStr}–${ed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`);
+        } else {
+          metaParts.push(rdStr);
+        }
+      }
       if (e.runtime) metaParts.push(fmtRuntime(e.runtime));
       if (e.seasons) metaParts.push(`${e.seasons}S · ${e.episodes}eps`);
       const metaStr = metaParts.length ? `<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">${metaParts.join(' · ')}</div>` : '';
@@ -3911,6 +3929,7 @@ async function refetchSelected() {
         const freshYear = (detail.release_date || detail.first_air_date || '').substring(0, 4);
         if (freshYear) e.year = freshYear;
         e.releaseDate = detail.release_date || detail.first_air_date || e.releaseDate || null;
+        e.endDate = tmdbType === 'tv' ? (detail.last_air_date || null) : null;
         e.genres = (detail.genres||[]).map(g=>g.name);
         if (tmdbType === 'movie') {
           e.runtime = detail.runtime || null;
@@ -4228,6 +4247,7 @@ async function refetchEntry(idx) {
     const freshYear = (detail.release_date || detail.first_air_date || '').substring(0, 4);
     if (freshYear) e.year = freshYear;
     e.releaseDate = detail.release_date || detail.first_air_date || e.releaseDate || null;
+    e.endDate = tmdbType === 'tv' ? (detail.last_air_date || null) : null;
     e.genres = (detail.genres || []).map(g => g.name);
     if (tmdbType === 'movie') {
       e.runtime = detail.runtime || null;
@@ -4270,6 +4290,8 @@ function openEdit(idx) {
   // Metadata fields
   document.getElementById('editPoster').value = e.poster || '';
   document.getElementById('editYear').value = e.year || '';
+  document.getElementById('editReleaseDate').value = e.releaseDate || '';
+  document.getElementById('editEndDate').value = e.endDate || '';
   document.getElementById('editRuntime').value = e.runtime || '';
   document.getElementById('editSeasons').value = e.seasons || '';
   document.getElementById('editEpisodes').value = e.episodes || '';
@@ -4307,6 +4329,10 @@ function saveEdit() {
   if (posterVal) DATA[idx].poster = posterVal;
   const yearVal = document.getElementById('editYear').value.trim();
   if (yearVal) DATA[idx].year = yearVal;
+  const releaseDateVal = document.getElementById('editReleaseDate').value;
+  DATA[idx].releaseDate = releaseDateVal || null;
+  const endDateVal = document.getElementById('editEndDate').value;
+  DATA[idx].endDate = endDateVal || null;
   const runtimeVal = document.getElementById('editRuntime').value;
   DATA[idx].runtime = runtimeVal ? parseInt(runtimeVal) : null;
   const seasonsVal = document.getElementById('editSeasons').value;
@@ -5142,6 +5168,7 @@ async function backfillMetadata(force = false) {
         const freshYear = (detail.release_date || detail.first_air_date || '').substring(0, 4);
         if (freshYear) e.year = freshYear;
         e.releaseDate = detail.release_date || detail.first_air_date || e.releaseDate || null;
+        e.endDate = tmdbType === 'tv' ? (detail.last_air_date || null) : null;
         e.genres = (detail.genres||[]).map(g=>g.name);
         if (tmdbType === 'movie') {
           e.runtime = detail.runtime || null;
@@ -5207,7 +5234,7 @@ async function checkUpcomingReleases(manual = false) {
   if (btn) { btn.disabled = true; btn.textContent = '🔜 Checking...'; }
 
   const today = new Date().toISOString().slice(0, 10);
-  let releasedCount = 0, fetchedCount = 0;
+  let releasedCount = 0, fetchedCount = 0, networkFailed = false;
 
   for (const e of candidates) {
     if (e.releaseDate) {
@@ -5215,6 +5242,7 @@ async function checkUpcomingReleases(manual = false) {
       continue;
     }
     if (!e.tmdbId) continue; // nothing to look up without an ID
+    if (networkFailed) continue; // already confirmed TMDB is unreachable this run — stop hammering it
     try {
       const tmdbType = e.type === '🎥' ? 'movie' : 'tv';
       const detail = await (await fetch(`https://api.themoviedb.org/3/${tmdbType}/${e.tmdbId}?api_key=${TMDB_KEY}`)).json();
@@ -5225,13 +5253,20 @@ async function checkUpcomingReleases(manual = false) {
         if (releaseDate <= today) { e.unreleased = false; releasedCount++; }
       }
       await delay(120);
-    } catch (err) { console.error('checkUpcomingReleases error for', e.title, err); }
+    } catch (err) {
+      console.error('checkUpcomingReleases error for', e.title, err);
+      if (err instanceof TypeError) networkFailed = true; // "Failed to fetch" = no point retrying others this run
+    }
   }
 
   if (releasedCount || fetchedCount) { saveLocal(); render(); }
   if (btn) { btn.disabled = false; btn.textContent = '🔜 Check Upcoming'; }
   if (manual) {
-    showToast(releasedCount ? `${releasedCount} item${releasedCount > 1 ? 's' : ''} marked as released!` : 'Everything upcoming is still upcoming.', 'ok');
+    if (networkFailed) {
+      showToast('Could not reach TMDB — if you\'re previewing this file locally, open it via a real server or the live GitHub Pages URL instead.', 'err');
+    } else {
+      showToast(releasedCount ? `${releasedCount} item${releasedCount > 1 ? 's' : ''} marked as released!` : 'Everything upcoming is still upcoming.', 'ok');
+    }
   }
   return releasedCount;
 }
